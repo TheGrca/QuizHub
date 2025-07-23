@@ -54,11 +54,13 @@ export default function Register() {
     }
   };
 
-  const validateForm = () => {
+ const validateForm = () => {
     const newErrors = {};
     
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters long';
     }
     
     if (!formData.email.trim()) {
@@ -69,8 +71,8 @@ export default function Register() {
     
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long';
     }
     
     if (!formData.profilePicture) {
@@ -89,15 +91,67 @@ export default function Register() {
     }
     
     setIsLoading(true);
-    
-    // Simulate registration process
-    setTimeout(() => {
-      console.log('Register attempt:', {
-        ...formData,
-        profilePicture: formData.profilePicture?.name
+    setErrors({});
+   try {
+      // Check username uniqueness
+      console.log(process.env.REACT_APP_API_BASE_URL)
+      const usernameCheck = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/auth/check-username/${formData.username}`
+      );
+      
+      const usernameData = await usernameCheck.json();
+      console.log(usernameData)
+      if (!usernameData.isUnique) {
+        setErrors({ username: 'Username already exists' });
+        setIsLoading(false);
+        return;
+      }
+console.log("Uslo3")
+      // Check email uniqueness
+      const emailCheck = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/auth/check-email/${formData.email}`
+      );
+      const emailData = await emailCheck.json();
+      
+      if (!emailData.isUnique) {
+        setErrors({ email: 'Email already exists' });
+        setIsLoading(false);
+        return;
+      }
+console.log("Uslo4")
+      // Create form data for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('username', formData.username);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('profilePicture', formData.profilePicture);
+
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        body: formDataToSend,
+        cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
       });
+console.log("Uslo5")
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and user data
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        console.log("Uslo6")
+        // Navigate to home page
+        window.location.href = '/Home';
+      } else {
+        setErrors({ general: data.message || 'Registration failed' });
+      }
+    } catch (err) {
+      setErrors({ general: 'Network error. Please try again.' });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

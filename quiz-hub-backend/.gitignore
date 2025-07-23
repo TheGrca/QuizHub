@@ -1,0 +1,58 @@
+## Build results
+bin/
+obj/
+out/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio working folder
+.vs/
+
+## Rider project files
+.idea/
+
+## Auto-generated files
+Generated_Code/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Publish output
+wwwroot/dist/
+wwwroot/node_modules/
+publish/
+app.publish/
+
+## Configuration files
+appsettings.*.json
+secrets.json
+
+## Logs
+*.log
+logs/
+
+## npm packages (ako koristiš frontend u istom projektu)
+node_modules/
+dist/
+
+## Environment files
+.env
+.env.*
+
+## Global JetBrains Rider files
+.idea/
+
+## dotnet tools
+.tools/
+
+## SQLite local DB
+*.db
+*.sqlite
+
+## Others
+*.DS_Store
+Thumbs.db

@@ -8,6 +8,7 @@ export default function Login() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -15,17 +16,41 @@ export default function Login() {
       ...prev,
       [name]: value
     }));
+    if (error) {
+      setError('');
+    }
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate login process
-    setTimeout(() => {
-      console.log('Login attempt:', formData);
+    try {
+      console.log("Usao")
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      console.log(data)
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        window.location.href = '/home';
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
  return (
@@ -116,7 +141,7 @@ export default function Login() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={handleSubmit}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? (
@@ -132,6 +157,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
+              onClick={handleSubmit}
               className="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ 
                 backgroundColor: '#495464',
