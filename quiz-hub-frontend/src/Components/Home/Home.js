@@ -1,9 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Search } from 'lucide-react';
 import Navbar from '../../Shared/Navbar';
+import QuizBox from '../../Shared/Quizbox';
+
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Hardcoded quizzes for testing
+  const sampleQuizzes = [
+    {
+      id: 1,
+      name: "JavaScript Fundamentals",
+      description: "Test your knowledge of JavaScript basics including variables, functions, and data types. Perfect for beginners learning web development.",
+      category: "Programming",
+      difficulty: "Easy",
+      numberOfQuestions: 10,
+      timeToFinish: 15
+    },
+    {
+      id: 2,
+      name: "World War II History",
+      description: "Comprehensive quiz covering major events, battles, and figures from World War II. Explore the timeline of this pivotal period in history.",
+      category: "History",
+      difficulty: "Medium",
+      numberOfQuestions: 20,
+      timeToFinish: 30
+    },
+    {
+      id: 3,
+      name: "Advanced React Concepts",
+      description: "Challenge yourself with advanced React topics including hooks, context, performance optimization, and modern patterns.",
+      category: "Programming",
+      difficulty: "Hard",
+      numberOfQuestions: 15,
+      timeToFinish: 25
+    },
+    {
+      id: 4,
+      name: "Ancient Civilizations",
+      description: "Journey through ancient Egypt, Greece, Rome, and Mesopotamia. Test your knowledge of these foundational civilizations.",
+      category: "History",
+      difficulty: "Easy",
+      numberOfQuestions: 12,
+      timeToFinish: 20
+    },
+    {
+      id: 5,
+      name: "Python Data Structures",
+      description: "Master Python's built-in data structures including lists, dictionaries, sets, and tuples. Essential for data science and backend development.",
+      category: "Programming",
+      difficulty: "Medium",
+      numberOfQuestions: 18,
+      timeToFinish: 35
+    },
+    {
+      id: 6,
+      name: "Medieval Europe",
+      description: "Explore the Middle Ages covering feudalism, the Crusades, major monarchs, and cultural developments in medieval European society.",
+      category: "History",
+      difficulty: "Hard",
+      numberOfQuestions: 25,
+      timeToFinish: 40
+    }
+  ];
 
   useEffect(() => {
     // Check if user is logged in
@@ -54,91 +114,81 @@ export default function Home() {
   return (
     <div>
       <Navbar/>
-    <div className="min-h-screen" style={{ 
-      backgroundColor: '#BBBFCA',
-      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-    }}>
-      {/* Header */}
-      <div className="flex justify-between items-center p-6">
-        
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:opacity-90"
-          style={{ 
-            backgroundColor: '#495464',
-            color: 'white'
-          }}
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Logout</span>
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 120px)' }}>
-        <div 
-          className="w-full max-w-2xl p-12 rounded-2xl shadow-lg text-center"
-          style={{ backgroundColor: '#E8E8E8' }}
-        >
-          {/* Profile Picture */}
-          <div className="mb-8">
-            <img
-              src={`data:image/jpeg;base64,${user.profilePictureBase64}`}
-              alt={`${user.username}'s profile`}
-              className="w-32 h-32 rounded-full mx-auto object-cover shadow-lg"
-              style={{ border: '4px solid #495464' }}
-            />
-          </div>
-
-          {/* Welcome Message */}
-          <div className="space-y-4">
-            <h2 className="text-4xl font-bold" style={{ color: '#495464' }}>
-              Hello, {user.username}!
-            </h2>
-            
-            <p className="text-xl" style={{ color: '#495464', opacity: 0.8 }}>
-              Welcome back to QuizHub
-            </p>
-
-            {/* User Info */}
-            <div className="mt-8 space-y-3">
-              <div 
-                className="inline-block px-4 py-2 rounded-xl"
-                style={{ backgroundColor: '#F4F4F2' }}
-              >
-                <span className="text-sm font-medium" style={{ color: '#495464' }}>
-                  Email: {user.email}
-                </span>
-              </div>
-              
-              <div 
-                className="inline-block px-4 py-2 rounded-xl ml-3"
-                style={{ backgroundColor: '#F4F4F2' }}
-              >
-                <span className="text-sm font-medium" style={{ color: '#495464' }}>
-                  Role: {user.role}
-                </span>
+      <div className="min-h-screen" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        {/* Search and Filter Section */}
+        <div className="px-8 py-6">
+          <div className="flex gap-4 justify-between items-center">
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md relative">
+              <div className="relative">
+                <Search 
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" 
+                  style={{ color: '#495464' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Search quizzes..."
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                  style={{ 
+                    backgroundColor: '#E8E8E8',
+                    color: '#495464',
+                    focusRingColor: '#495464'
+                  }}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Future Features Placeholder */}
-          <div className="mt-12">
-            <div 
-              className="p-6 rounded-xl"
-              style={{ backgroundColor: '#F4F4F2' }}
-            >
-              <h3 className="text-xl font-semibold mb-3" style={{ color: '#495464' }}>
-                Coming Soon
-              </h3>
-              <p style={{ color: '#495464', opacity: 0.7 }}>
-                Quiz features and more functionality will be added here!
-              </p>
+            {/* Filters */}
+            <div className="flex gap-4">
+              {/* Category Filter */}
+              <select
+                className="px-4 py-3 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                style={{ 
+                  backgroundColor: '#E8E8E8',
+                  color: '#495464',
+                  focusRingColor: '#495464'
+                }}
+              >
+                <option value="">All Categories</option>
+                <option value="programming">Programming</option>
+                <option value="history">History</option>
+              </select>
+
+              {/* Difficulty Filter */}
+              <select
+                className="px-4 py-3 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                style={{ 
+                  backgroundColor: '#E8E8E8',
+                  color: '#495464',
+                  focusRingColor: '#495464'
+                }}
+              >
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Quiz Display Area */}
+        <div className="px-8 pb-8">
+          <div 
+            className="w-full rounded-2xl shadow-lg p-8"
+            style={{ backgroundColor: '#E8E8E8' }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {sampleQuizzes.map(quiz => (
+                <QuizBox key={quiz.id} quiz={quiz} />
+              ))}
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }
