@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LogOut } from 'lucide-react';
-
+import Navbar from '../../Shared/Navbar';
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -52,15 +52,14 @@ export default function Home() {
   }
 
   return (
+    <div>
+      <Navbar/>
     <div className="min-h-screen" style={{ 
       backgroundColor: '#BBBFCA',
       fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
       {/* Header */}
       <div className="flex justify-between items-center p-6">
-        <h1 className="text-4xl font-bold" style={{ color: '#495464' }}>
-          QuizHub
-        </h1>
         
         <button
           onClick={handleLogout}
@@ -140,5 +139,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
