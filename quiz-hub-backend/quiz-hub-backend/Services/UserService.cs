@@ -14,6 +14,7 @@ namespace quiz_hub_backend.Services
             _context = context;
         }
 
+        //For home page
         public async Task<List<QuizListDTO>> GetAllQuizzesAsync(QuizFilterDTO? filters = null)
         {
             var query = _context.Quizzes
@@ -92,7 +93,6 @@ namespace quiz_hub_backend.Services
                 Questions = quiz.Questions.Select(q => MapQuestionToDto(q)).ToList()
             };
         }
-
         private QuestionResponseDTO MapQuestionToDto(Question question)
         {
             var dto = new QuestionResponseDTO
@@ -132,6 +132,233 @@ namespace quiz_hub_backend.Services
             }
 
             return dto;
+        }
+
+
+        //For Quiz pages
+        public async Task<QuizResultDetailDTO?> GetQuizResultAsync(int resultId, int userId)
+        {
+            var result = await _context.UserQuizResults
+                .Include(r => r.Quiz)
+                .Include(r => r.UserAnswers)
+                    .ThenInclude(a => a.Question)
+                .FirstOrDefaultAsync(r => r.Id == resultId && r.UserId == userId);
+
+            if (result == null)
+                return null;
+
+            var questionResults = new List<QuestionResultDTO>();
+
+            foreach (var answer in result.UserAnswers)
+            {
+                var questionDto = MapQuestionToDto(answer.Question);
+                var userAnswerDto = MapUserAnswerToDto(answer);
+
+                var pointsEarned = answer.IsCorrect ? answer.Question.Points : 0;
+
+                questionResults.Add(new QuestionResultDTO
+                {
+                    Question = questionDto,
+                    UserAnswer = userAnswerDto,
+                    IsCorrect = answer.IsCorrect,
+                    PointsEarned = pointsEarned
+                });
+            }
+
+            return new QuizResultDetailDTO
+            {
+                Id = result.Id,
+                QuizId = result.QuizId,
+                QuizName = result.Quiz.Name,
+                Score = result.Score,
+                TotalPoints = result.UserAnswers.Sum(a => a.Question.Points),
+                Percentage = result.Percentage,
+                CorrectAnswers = result.UserAnswers.Count(a => a.IsCorrect),
+                TotalQuestions = result.UserAnswers.Count,
+                TimeTakenSeconds = result.TimeTakenSeconds,
+                CompletionDate = result.CompletionDate,
+                QuestionResults = questionResults
+            };
+        }
+
+        public async Task<QuizSubmissionResultDTO> SubmitQuizAsync(int userId, QuizSubmissionDTO submission)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Get the quiz with questions
+                var quiz = await _context.Quizzes
+                    .Include(q => q.Questions)
+                    .FirstOrDefaultAsync(q => q.Id == submission.QuizId);
+
+                if (quiz == null)
+                    throw new ArgumentException("Quiz not found");
+
+                // Calculate score and create user answers
+                int totalScore = 0;
+                int correctAnswers = 0;
+                var userAnswers = new List<UserAnswer>();
+
+                foreach (var answerDto in submission.UserAnswers)
+                {
+                    var question = quiz.Questions.FirstOrDefault(q => q.Id == answerDto.QuestionId);
+                    if (question == null) continue;
+
+                    var (isCorrect, pointsEarned) = EvaluateAnswer(question, answerDto);
+
+                    if (isCorrect) correctAnswers++;
+                    totalScore += pointsEarned;
+
+                    // Create appropriate UserAnswer based on question type
+                    UserAnswer userAnswer = answerDto.AnswerType switch
+                    {
+                        "MultipleChoiceQuestion" => new MultipleChoiceUserAnswer
+                        {
+                            QuestionId = answerDto.QuestionId,
+                            IsCorrect = isCorrect,
+                            SelectedOptionIndex = answerDto.SelectedOptionIndex ?? -1
+                        },
+                        "MultipleAnswerQuestion" => new MultipleAnswerUserAnswer
+                        {
+                            QuestionId = answerDto.QuestionId,
+                            IsCorrect = isCorrect,
+                            SelectedOptionIndices = answerDto.SelectedOptionIndices ?? ""
+                        },
+                        "TrueFalseQuestion" => new TrueFalseUserAnswer
+                        {
+                            QuestionId = answerDto.QuestionId,
+                            IsCorrect = isCorrect,
+                            UserAnswer = answerDto.UserAnswer ?? false
+                        },
+                        "TextInputQuestion" => new TextInputUserAnswer
+                        {
+                            QuestionId = answerDto.QuestionId,
+                            IsCorrect = isCorrect,
+                            UserAnswerText = answerDto.UserAnswerText ?? ""
+                        },
+                        _ => throw new ArgumentException($"Unknown answer type: {answerDto.AnswerType}")
+                    };
+
+                    userAnswers.Add(userAnswer);
+                }
+
+                // Calculate percentage
+                var totalPossiblePoints = quiz.Questions.Sum(q => q.Points);
+                var percentage = totalPossiblePoints > 0 ? (double)totalScore / totalPossiblePoints * 100 : 0;
+
+                // Create UserQuizResult
+                var quizResult = new UserQuizResult
+                {
+                    UserId = userId,
+                    QuizId = submission.QuizId,
+                    CompletionDate = DateTime.UtcNow,
+                    TimeTakenSeconds = submission.TimeTakenSeconds,
+                    Score = totalScore,
+                    Percentage = percentage
+                };
+
+                _context.UserQuizResults.Add(quizResult);
+                await _context.SaveChangesAsync();
+
+                // Set UserQuizResultId for all answers
+                foreach (var answer in userAnswers)
+                {
+                    answer.UserQuizResultId = quizResult.Id;
+                }
+
+                _context.UserAnswers.AddRange(userAnswers);
+
+                // Update or create UserQuizHistory
+                var history = await _context.UserQuizHistory
+                    .FirstOrDefaultAsync(h => h.UserId == userId && h.QuizId == submission.QuizId);
+
+                if (history == null)
+                {
+                    history = new UserQuizHistory
+                    {
+                        UserId = userId,
+                        QuizId = submission.QuizId,
+                        AttemptCount = 1,
+                        BestScore = totalScore,
+                        BestPercentage = percentage,
+                        BestTimeSeconds = submission.TimeTakenSeconds,
+                        LastAttemptDate = DateTime.UtcNow
+                    };
+                    _context.UserQuizHistory.Add(history);
+                }
+                else
+                {
+                    history.AttemptCount++;
+                    history.LastAttemptDate = DateTime.UtcNow;
+
+                    if (totalScore > history.BestScore ||
+                        (totalScore == history.BestScore && submission.TimeTakenSeconds < history.BestTimeSeconds))
+                    {
+                        history.BestScore = totalScore;
+                        history.BestPercentage = percentage;
+                        history.BestTimeSeconds = submission.TimeTakenSeconds;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new QuizSubmissionResultDTO
+                {
+                    ResultId = quizResult.Id,
+                    Score = totalScore,
+                    Percentage = percentage,
+                    CorrectAnswers = correctAnswers,
+                    TotalQuestions = quiz.Questions.Count
+                };
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        private (bool isCorrect, int pointsEarned) EvaluateAnswer(Question question, UserAnswerSubmissionDTO answer)
+        {
+            switch (question)
+            {
+                case MultipleChoiceQuestion mcq:
+                    var isCorrect = answer.SelectedOptionIndex == mcq.CorrectAnswerIndex;
+                    return (isCorrect, isCorrect ? question.Points : 0);
+
+                case MultipleAnswerQuestion maq:
+                    var correctIndices = maq.CorrectAnswerIndices.Split(',').Select(int.Parse).OrderBy(x => x).ToArray();
+                    var userIndices = string.IsNullOrEmpty(answer.SelectedOptionIndices)
+                        ? new int[0]
+                        : answer.SelectedOptionIndices.Split(',').Select(int.Parse).OrderBy(x => x).ToArray();
+
+                    var isMultiCorrect = correctIndices.SequenceEqual(userIndices);
+                    return (isMultiCorrect, isMultiCorrect ? question.Points : 0);
+
+                case TrueFalseQuestion tfq:
+                    var isTFCorrect = answer.UserAnswer == tfq.CorrectAnswer;
+                    return (isTFCorrect, isTFCorrect ? question.Points : 0);
+
+                case TextInputQuestion tiq:
+                    var isTextCorrect = string.Equals(answer.UserAnswerText?.Trim(), tiq.CorrectAnswer.Trim(), StringComparison.OrdinalIgnoreCase);
+                    return (isTextCorrect, isTextCorrect ? question.Points : 0);
+
+                default:
+                    return (false, 0);
+            }
+        }
+        private UserAnswerDetailDTO MapUserAnswerToDto(UserAnswer answer)
+        {
+            return new UserAnswerDetailDTO
+            {
+                AnswerType = answer.GetType().Name.Replace("UserAnswer", "Question"),
+                SelectedOptionIndex = (answer as MultipleChoiceUserAnswer)?.SelectedOptionIndex,
+                SelectedOptionIndices = (answer as MultipleAnswerUserAnswer)?.SelectedOptionIndices,
+                UserAnswer = (answer as TrueFalseUserAnswer)?.UserAnswer,
+                UserAnswerText = (answer as TextInputUserAnswer)?.UserAnswerText
+            };
         }
     }
 }

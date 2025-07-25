@@ -7,5 +7,7 @@ namespace quiz_hub_backend.Interfaces
         Task<List<QuizListDTO>> GetAllQuizzesAsync(QuizFilterDTO? filters = null);
         Task<List<CategoryDTO>> GetCategoriesAsync();
         Task<QuizResponseDTO?> GetQuizByIdAsync(int quizId);
+        Task<QuizSubmissionResultDTO> SubmitQuizAsync(int userId, QuizSubmissionDTO submission);
+        Task<QuizResultDetailDTO?> GetQuizResultAsync(int resultId, int userId);
     }
 }

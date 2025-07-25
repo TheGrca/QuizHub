@@ -2,6 +2,7 @@
 using quiz_hub_backend.DTO;
 using quiz_hub_backend.Interfaces;
 using quiz_hub_backend.Services;
+using System.Security.Claims;
 
 namespace quiz_hub_backend.Controllers
 {
@@ -62,6 +63,54 @@ namespace quiz_hub_backend.Controllers
             {
                 return StatusCode(500, new { message = "An error occurred while fetching the quiz.", error = ex.Message });
             }
+        }
+
+        [HttpPost("submit-quiz")]
+        public async Task<ActionResult<QuizSubmissionResultDTO>> SubmitQuiz([FromBody] QuizSubmissionDTO submission)
+        {
+            try
+            {
+                // Get user ID from token (you'll need to implement this based on your auth system)
+                var userId = GetUserIdFromToken();
+
+                var result = await _userService.SubmitQuizAsync(userId, submission);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while submitting the quiz.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("quiz-result/{id}")]
+        public async Task<ActionResult<QuizResultDetailDTO>> GetQuizResult(int id)
+        {
+            try
+            {
+                var userId = GetUserIdFromToken();
+                var result = await _userService.GetQuizResultAsync(id, userId);
+
+                if (result == null)
+                {
+                    return NotFound(new { message = "Quiz result not found." });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching the quiz result.", error = ex.Message });
+            }
+        }
+
+        private int GetUserIdFromToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                throw new UnauthorizedAccessException("Invalid or missing user ID in token");
+            }
+            return userId;
         }
     }
 }
