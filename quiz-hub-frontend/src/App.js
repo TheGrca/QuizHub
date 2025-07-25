@@ -10,6 +10,7 @@ import MyResultsPage from './Components/MyResults/MyResults';
 import AddQuizPage from './Components/AddQuiz/AddQuiz';
 import EditQuizPage from './Components/EditQuiz/EditQuiz';
 import RankingsPage from './Components/Rankings/Rankings';
+import QuizPage from './Components/Quiz/Quiz'; // Add this import
 
 const getUserFromStorage = () => {
   try {
@@ -58,6 +59,7 @@ const App = () => {
           <>
             <Route path="/home" element={<HomePage />} />
             <Route path="/my-results" element={<MyResultsPage />} />
+            <Route path="/quiz/:id" element={<QuizPage />} />
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </>

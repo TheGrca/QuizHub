@@ -1,54 +1,34 @@
-import React from 'react';
+import { Clock, FileText, AlertCircle } from 'lucide-react';
 
-const QuizBox = ({ quiz }) => {
+// QuizBox Component
+const QuizBox = ({ quiz, onClick }) => {
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy': return 'bg-green-100 text-green-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'hard': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div 
-      className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
-      style={{ backgroundColor: '#F5F5F5' }}
+      onClick={() => onClick(quiz.id)}
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 p-6 border border-gray-200"
     >
-      {/* Quiz Name */}
-      <h3 className="text-xl font-bold mb-2" style={{ color: '#495464' }}>
-        {quiz.name}
-      </h3>
-      
-      {/* Quiz Description */}
-      <p className="text-sm mb-4 line-clamp-3" style={{ color: '#495464', opacity: 0.8 }}>
-        {quiz.description}
-      </p>
-      
-      {/* Quiz Details */}
-      <div className="flex flex-wrap gap-2">
-        <span 
-          className="px-3 py-1 rounded-full text-xs font-medium"
-          style={{ backgroundColor: '#495464', color: '#FFFFFF' }}
-        >
-          {quiz.category}
-        </span>
-        
-        <span 
-          className="px-3 py-1 rounded-full text-xs font-medium"
-          style={{ 
-            backgroundColor: quiz.difficulty === 'Easy' ? '#4CAF50' : 
-                           quiz.difficulty === 'Medium' ? '#FF9800' : '#F44336',
-            color: '#FFFFFF'
-          }}
-        >
+      <div className="flex justify-between items-start mb-3">
+        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(quiz.difficulty)}`}>
           {quiz.difficulty}
         </span>
-        
-        <span 
-          className="px-3 py-1 rounded-full text-xs font-medium"
-          style={{ backgroundColor: '#E8E8E8', color: '#495464' }}
-        >
-          {quiz.numberOfQuestions} Questions
-        </span>
-        
-        <span 
-          className="px-3 py-1 rounded-full text-xs font-medium"
-          style={{ backgroundColor: '#E8E8E8', color: '#495464' }}
-        >
-          {quiz.timeToFinish} min
-        </span>
+        <span className="text-sm text-gray-500 font-medium">{quiz.category}</span>
+      </div>
+      
+      <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{quiz.name}</h3>
+      <p className="text-gray-600 text-sm mb-4 line-clamp-3">{quiz.description}</p>
+      
+      <div className="flex justify-between items-center text-sm text-gray-500">
+        <span>{quiz.numberOfQuestions} questions</span>
+        <span>{quiz.timeToFinish} min</span>
       </div>
     </div>
   );
