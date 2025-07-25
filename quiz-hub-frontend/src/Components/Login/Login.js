@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     emailOrUsername: '',
     password: ''
@@ -21,13 +23,13 @@ export default function Login() {
     }
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     
     try {
-      console.log("Usao")
+      console.log("Login attempt started");
       const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -37,23 +39,48 @@ const handleSubmit = async (e) => {
       });
 
       const data = await response.json();
-      console.log(data)
+      console.log('Login response:', data);
+      
       if (response.ok) {
+        // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        window.location.href = '/home';
+        console.log('Storing user data:', data.user);
+        console.log('User role being stored:', data.user.role);
+        
+        // Force page reload to ensure App.js reads fresh localStorage data
+        if (data.user.role === 1) {
+          window.location.href = '/add-quiz';
+        } else {
+          window.location.href = '/home';
+        }
       } else {
-        setError(data.message || 'Login failed');
+        setError('Username or password incorrect');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      console.error('Login error:', err);
+      setError('Username or password incorrect');
     } finally {
       setIsLoading(false);
     }
   };
 
- return (
+  // Handle Enter key press
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e);
+    }
+  };
+
+  // Toggle password visibility
+  const togglePasswordVisibility = (e) => {
+    e.preventDefault(); // Prevent form submission
+    e.stopPropagation(); // Stop event bubbling
+    setShowPassword(!showPassword);
+  };
+
+  return (
     <div className="min-h-screen flex flex-col" style={{ 
       backgroundColor: '#BBBFCA',
       fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
@@ -100,6 +127,7 @@ const handleSubmit = async (e) => {
                   name="emailOrUsername"
                   value={formData.emailOrUsername}
                   onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
                   className="w-full pl-10 pr-4 py-4 text-base rounded-xl border-0 focus:outline-none focus:ring-2 transition-all duration-200"
                   style={{ 
                     backgroundColor: '#F4F4F2',
@@ -129,6 +157,7 @@ const handleSubmit = async (e) => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
                   className="w-full pl-4 pr-12 py-4 text-base rounded-xl border-0 focus:outline-none focus:ring-2 transition-all duration-200"
                   style={{ 
                     backgroundColor: '#F4F4F2',
@@ -141,8 +170,9 @@ const handleSubmit = async (e) => {
                 />
                 <button
                   type="button"
-                  onClick={handleSubmit}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center hover:opacity-70 transition-opacity z-10"
+                  style={{ cursor: 'pointer' }}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" style={{ color: '#BBBFCA' }} />
@@ -151,11 +181,20 @@ const handleSubmit = async (e) => {
                   )}
                 </button>
               </div>
+              
+              {/* Error Message under password field */}
+              {error && (
+                <div className="mt-2">
+                  <p className="text-sm font-medium" style={{ color: '#d32f2f' }}>
+                    {error}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Login Button */}
             <button
-              type="submit"
+              type="button"
               disabled={isLoading}
               onClick={handleSubmit}
               className="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -182,7 +221,7 @@ const handleSubmit = async (e) => {
             <p style={{ color: '#495464', opacity: 0.7 }}>
               Don't have an account?{' '}
               <a 
-                href="/Register" 
+                href="/register" 
                 className="font-semibold hover:underline transition-colors duration-200"
                 style={{ color: '#495464' }}
               >

@@ -14,7 +14,7 @@ namespace quiz_hub_backend.DTO
         public string Username { get; set; }
         public string Email { get; set; }
         public string ProfilePictureBase64 { get; set; }
-        public UserType Role { get; set; }
+        public int Role { get; set; }
     }
 }
 

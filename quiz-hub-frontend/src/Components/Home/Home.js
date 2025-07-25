@@ -78,6 +78,10 @@ export default function Home() {
 
     try {
       const parsedUser = JSON.parse(userData);
+      if (parsedUser.IsAdmin == 1) {
+        window.location.href = '/add-quiz';
+        return;
+      }
       setUser(parsedUser);
     } catch (error) {
       console.error('Error parsing user data:', error);
@@ -86,12 +90,6 @@ export default function Home() {
       setLoading(false);
     }
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-  };
 
   if (loading) {
     return (
@@ -113,7 +111,6 @@ export default function Home() {
 
   return (
     <div>
-      <Navbar/>
       <div className="min-h-screen" style={{ 
         backgroundColor: '#BBBFCA',
         fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'

@@ -33,7 +33,7 @@ namespace quiz_hub_backend.Services
                 Username = user.Username,
                 Email = user.Email,
                 ProfilePictureBase64 = Convert.ToBase64String(user.Image),
-                Role = user.isAdmin
+                Role = (int)user.isAdmin
             };
 
             return new AuthResponseDto
@@ -86,7 +86,7 @@ namespace quiz_hub_backend.Services
                 Username = user.Username,
                 Email = user.Email,
                 ProfilePictureBase64 = Convert.ToBase64String(user.Image),
-                Role = user.isAdmin
+                Role = (int)user.isAdmin
             };
 
             return new AuthResponseDto

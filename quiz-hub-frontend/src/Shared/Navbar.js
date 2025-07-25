@@ -1,37 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogOut, User } from 'lucide-react';
 
-export default function Navbar() {
+const Navbar = ({ isAdmin }) => {
   const [user, setUser] = useState(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    if (userData && token) {
-        try {
-            const parsedUser = JSON.parse(userData);
-            setUser(parsedUser);
-        } catch (error) {
-      console.error('Error parsing user data:', error);
-      window.location.href = '/login';
-    }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Close dropdown when clicking outside
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    }
   }, []);
 
   const handleLogout = () => {
@@ -40,94 +23,119 @@ export default function Navbar() {
     window.location.href = '/login';
   };
 
-  const navItems = [
-    { name: 'Home', href: '/home' },
-    { name: 'Rankings', href: '/rankings' },
-    { name: 'My Results', href: '/my-results' }
-  ];
+  const navigateTo = (path) => {
+    window.location.href = path;
+  };
 
-  if (!user) {
-    return null; // Don't render navbar if user is not loaded
-  }
+  if (!user) return null;
 
   return (
     <nav 
-      className="w-full px-6 py-8 shadow-sm"
+      className="shadow-sm border-b-2 px-8 py-4"
       style={{ 
-        backgroundColor: '#E8E8E8',
+        backgroundColor: '#495464',
+        borderBottomColor: '#BBBFCA',
         fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}
     >
       <div className="flex items-center justify-between">
-        <div>
-          <a 
-            href="/home"
-            className="text-4xl font-bold hover:opacity-80 transition-opacity duration-200"
-            style={{ color: '#495464' }}
-          >
-            QuizHub
-          </a>
+        {/* Logo/Brand */}
+        <div 
+          className="text-2xl font-bold cursor-pointer"
+          style={{ color: '#BBBFCA' }}
+          onClick={() => navigateTo(isAdmin ? '/add-quiz' : '/home')}
+        >
+          QuizHub
         </div>
 
-        <div className="flex items-center space-x-8">
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-xl font-medium hover:opacity-80 transition-opacity duration-200"
-              style={{ color: '#495464' }}
-            >
-              {item.name}
-            </a>
-          ))}
-
-          <div className="flex items-center space-x-3">
-            <span 
-              className="text-xl font-medium"
-              style={{ color: '#080808ff' }}
-            >
-              {user.username}
-            </span>
-
-            <div className="relative" ref={dropdownRef}>
+        {/* Navigation Links */}
+        <div className="flex items-center space-x-6">
+          {isAdmin ? (
+            // Admin Navigation
+            <>
               <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full transition-all duration-200"
-                style={{ focusRingColor: '#BBBFCA' }}
+                onClick={() => navigateTo('/add-quiz')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
               >
+                Add Quiz
+              </button>
+              <button
+                onClick={() => navigateTo('/edit-quiz')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
+              >
+                Edit Quiz
+              </button>
+              <button
+                onClick={() => navigateTo('/rankings')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
+              >
+                Rankings
+              </button>
+            </>
+          ) : (
+            // User Navigation
+            <>
+              <button
+                onClick={() => navigateTo('/home')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
+              >
+                Home
+              </button>
+              <button
+                onClick={() => navigateTo('/my-results')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
+              >
+                My Results
+              </button>
+            </>
+          )}
+
+          {/* User Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+              style={{ color: '#BBBFCA' }}
+            >
+              {/* Show profile picture only for regular users, not admin */}
+              {!isAdmin && user.profilePictureBase64 ? (
                 <img
                   src={`data:image/jpeg;base64,${user.profilePictureBase64}`}
-                  alt={`${user.username}'s profile`}
-                  className="w-12 h-12 rounded-full object-cover hover:opacity-90 transition-opacity duration-200"
-                  style={{ border: '2px solid #495464' }}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
-              </button>
-
-              {isDropdownOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg z-50"
-                  style={{ backgroundColor: '#F4F4F2' }}
-                >
-                  <div className="py-2">
-
-                    {/* Menu Items */}
-                    <div className="py-1">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200 text-left"
-                        style={{ color: '#495464' }}
-                      >
-                        <LogOut className="h-4 w-4 mr-3" />
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              ) : (
+                <User className="w-8 h-8" />
               )}
-            </div>
+              <span className="font-medium">{user.username}</span>
+            </button>
+
+            {/* Dropdown Menu - Simplified to only show logout */}
+            {showDropdown && (
+              <div 
+                className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-2 z-50"
+                style={{ backgroundColor: '#E8E8E8' }}
+              >
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-sm hover:bg-opacity-50 hover:bg-gray-300 transition-colors duration-200"
+                  style={{ color: '#495464' }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

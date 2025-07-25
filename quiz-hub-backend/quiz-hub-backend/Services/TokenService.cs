@@ -25,6 +25,15 @@ namespace quiz_hub_backend.Services
             new Claim(ClaimTypes.Email, user.Email)
         };
 
+            if (user.Username == "Admin" || user.isAdmin == UserType.Admin)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "User"));
+            }
+
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_SECRET_KEY"]));
             var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
