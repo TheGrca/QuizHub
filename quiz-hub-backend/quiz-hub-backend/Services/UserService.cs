@@ -360,5 +360,154 @@ namespace quiz_hub_backend.Services
                 UserAnswerText = (answer as TextInputUserAnswer)?.UserAnswerText
             };
         }
+
+        public async Task<MyQuizResultsDTO> GetMyQuizResultsAsync(int userId)
+        {
+            var results = await _context.UserQuizResults
+                .Include(r => r.Quiz)
+                    .ThenInclude(q => q.Category)
+                .Include(r => r.Quiz)
+                    .ThenInclude(q => q.Questions) // Include quiz questions to get total points
+                .Include(r => r.UserAnswers)
+                    .ThenInclude(a => a.Question) // Include user answers and their questions
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.CompletionDate)
+                .ToListAsync();
+
+            var resultSummaries = results.Select(r => new QuizResultSummaryDTO
+            {
+                Id = r.Id,
+                QuizId = r.QuizId,
+                QuizName = r.Quiz.Name,
+                Category = r.Quiz.Category.Name,
+                Difficulty = r.Quiz.Difficulty.ToString(),
+                Score = r.Score,
+                TotalPoints = r.Quiz.Questions.Sum(q => q.Points), // Use Quiz.Questions instead
+                Percentage = r.Percentage,
+                CorrectAnswers = r.UserAnswers.Count(a => a.IsCorrect),
+                TotalQuestions = r.Quiz.NumberOfQuestions,
+                TimeTakenSeconds = r.TimeTakenSeconds,
+                CompletionDate = r.CompletionDate
+            }).ToList();
+
+            // Calculate user stats
+            var stats = new UserStatsDTO();
+            if (results.Any())
+            {
+                stats.TotalQuizzes = results.Count;
+                stats.AverageScore = results.Average(r => r.Percentage);
+                stats.BestScore = results.Max(r => r.Percentage);
+
+                var totalSeconds = results.Sum(r => r.TimeTakenSeconds);
+                var totalHours = totalSeconds / 3600;
+                var remainingMinutes = (totalSeconds % 3600) / 60;
+
+                if (totalHours > 0)
+                {
+                    stats.TotalTimeSpent = $"{totalHours}h {remainingMinutes}m";
+                }
+                else
+                {
+                    stats.TotalTimeSpent = $"{remainingMinutes}m";
+                }
+            }
+            else
+            {
+                stats.TotalQuizzes = 0;
+                stats.AverageScore = 0;
+                stats.BestScore = 0;
+                stats.TotalTimeSpent = "0m";
+            }
+
+            return new MyQuizResultsDTO
+            {
+                Results = resultSummaries,
+                Stats = stats
+            };
+        }
+
+        public async Task<List<QuizProgressDTO>> GetQuizProgressAsync(int userId, int quizId)
+        {
+            var results = await _context.UserQuizResults
+                .Include(r => r.Quiz)
+                    .ThenInclude(q => q.Questions)
+                .Where(r => r.UserId == userId && r.QuizId == quizId)
+                .OrderBy(r => r.CompletionDate)
+                .ToListAsync();
+
+            var progressData = new List<QuizProgressDTO>();
+            var maxPoints = results.FirstOrDefault()?.Quiz.Questions.Sum(q => q.Points) ?? 0;
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                var result = results[i];
+                progressData.Add(new QuizProgressDTO
+                {
+                    AttemptNumber = i + 1,
+                    Score = result.Score,
+                    MaxPoints = maxPoints,
+                    Percentage = result.Percentage,
+                    Date = result.CompletionDate
+                });
+            }
+
+            return progressData;
+        }
+
+        public async Task<QuizRankingsDTO?> GetQuizRankingsAsync(int quizId)
+        {
+            // Get quiz information
+            var quiz = await _context.Quizzes
+                .Include(q => q.Category)
+                .FirstOrDefaultAsync(q => q.Id == quizId);
+
+            if (quiz == null)
+                return null;
+
+            // Get all results for this quiz with user information
+            var allResults = await _context.UserQuizResults
+                .Include(r => r.User)
+                .Where(r => r.QuizId == quizId)
+                .ToListAsync();
+
+            // Group by user and get best result for each user (in memory)
+            var bestResults = allResults
+                .GroupBy(r => r.UserId)
+                .Select(g => g
+                    .OrderByDescending(r => r.Score)
+                    .ThenBy(r => r.TimeTakenSeconds)
+                    .First())
+                .OrderByDescending(r => r.Score)
+                .ThenBy(r => r.TimeTakenSeconds)
+                .ToList();
+
+            // Create rankings with rank numbers
+            var rankings = bestResults.Select((result, index) => new UserRankingDTO
+            {
+                UserId = result.UserId,
+                Username = result.User.Username,
+                Email = result.User.Email,
+                ProfilePicture = Convert.ToBase64String(result.User.Image),
+                Score = result.Score,
+                TimeTakenSeconds = result.TimeTakenSeconds,
+                CompletionDate = result.CompletionDate,
+                Rank = index + 1
+            }).ToList();
+
+            return new QuizRankingsDTO
+            {
+                Quiz = new QuizInfoDTO
+                {
+                    Id = quiz.Id,
+                    Name = quiz.Name,
+                    Description = quiz.Description,
+                    Category = quiz.Category.Name,
+                    Difficulty = quiz.Difficulty.ToString(),
+                    NumberOfQuestions = quiz.NumberOfQuestions,
+                    TimeLimitMinutes = quiz.TimeLimitMinutes
+                },
+                Rankings = rankings
+            };
+        }
     }
 }

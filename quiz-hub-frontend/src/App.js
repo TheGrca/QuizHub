@@ -10,8 +10,9 @@ import MyResultsPage from './Components/MyResults/MyResults';
 import AddQuizPage from './Components/AddQuiz/AddQuiz';
 import EditQuizPage from './Components/EditQuiz/EditQuiz';
 import RankingsPage from './Components/Rankings/Rankings';
-import QuizPage from './Components/Quiz/Quiz'; // Add this import
-
+import QuizPage from './Components/Quiz/Quiz'; 
+import MyResultDetailPage from './Components/MyResultDetailPage/MyResultDetailPage'
+import RankingsDetailPage from './Components/RankingsDetailPage/RankingsDetailPage'
 const getUserFromStorage = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -50,18 +51,20 @@ const App = () => {
           <>
             <Route path="/add-quiz" element={<AddQuizPage />} />
             <Route path="/edit-quiz" element={<EditQuizPage />} />
-            <Route path="/rankings" element={<RankingsPage />} />
             <Route path="/" element={<Navigate to="/add-quiz" replace />} />
             <Route path="*" element={<Navigate to="/add-quiz" replace />} />
           </>
         ) : (
           // User routes
           <>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/my-results" element={<MyResultsPage />} />
-            <Route path="/quiz/:id" element={<QuizPage />} />
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
+  <Route path="/home" element={<HomePage />} />
+  <Route path="/my-results" element={<MyResultsPage />} />
+  <Route path="/my-results/:id" element={<MyResultDetailPage />} />
+  <Route path="/quiz/:id" element={<QuizPage />} />
+  <Route path="/rankings" element={<RankingsPage />} />
+  <Route path="/rankings/:id" element={<RankingsDetailPage />}/>
+  <Route path="/" element={<Navigate to="/home" replace />} />
+  <Route path="*" element={<Navigate to="/home" replace />} />
           </>
         )}
         

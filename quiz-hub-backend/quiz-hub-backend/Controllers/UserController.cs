@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using quiz_hub_backend.DTO;
 using quiz_hub_backend.Interfaces;
 using quiz_hub_backend.Services;
@@ -70,10 +71,7 @@ namespace quiz_hub_backend.Controllers
         {
             try
             {
-                // Get user ID from token (you'll need to implement this based on your auth system)
-                var userId = GetUserIdFromToken();
-
-                var result = await _userService.SubmitQuizAsync(userId, submission);
+                var result = await _userService.SubmitQuizAsync(submission.UserId, submission);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -87,7 +85,12 @@ namespace quiz_hub_backend.Controllers
         {
             try
             {
-                var userId = GetUserIdFromToken();
+                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
+                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                {
+                    return BadRequest("User ID is required");
+                }
+
                 var result = await _userService.GetQuizResultAsync(id, userId);
 
                 if (result == null)
@@ -102,15 +105,65 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching the quiz result.", error = ex.Message });
             }
         }
-
-        private int GetUserIdFromToken()
+        [HttpGet("my-quiz-results")]
+        public async Task<ActionResult<MyQuizResultsDTO>> GetMyQuizResults()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            try
             {
-                throw new UnauthorizedAccessException("Invalid or missing user ID in token");
+                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
+                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                {
+                    return BadRequest("User ID is required");
+                }
+
+                var results = await _userService.GetMyQuizResultsAsync(userId);
+                return Ok(results);
             }
-            return userId;
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching quiz results.", error = ex.Message });
+            }
         }
+
+        [HttpGet("quiz-progress/{quizId}")]
+        public async Task<ActionResult<List<QuizProgressDTO>>> GetQuizProgress(int quizId)
+        {
+            try
+            {
+                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
+                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                {
+                    return BadRequest("User ID is required");
+                }
+
+                var progressData = await _userService.GetQuizProgressAsync(userId, quizId);
+                return Ok(progressData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching quiz progress.", error = ex.Message });
+            }
+        }
+
+        [HttpGet("quiz-rankings/{quizId}")]
+        public async Task<ActionResult<QuizRankingsDTO>> GetQuizRankings(int quizId)
+        {
+            try
+            {
+                var rankings = await _userService.GetQuizRankingsAsync(quizId);
+
+                if (rankings == null)
+                {
+                    return NotFound(new { message = "Quiz not found." });
+                }
+
+                return Ok(rankings);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching quiz rankings.", error = ex.Message });
+            }
+        }
+
     }
 }

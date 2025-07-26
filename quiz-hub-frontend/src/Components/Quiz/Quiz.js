@@ -169,7 +169,6 @@ export default function Quiz() {
     const segments = path.split('/');
     return segments[segments.length - 1];
   };
-
   const id = getQuizIdFromUrl();
   const [quiz, setQuiz] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -208,54 +207,67 @@ export default function Quiz() {
   };
 
   // Submit quiz
-  const submitQuiz = async () => {
-    setSubmitting(true);
-    try {
-      const userAnswers = quiz.questions.map((question, index) => ({
-        questionId: question.id,
-        answerType: question.questionType,
-        ...(question.questionType === 'MultipleChoiceQuestion' && {
-          selectedOptionIndex: answers[index] !== undefined ? answers[index] : null
-        }),
-        ...(question.questionType === 'MultipleAnswerQuestion' && {
-          selectedOptionIndices: answers[index] ? answers[index].join(',') : ''
-        }),
-        ...(question.questionType === 'TrueFalseQuestion' && {
-          userAnswer: answers[index] !== undefined ? answers[index] : null
-        }),
-        ...(question.questionType === 'TextInputQuestion' && {
-          userAnswerText: answers[index] || ''
-        })
-      }));
-
-      const submissionData = {
-        quizId: parseInt(id),
-        timeTakenSeconds: (quiz.timeLimitMinutes * 60) - timeLeft,
-        userAnswers
-      };
-
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/submit-quiz`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(submissionData)
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        window.location.href = `/my-results/${result.resultId}`;
-      } else {
-        toast.error('Failed to submit quiz');
-      }
-    } catch (error) {
-      console.error('Error submitting quiz:', error);
-      toast.error('Failed to submit quiz');
-    } finally {
-      setSubmitting(false);
+const submitQuiz = async () => {
+  setSubmitting(true);
+  try {
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+    console.log(user)
+    
+    if (!user || !user.id) {
+      toast.error('User not found. Please login again.');
+      window.location.href = '/login';
+      return;
     }
-  };
+    const userAnswers = quiz.questions.map((question, index) => ({
+      QuestionId: question.id, // Changed from questionId
+      AnswerType: question.questionType, // Changed from answerType
+      ...(question.questionType === 'MultipleChoiceQuestion' && {
+        SelectedOptionIndex: answers[index] !== undefined ? answers[index] : null // Changed from selectedOptionIndex
+      }),
+      ...(question.questionType === 'MultipleAnswerQuestion' && {
+        SelectedOptionIndices: answers[index] ? answers[index].join(',') : '' // Changed from selectedOptionIndices
+      }),
+      ...(question.questionType === 'TrueFalseQuestion' && {
+        UserAnswer: answers[index] !== undefined ? answers[index] : null // Changed from userAnswer
+      }),
+      ...(question.questionType === 'TextInputQuestion' && {
+        UserAnswerText: answers[index] || '' // Changed from userAnswerText
+      })
+    }));
+
+    const submissionData = {
+      UserId: user.id,
+      QuizId: parseInt(id), // Changed from quizId
+      TimeTakenSeconds: (quiz.timeLimitMinutes * 60) - timeLeft, // Changed from timeTakenSeconds
+      UserAnswers: userAnswers // Changed from userAnswers
+    };
+
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/submit-quiz`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(submissionData)
+    });
+
+    
+    if (response.ok) {
+      const result = await response.json();
+      window.location.href = `/my-results/${result.resultId}`;
+    } else {
+      const errorText = await response.text();
+      console.error('Server error:', errorText);
+      toast.error('Failed to submit quiz');
+    }
+  } catch (error) {
+    console.error('Error submitting quiz:', error);
+    toast.error('Failed to submit quiz');
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   // Timer effect
   useEffect(() => {

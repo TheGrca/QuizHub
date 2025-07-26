@@ -92,6 +92,13 @@ const Navbar = ({ isAdmin }) => {
               >
                 My Results
               </button>
+              <button
+                onClick={() => navigateTo('/rankings')}
+                className="px-4 py-2 rounded-lg hover:bg-opacity-20 hover:bg-white transition-all duration-200"
+                style={{ color: '#BBBFCA' }}
+              >
+                Rankings
+              </button>
             </>
           )}
 

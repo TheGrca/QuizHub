@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizrankingsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizrankingsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -15,20 +19,32 @@
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\interfaces\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\myquizresultsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\myquizresultsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizinfodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizinfodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\userrankingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\userrankingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizprogressdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizprogressdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizresultsummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizresultsummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\userstatsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\userstatsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\useranswerdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -47,12 +63,32 @@
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizsubmissionresultdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizsubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\useranswersubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\useranswersubmissiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\models\\userquizhistory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -67,20 +103,12 @@
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\models\\quiz.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizfilterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\dto\\quizfilterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|solutionrelative:quiz-hub-backend\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E19A3609-EFFD-47B5-9EB7-C33FCD48AF80}|quiz-hub-backend\\quiz-hub-backend.csproj|d:\\faks\\web2\\quiz-hub-backend\\quiz-hub-backend\\dto\\quizresponsedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -253,21 +281,69 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 5,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "QuizInfoDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizInfoDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizInfoDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizInfoDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizInfoDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-26T16:03:10.654Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
+              "Title": "QuizSubmissionDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T17:36:51.232Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MyQuizResultsDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\MyQuizResultsDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\MyQuizResultsDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\MyQuizResultsDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\MyQuizResultsDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-26T14:50:50.713Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IUserService.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\Interfaces\\IUserService.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IUserService.cs",
+              "RelativeToolTip": "quiz-hub-backend\\Interfaces\\IUserService.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA9wA0AAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T16:44:42.502Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "UserService.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\UserService.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\UserService.cs",
               "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\UserService.cs",
               "RelativeToolTip": "quiz-hub-backend\\Services\\UserService.cs",
-              "ViewState": "AgIAABgBAAAAAAAAAAAYwDIBAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAAEkAAAAAAAAAAAA8wPIBAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-25T16:45:35.287Z",
               "EditorCaption": ""
@@ -280,105 +356,83 @@
               "RelativeDocumentMoniker": "quiz-hub-backend\\Controllers\\UserController.cs",
               "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\UserController.cs",
               "RelativeToolTip": "quiz-hub-backend\\Controllers\\UserController.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAuwEAAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAHUAAAAAAAAAAAAgwJUAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-23T15:00:39.583Z",
               "EditorCaption": ""
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "TokenService.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\TokenService.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\TokenService.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\TokenService.cs",
-              "RelativeToolTip": "quiz-hub-backend\\Services\\TokenService.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB8AAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T16:52:56.217Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\Controllers\\AdminController.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "quiz-hub-backend\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAgwHIAAABGAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "QuizRankingsDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizRankingsDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizRankingsDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizRankingsDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizRankingsDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:09:10.853Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\Controllers\\AuthController.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "quiz-hub-backend\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAowBEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T16:55:54.47Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "IUserService.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IUserService.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\Interfaces\\IUserService.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IUserService.cs",
-              "RelativeToolTip": "quiz-hub-backend\\Interfaces\\IUserService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABTAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T16:44:42.502Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\AuthService.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\AuthService.cs",
-              "RelativeToolTip": "quiz-hub-backend\\Services\\AuthService.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAQwG4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T16:54:55.476Z",
+              "WhenOpened": "2025-07-26T16:02:46.145Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "UserAnswerDetailDTO.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
-              "RelativeToolTip": "quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAzAAAAAAAAAA==",
+              "Title": "UserRankingDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserRankingDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\UserRankingDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserRankingDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\UserRankingDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:39:30.374Z",
+              "WhenOpened": "2025-07-26T16:03:31.013Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "QuestionResultDTO.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
-              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAiAAAAAAAAAA==",
+              "Title": "QuizProgressDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizProgressDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizProgressDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizProgressDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizProgressDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:39:02.677Z",
+              "WhenOpened": "2025-07-26T15:22:43.871Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "QuizResultSummaryDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizResultSummaryDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizResultSummaryDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizResultSummaryDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizResultSummaryDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-26T14:51:26.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "UserStatsDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserStatsDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\UserStatsDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserStatsDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\UserStatsDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-26T14:51:58.797Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "QuizResultDetailDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizResultDetailDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizResultDetailDTO.cs",
@@ -391,7 +445,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "QuizSubmissionResultDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizSubmissionResultDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizSubmissionResultDTO.cs",
@@ -405,6 +459,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 12,
+              "Title": "QuestionResultDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T17:39:02.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "UserAnswerDetailDTO.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
+              "RelativeToolTip": "quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T17:39:30.374Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "UserAnswerSubmissionDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\UserAnswerSubmissionDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\UserAnswerSubmissionDTO.cs",
@@ -417,20 +497,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "QuizSubmissionDTO.cs",
-              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
-              "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
-              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
-              "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAArAAAAAAAAAA==",
+              "DocumentIndex": 17,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\Controllers\\AdminController.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "quiz-hub-backend\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwHIAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:36:51.232Z",
+              "WhenOpened": "2025-07-25T13:09:10.853Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 18,
               "Title": "AdminService.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\AdminService.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\AdminService.cs",
@@ -438,24 +518,63 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\AdminService.cs",
               "ViewState": "AgIAAFkAAAAAAAAAAAAUwIIAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:05:48.643Z"
+              "WhenOpened": "2025-07-25T13:05:48.643Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 16,
+              "Title": "TokenService.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\TokenService.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\TokenService.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\TokenService.cs",
+              "RelativeToolTip": "quiz-hub-backend\\Services\\TokenService.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAADMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T16:52:56.217Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\Services\\AuthService.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Services\\AuthService.cs",
+              "RelativeToolTip": "quiz-hub-backend\\Services\\AuthService.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAUwBIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T16:54:55.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "quiz-hub-backend\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "quiz-hub-backend\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAowBEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T16:55:54.47Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Program.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Program.cs",
               "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Program.cs",
               "RelativeToolTip": "quiz-hub-backend\\Program.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAACcAAAA4AAAAAAAAAA==",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAACcAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T12:16:12.945Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 24,
               "Title": "Quiz.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\Quiz.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\Quiz.cs",
@@ -463,12 +582,11 @@
               "RelativeToolTip": "quiz-hub-backend\\Models\\Quiz.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAA5wBsAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-24T10:40:18.331Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-24T10:40:18.331Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 23,
               "Title": "UserAnswer.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\UserAnswer.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\UserAnswer.cs",
@@ -476,12 +594,11 @@
               "RelativeToolTip": "quiz-hub-backend\\Models\\UserAnswer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-24T11:00:58.817Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-24T11:00:58.817Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 22,
               "Title": "UserQuizHistory.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\UserQuizHistory.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\UserQuizHistory.cs",
@@ -489,12 +606,11 @@
               "RelativeToolTip": "quiz-hub-backend\\Models\\UserQuizHistory.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-24T11:39:58.027Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-24T11:39:58.027Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 27,
               "Title": "QuizResponseDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizResponseDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizResponseDTO.cs",
@@ -506,7 +622,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 25,
               "Title": "QuizListDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizListDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizListDTO.cs",
@@ -518,7 +634,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 26,
               "Title": "QuizFilterDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuizFilterDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuizFilterDTO.cs",
@@ -530,7 +646,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 28,
               "Title": "CreateQuizDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\CreateQuizDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\CreateQuizDTO.cs",
@@ -542,7 +658,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 29,
               "Title": "QuestionResponseDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\QuestionResponseDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\QuestionResponseDTO.cs",
@@ -554,7 +670,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 30,
               "Title": "IAdminService.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IAdminService.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Interfaces\\IAdminService.cs",
@@ -566,7 +682,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 31,
               "Title": "CategoryDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\CategoryDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\CategoryDTO.cs",
@@ -578,7 +694,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 32,
               "Title": "CreateQuestionDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\CreateQuestionDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\CreateQuestionDTO.cs",
@@ -590,7 +706,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 33,
               "Title": "20250724121249_CreatedModels.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724121249_CreatedModels.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724121249_CreatedModels.cs",
@@ -602,7 +718,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 34,
               "Title": "ITokenService.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\ITokenService.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Interfaces\\ITokenService.cs",
@@ -614,7 +730,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 37,
               "Title": "LoginDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\LoginDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\LoginDTO.cs",
@@ -626,7 +742,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 35,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\User.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\User.cs",
@@ -638,7 +754,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 36,
               "Title": "AuthResponseDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\AuthResponseDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\AuthResponseDTO.cs",
@@ -650,7 +766,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 38,
               "Title": "IAuthService.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Interfaces\\IAuthService.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Interfaces\\IAuthService.cs",
@@ -662,7 +778,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 39,
               "Title": "MultipleAnswerQuestion.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\MultipleAnswerQuestion.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\MultipleAnswerQuestion.cs",
@@ -674,7 +790,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 40,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\AppDbContext.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\AppDbContext.cs",
@@ -686,7 +802,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 41,
               "Title": "20250724121109_CreatedModels8.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724121109_CreatedModels8.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724121109_CreatedModels8.cs",
@@ -698,7 +814,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 42,
               "Title": "20250724120848_CreatedModels7.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724120848_CreatedModels7.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724120848_CreatedModels7.cs",
@@ -710,7 +826,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 43,
               "Title": "20250724120820_CreatedModels6.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724120820_CreatedModels6.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724120820_CreatedModels6.cs",
@@ -722,7 +838,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 44,
               "Title": "GlobalRanking.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\GlobalRanking.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\GlobalRanking.cs",
@@ -734,7 +850,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 45,
               "Title": "TextInputUserAnswer.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\TextInputUserAnswer.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\TextInputUserAnswer.cs",
@@ -746,7 +862,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 46,
               "Title": "TrueFalseUserAnswer.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\TrueFalseUserAnswer.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\TrueFalseUserAnswer.cs",
@@ -758,7 +874,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 47,
               "Title": "MultipleAnswerUserAnswer.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\MultipleAnswerUserAnswer.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\MultipleAnswerUserAnswer.cs",
@@ -770,7 +886,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 48,
               "Title": "MultipleChoiceUserAnswer.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\MultipleChoiceUserAnswer.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\MultipleChoiceUserAnswer.cs",
@@ -782,7 +898,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 49,
               "Title": "UserQuizResult.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\UserQuizResult.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\UserQuizResult.cs",
@@ -794,7 +910,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 50,
               "Title": "TextInputQuestion.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\TextInputQuestion.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\TextInputQuestion.cs",
@@ -806,7 +922,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 51,
               "Title": "TrueFalseQuestion.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\TrueFalseQuestion.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\TrueFalseQuestion.cs",
@@ -818,7 +934,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 52,
               "Title": "MultipleChoiceQuestion.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\MultipleChoiceQuestion.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\MultipleChoiceQuestion.cs",
@@ -830,7 +946,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 53,
               "Title": "Question.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\Question.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\Question.cs",
@@ -842,7 +958,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 54,
               "Title": "Category.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Models\\Category.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Models\\Category.cs",
@@ -854,7 +970,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 55,
               "Title": "20250724115819_CreatedModels5.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724115819_CreatedModels5.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724115819_CreatedModels5.cs",
@@ -866,7 +982,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 56,
               "Title": "20250724115636_CreatedModels4.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724115636_CreatedModels4.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724115636_CreatedModels4.cs",
@@ -878,7 +994,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 57,
               "Title": "20250724114434_CreatedModels3.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724114434_CreatedModels3.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724114434_CreatedModels3.cs",
@@ -890,7 +1006,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 58,
               "Title": "20250724110830_CreatedModels2.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724110830_CreatedModels2.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724110830_CreatedModels2.cs",
@@ -902,7 +1018,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 59,
               "Title": "20250724110546_CreatedModels.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Migrations\\20250724110546_CreatedModels.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Migrations\\20250724110546_CreatedModels.cs",
@@ -914,7 +1030,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 60,
               "Title": "RegisterDTO.cs",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\DTO\\RegisterDTO.cs",
               "RelativeDocumentMoniker": "quiz-hub-backend\\DTO\\RegisterDTO.cs",
@@ -926,7 +1042,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 61,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\appsettings.json",
               "RelativeDocumentMoniker": "quiz-hub-backend\\appsettings.json",
@@ -938,7 +1054,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 62,
               "Title": "launchSettings.json",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "quiz-hub-backend\\Properties\\launchSettings.json",
@@ -950,7 +1066,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 63,
               "Title": "quiz-hub-backend.csproj",
               "DocumentMoniker": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\quiz-hub-backend.csproj",
               "RelativeDocumentMoniker": "quiz-hub-backend\\quiz-hub-backend.csproj",
@@ -962,7 +1078,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 64,
               "Title": "UserService.cs",
               "DocumentMoniker": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Services\\UserService.cs",
               "ToolTip": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Services\\UserService.cs",
@@ -972,7 +1088,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 65,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Controllers\\UserController.cs",
               "ToolTip": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Controllers\\UserController.cs",
@@ -982,7 +1098,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 66,
               "Title": "IUserService.cs",
               "DocumentMoniker": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Interfaces\\IUserService.cs",
               "ToolTip": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Interfaces\\IUserService.cs",
@@ -992,7 +1108,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 67,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Models\\User.cs",
               "ToolTip": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Models\\User.cs",
@@ -1002,7 +1118,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 68,
               "Title": "UserDto.cs",
               "DocumentMoniker": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Dto\\UserDto.cs",
               "ToolTip": "C:\\Users\\Korisnik\\Desktop\\VebVjezbe\\Termin 6\\Dto\\UserDto.cs",

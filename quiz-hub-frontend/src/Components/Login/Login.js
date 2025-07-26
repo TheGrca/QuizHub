@@ -45,10 +45,6 @@ export default function Login() {
         // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        
-        console.log('Storing user data:', data.user);
-        console.log('User role being stored:', data.user.role);
-        
         // Force page reload to ensure App.js reads fresh localStorage data
         if (data.user.role === 1) {
           window.location.href = '/add-quiz';
