@@ -293,8 +293,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizInfoDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T16:03:10.654Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T16:03:10.654Z"
             },
             {
               "$type": "Document",
@@ -306,8 +305,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizSubmissionDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:36:51.232Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:36:51.232Z"
             },
             {
               "$type": "Document",
@@ -319,8 +317,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\MyQuizResultsDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T14:50:50.713Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T14:50:50.713Z"
             },
             {
               "$type": "Document",
@@ -332,8 +329,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Interfaces\\IUserService.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAA9wA0AAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T16:44:42.502Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T16:44:42.502Z"
             },
             {
               "$type": "Document",
@@ -345,8 +341,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\UserService.cs",
               "ViewState": "AgIAAEkAAAAAAAAAAAA8wPIBAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T16:45:35.287Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T16:45:35.287Z"
             },
             {
               "$type": "Document",
@@ -375,8 +370,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizRankingsDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T16:02:46.145Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T16:02:46.145Z"
             },
             {
               "$type": "Document",
@@ -388,8 +382,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserRankingDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T16:03:31.013Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T16:03:31.013Z"
             },
             {
               "$type": "Document",
@@ -401,8 +394,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizProgressDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T15:22:43.871Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T15:22:43.871Z"
             },
             {
               "$type": "Document",
@@ -414,8 +406,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizResultSummaryDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T14:51:26.341Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T14:51:26.341Z"
             },
             {
               "$type": "Document",
@@ -427,8 +418,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserStatsDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T14:51:58.797Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T14:51:58.797Z"
             },
             {
               "$type": "Document",
@@ -440,8 +430,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizResultDetailDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:38:28.987Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:38:28.987Z"
             },
             {
               "$type": "Document",
@@ -453,8 +442,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuizSubmissionResultDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:38:08.424Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:38:08.424Z"
             },
             {
               "$type": "Document",
@@ -466,8 +454,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\QuestionResultDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:39:02.677Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:39:02.677Z"
             },
             {
               "$type": "Document",
@@ -479,8 +466,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserAnswerDetailDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:39:30.374Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:39:30.374Z"
             },
             {
               "$type": "Document",
@@ -492,8 +478,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserAnswerSubmissionDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T17:37:21.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T17:37:21.579Z"
             },
             {
               "$type": "Document",
@@ -505,8 +490,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Controllers\\AdminController.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAgwHIAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:09:10.853Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T13:09:10.853Z"
             },
             {
               "$type": "Document",
@@ -518,8 +502,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\AdminService.cs",
               "ViewState": "AgIAAFkAAAAAAAAAAAAUwIIAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:05:48.643Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T13:05:48.643Z"
             },
             {
               "$type": "Document",
@@ -531,8 +514,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\TokenService.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAADMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T16:52:56.217Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-23T16:52:56.217Z"
             },
             {
               "$type": "Document",
@@ -544,8 +526,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\AuthService.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAUwBIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-23T16:54:55.476Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-23T16:54:55.476Z"
             },
             {
               "$type": "Document",
@@ -569,8 +550,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Program.cs",
               "ViewState": "AgIAACcAAAAAAAAAAAAAACcAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-22T12:16:12.945Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-22T12:16:12.945Z"
             },
             {
               "$type": "Document",

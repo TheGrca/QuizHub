@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import AuthService from '../../Services/AuthService';
 
 export default function Login() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     emailOrUsername: '',
     password: ''
@@ -25,35 +24,27 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.emailOrUsername.trim() || !formData.password.trim()) {
+      setError('All fields must be filled');
+      return;
+    }
+    
     setIsLoading(true);
     setError('');
     
     try {
-      console.log("Login attempt started");
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-      console.log('Login response:', data);
+      const { user } = await AuthService.login(
+        formData.emailOrUsername, 
+        formData.password
+      );
       
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        // Force page reload to ensure App.js reads fresh localStorage data
-        if (data.user.role === 1) {
-          window.location.href = '/add-quiz';
-        } else {
-          window.location.href = '/home';
-        }
+      if (user.isAdmin()) {
+        window.location.href = '/add-quiz';
       } else {
-        setError('Username or password incorrect');
+        window.location.href = '/home';
       }
+      
     } catch (err) {
       console.error('Login error:', err);
       setError('Username or password incorrect');
@@ -62,17 +53,15 @@ export default function Login() {
     }
   };
 
-  // Handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSubmit(e);
     }
   };
 
-  // Toggle password visibility
   const togglePasswordVisibility = (e) => {
-    e.preventDefault(); // Prevent form submission
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation(); 
     setShowPassword(!showPassword);
   };
 
@@ -103,7 +92,7 @@ export default function Login() {
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div onSubmit={handleSubmit} className="space-y-6">
             {/* Email/Username Input */}
             <div>
               <label 

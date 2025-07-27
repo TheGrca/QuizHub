@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, User, Upload, Image } from 'lucide-react';
+import AuthService from '../../Services/AuthService'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -20,7 +21,6 @@ export default function Register() {
       [name]: value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -37,14 +37,12 @@ export default function Register() {
         profilePicture: file
       }));
       
-      // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfilePicturePreview(e.target.result);
       };
       reader.readAsDataURL(file);
       
-      // Clear error
       if (errors.profilePicture) {
         setErrors(prev => ({
           ...prev,
@@ -54,7 +52,7 @@ export default function Register() {
     }
   };
 
- const validateForm = () => {
+  const validateForm = () => {
     const newErrors = {};
     
     if (!formData.username.trim()) {
@@ -92,63 +90,33 @@ export default function Register() {
     
     setIsLoading(true);
     setErrors({});
-   try {
-      // Check username uniqueness
-      console.log(process.env.REACT_APP_API_BASE_URL)
-      const usernameCheck = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/auth/check-username/${formData.username}`
-      );
-      
-      const usernameData = await usernameCheck.json();
-      console.log(usernameData)
-      if (!usernameData.isUnique) {
+
+    try {
+      const isUsernameUnique = await AuthService.checkUsernameUniqueness(formData.username);
+      if (!isUsernameUnique) {
         setErrors({ username: 'Username already exists' });
         setIsLoading(false);
         return;
       }
-console.log("Uslo3")
-      // Check email uniqueness
-      const emailCheck = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/auth/check-email/${formData.email}`
-      );
-      const emailData = await emailCheck.json();
-      
-      if (!emailData.isUnique) {
+
+      const isEmailUnique = await AuthService.checkEmailUniqueness(formData.email);
+      if (!isEmailUnique) {
         setErrors({ email: 'Email already exists' });
         setIsLoading(false);
         return;
       }
-console.log("Uslo4")
-      // Create form data for file upload
-      const formDataToSend = new FormData();
-      formDataToSend.append('username', formData.username);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('password', formData.password);
-      formDataToSend.append('profilePicture', formData.profilePicture);
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        body: formDataToSend,
-        cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-      });
-console.log("Uslo5")
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        console.log("Uslo6")
-        // Navigate to home page
-        window.location.href = '/Home';
-      } else {
-        setErrors({ general: data.message || 'Registration failed' });
-      }
-    } catch (err) {
-      setErrors({ general: 'Network error. Please try again.' });
+      const result = await AuthService.register(
+        formData.username,
+        formData.email,
+        formData.password,
+        formData.profilePicture
+      );
+      
+      window.location.href = '/Home';   
+    } catch (error) {
+      console.error('Registration error:', error);
+      setErrors({ general: error.message || 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +149,16 @@ console.log("Uslo5")
             </p>
           </div>
 
-          <div className="space-y-6">
+          {/* General Error Message */}
+          {errors.general && (
+            <div className="mb-6 p-4 rounded-xl" style={{ backgroundColor: '#fee2e2', border: '1px solid #ef4444' }}>
+              <p className="text-sm" style={{ color: '#ef4444' }}>
+                {errors.general}
+              </p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Username Input */}
             <div>
               <label 
@@ -368,7 +345,6 @@ console.log("Uslo5")
             <button
               type="submit"
               disabled={isLoading}
-              onClick={handleSubmit}
               className="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ 
                 backgroundColor: '#495464',
@@ -386,7 +362,7 @@ console.log("Uslo5")
                 'Create Account'
               )}
             </button>
-          </div>
+          </form>
 
           {/* Sign In Link */}
           <div className="mt-8 text-center">
