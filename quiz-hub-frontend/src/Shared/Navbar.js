@@ -39,7 +39,6 @@ const Navbar = ({ isAdmin }) => {
       }}
     >
       <div className="flex items-center justify-between">
-        {/* Logo/Brand */}
         <div 
           className="text-2xl font-bold cursor-pointer"
           style={{ color: '#BBBFCA' }}
@@ -48,7 +47,6 @@ const Navbar = ({ isAdmin }) => {
           QuizHub
         </div>
 
-        {/* Navigation Links */}
         <div className="flex items-center space-x-6">
           {isAdmin ? (
             // Admin Navigation

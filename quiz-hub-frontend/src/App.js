@@ -9,6 +9,7 @@ import HomePage from './Components/Home/Home';
 import MyResultsPage from './Components/MyResults/MyResults';
 import AddQuizPage from './Components/AddQuiz/AddQuiz';
 import EditQuizPage from './Components/EditQuiz/EditQuiz';
+import EditQuizDetails from './Components/EditQuizDetailPage/EditQuizDetailPage';
 import RankingsPage from './Components/Rankings/Rankings';
 import QuizPage from './Components/Quiz/Quiz'; 
 import MyResultDetailPage from './Components/MyResultDetailPage/MyResultDetailPage'
@@ -51,6 +52,7 @@ const App = () => {
           <>
             <Route path="/add-quiz" element={<AddQuizPage />} />
             <Route path="/edit-quiz" element={<EditQuizPage />} />
+            <Route path="/edit-quiz/:id" element={<EditQuizDetails />} />
             <Route path="/" element={<Navigate to="/add-quiz" replace />} />
             <Route path="*" element={<Navigate to="/add-quiz" replace />} />
           </>

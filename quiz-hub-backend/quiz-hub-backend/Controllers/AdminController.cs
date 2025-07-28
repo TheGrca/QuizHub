@@ -126,5 +126,132 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the quiz.", error = ex.Message });
             }
         }
+
+        [HttpGet("quiz/{quizId}/edit")]
+        public async Task<IActionResult> GetQuizForEdit(int quizId)
+        {
+            try
+            {
+                var quiz = await _adminService.GetQuizForEditAsync(quizId);
+                if (quiz == null)
+                {
+                    return NotFound(new { message = "Quiz not found" });
+                }
+
+                return Ok(quiz);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to fetch quiz for editing", error = ex.Message });
+            }
+        }
+
+        [HttpPut("quiz/{quizId}/edit")]
+        public async Task<IActionResult> UpdateQuizWithEdit(int quizId, [FromBody] EditQuizDTO editQuizDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var success = await _adminService.UpdateQuizWithEditAsync(quizId, editQuizDto);
+                if (!success)
+                {
+                    return NotFound(new { message = "Quiz not found" });
+                }
+
+                return Ok(new { message = "Quiz updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to update quiz", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("quiz/{quizId}/complete")]
+        public async Task<IActionResult> DeleteQuizCompletely(int quizId)
+        {
+            try
+            {
+                var success = await _adminService.DeleteQuizAndAllDataAsync(quizId);
+                if (!success)
+                {
+                    return NotFound(new { message = "Quiz not found" });
+                }
+
+                return Ok(new { message = "Quiz and all associated data deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to delete quiz", error = ex.Message });
+            }
+        }
+
+        // New endpoint: Add question to quiz
+        [HttpPost("quiz/{quizId}/question")]
+        public async Task<IActionResult> AddQuestionToQuiz(int quizId, [FromBody] EditQuestionDTO questionDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var question = await _adminService.AddQuestionToQuizAsync(quizId, questionDto);
+                return CreatedAtAction(nameof(GetQuizForEdit), new { quizId }, question);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to add question", error = ex.Message });
+            }
+        }
+
+        // New endpoint: Update single question
+        [HttpPut("question/{questionId}/edit")]
+        public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] EditQuestionDTO questionDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var success = await _adminService.UpdateQuestionAsync(questionId, questionDto);
+                if (!success)
+                {
+                    return NotFound(new { message = "Question not found" });
+                }
+
+                return Ok(new { message = "Question updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to update question", error = ex.Message });
+            }
+        }
+
+        // New endpoint: Delete single question
+        [HttpDelete("question/{questionId}")]
+        public async Task<IActionResult> DeleteQuestion(int questionId)
+        {
+            try
+            {
+                var success = await _adminService.DeleteQuestionAsync(questionId);
+                if (!success)
+                {
+                    return NotFound(new { message = "Question not found" });
+                }
+
+                return Ok(new { message = "Question deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to delete question", error = ex.Message });
+            }
+        }
     }
 }

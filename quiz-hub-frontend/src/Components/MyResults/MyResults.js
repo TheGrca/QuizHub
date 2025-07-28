@@ -1,119 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, FileText, AlertCircle, Award, TrendingUp, Calendar } from 'lucide-react';
+import { FileText, Trophy, BarChart3, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-// QuizResultBox Component - Modified version of QuizBox for results
-const QuizResultBox = ({ result, onClick }) => {
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty.toLowerCase()) {
-      case 'easy': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'hard': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPerformanceColor = (percentage) => {
-    if (percentage >= 80) return 'text-green-600';
-    if (percentage >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  return (
-    <div 
-      onClick={() => onClick(result.id)}
-      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 p-6 border border-gray-200"
-    >
-      <div className="flex justify-between items-start mb-3">
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(result.difficulty)}`}>
-          {result.difficulty}
-        </span>
-        <span className="text-sm text-gray-500 font-medium">{result.category}</span>
-      </div>
-      
-      <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">{result.quizName}</h3>
-      
-      {/* Performance Summary */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">Score:</span>
-          <span className={`text-lg font-bold ${getPerformanceColor(result.percentage)}`}>
-            {result.percentage.toFixed(1)}%
-          </span>
-        </div>
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>{result.correctAnswers}/{result.totalQuestions} correct</span>
-          <span>{result.score}/{result.totalPoints} pts</span>
-        </div>
-      </div>
-      
-      <div className="flex justify-between items-center text-sm text-gray-500 border-t pt-3">
-        <div className="flex items-center">
-          <Clock className="h-4 w-4 mr-1" />
-          {formatTime(result.timeTakenSeconds)}
-        </div>
-        <div className="flex items-center">
-          <Calendar className="h-4 w-4 mr-1" />
-          {formatDate(result.completionDate)}
-        </div>
-      </div>
-    </div>
-  );
-};
+import QuizResultBox from './QuizResultBox';
+import AuthService from '../../Services/AuthService';
+import UserService from '../../Services/UserService';
 
 export default function MyResults() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Fetch all quiz results for the user
+  const navigateTo = (path) => {
+    window.location.href = path;
+  };
+
   const fetchResults = async () => {
     try {
-      const userData = localStorage.getItem('user');
-      const user = userData ? JSON.parse(userData) : null;
-      
-      if (!user || !user.id) {
-        toast.error('User not found. Please login again.');
-        window.location.href = '/login';
+      if (!AuthService.isAuthenticated()) {
+        console.log('User not authenticated');
+        toast.error('Please login to view your results');
+        navigateTo('/login');
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/my-quiz-results`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'X-User-Id': user.id.toString()
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+      const user = AuthService.getCurrentUser();
+      
+      if (!user || !user.id) {
+        toast.error('User not found. Please login again.');
+        navigateTo('/login');
+        return;
+      }
+      console.log('Attempting to fetch quiz results...');
+      const data = await UserService.getMyQuizResults();
+      console.log("Quiz results data received:", data);
+      
+      if (data && data.results) {
+        console.log("Setting results:", data.results);
         setResults(data.results);
+      } else {
+        console.log("No results data, setting empty array");
+        setResults([]);
+      }
+      
+      if (data && data.stats) {
+        console.log("Setting stats:", data.stats);
         setStats(data.stats);
       } else {
-        toast.error('Failed to load quiz results');
+        console.log("No stats data");
+        setStats(null);
       }
+
     } catch (error) {
-      console.error('Error fetching quiz results:', error);
-      toast.error('Failed to load quiz results');
+      console.error('Error in fetchResults:', error);
+      console.error('Error message:', error.message);
+    
+      setError(error.message || 'Failed to load quiz results');
+      
+      toast.error(error.message || 'Failed to load quiz results');
+      
+      if (error.message && error.message.includes('login')) {
+        navigateTo('/login');
+      } else {
+        console.log('Staying on page to show error state');
+      }
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
@@ -123,30 +75,98 @@ export default function MyResults() {
   }, []);
 
   const handleResultClick = (resultId) => {
-    window.location.href = `/my-results/${resultId}`;
+    navigateTo(`/my-results/${resultId}`);
+  };
+
+  const handleBrowseQuizzes = () => {
+    navigateTo('/home');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#BBBFCA' }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent" style={{ borderColor: '#495464' }}></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <div className="text-center">
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" 
+            style={{ borderColor: '#495464' }}
+          ></div>
+          <p className="text-lg" style={{ color: '#495464' }}>Loading your results...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <div className="text-center p-8 rounded-2xl shadow-lg" style={{ backgroundColor: '#E8E8E8' }}>
+          <BarChart3 className="h-16 w-16 mx-auto mb-4" style={{ color: '#ef4444', opacity: 0.7 }} />
+          <p className="text-lg mb-2" style={{ color: '#495464' }}>Error Loading Results</p>
+          <p className="text-sm mb-4" style={{ color: '#495464', opacity: 0.7 }}>{error}</p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => {
+                setError(null);
+                setLoading(true);
+                fetchResults();
+              }}
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
+              style={{ 
+                backgroundColor: '#22c55e',
+                color: 'white'
+              }}
+            >
+              Try Again
+            </button>
+            <button
+              onClick={handleBrowseQuizzes}
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
+              style={{ 
+                backgroundColor: '#495464',
+                color: 'white'
+              }}
+            >
+              Browse Quizzes
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#BBBFCA' }}>
+    <div className="min-h-screen" style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Quiz Results</h1>
+          <div className="flex items-center mb-4">
+            <BarChart3 className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
+            <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+              My Quiz Results
+            </h1>
+          </div>
+          <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+            Track your progress and review your quiz performance
+          </p>
         </div>
 
         {/* Results Grid */}
         <div className="rounded-lg p-8 shadow-md" style={{ backgroundColor: '#E8E8E8' }}>
           {results.length > 0 ? (
             <>
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Quiz Attempts</h2>
+              <h2 className="text-xl font-bold mb-6" style={{ color: '#495464' }}>
+                Recent Quiz Attempts ({results.length} total)
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {results.map(result => (
                   <QuizResultBox 
@@ -159,13 +179,22 @@ export default function MyResults() {
             </>
           ) : (
             <div className="text-center py-12">
-              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">No Quiz Results Yet</h3>
-              <p className="text-gray-600 mb-6">You haven't taken any quizzes yet. Start your learning journey!</p>
+              <FileText className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.4 }} />
+              <h3 className="text-xl font-semibold mb-2" style={{ color: '#495464' }}>
+                No Quiz Results Yet
+              </h3>
+              <p className="mb-6" style={{ color: '#495464', opacity: 0.7 }}>
+                You haven't taken any quizzes yet. Start your learning journey!
+              </p>
               <button
-                onClick={() => window.location.href = '/home'}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                onClick={handleBrowseQuizzes}
+                className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
+                style={{ 
+                  backgroundColor: '#3b82f6',
+                  color: 'white'
+                }}
               >
+                <Trophy className="h-5 w-5 mr-2" />
                 Browse Quizzes
               </button>
             </div>

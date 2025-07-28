@@ -1,92 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Trophy, Medal, Award, Clock, Target } from 'lucide-react';
+import { ArrowLeft, Trophy, Target, Users } from 'lucide-react';
+import RankingItem from './RankingItem';
 import toast from 'react-hot-toast';
-
-// Ranking Item Component
-const RankingItem = ({ ranking, index, currentUserId }) => {
-  const isCurrentUser = ranking.userId === currentUserId;
-  
-  const getRankIcon = (position) => {
-    switch (position) {
-      case 1:
-        return <Trophy className="h-6 w-6 text-yellow-500" />;
-      case 2:
-        return <Medal className="h-6 w-6 text-gray-400" />;
-      case 3:
-        return <Award className="h-6 w-6 text-amber-600" />;
-      default:
-        return <span className="text-lg font-bold text-gray-600">#{position}</span>;
-    }
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  return (
-    <div 
-      className={`flex items-center p-4 rounded-lg border transition-all ${
-        isCurrentUser 
-          ? 'bg-blue-50 border-blue-300 shadow-md transform scale-105' 
-          : 'bg-white border-gray-200 hover:shadow-md'
-      }`}
-    >
-      {/* Rank */}
-      <div className="flex items-center justify-center w-12 h-12 mr-4">
-        {getRankIcon(index + 1)}
-      </div>
-
-      {/* Profile Picture */}
-      <div className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2 border-gray-200">
-        <img 
-          src={`data:image/jpeg;base64,${ranking.profilePicture}`}
-          alt={ranking.username}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.src = `https://ui-avatars.com/api/?name=${ranking.username}&background=random&color=fff&size=48`;
-          }}
-        />
-      </div>
-
-      {/* User Info */}
-      <div className="flex-1">
-        <div className="flex items-center">
-          <h3 className={`font-semibold ${isCurrentUser ? 'text-blue-900' : 'text-gray-900'}`}>
-            {ranking.username}
-            {isCurrentUser && (
-              <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                You
-              </span>
-            )}
-          </h3>
-        </div>
-        <p className="text-sm text-gray-600">{ranking.email}</p>
-      </div>
-
-      {/* Score */}
-      <div className="text-center mr-4">
-        <div className={`text-xl font-bold ${isCurrentUser ? 'text-blue-900' : 'text-gray-900'}`}>
-          {ranking.score}
-        </div>
-        <div className="text-sm text-gray-600">points</div>
-      </div>
-
-      {/* Time */}
-      <div className="text-center">
-        <div className={`flex items-center text-lg font-medium ${isCurrentUser ? 'text-blue-700' : 'text-gray-700'}`}>
-          <Clock className="h-4 w-4 mr-1" />
-          {formatTime(ranking.timeTakenSeconds)}
-        </div>
-        <div className="text-sm text-gray-600">time</div>
-      </div>
-    </div>
-  );
-};
+import AuthService from '../../Services/AuthService';
+import UserService from '../../Services/UserService';
 
 export default function QuizRankingsDetail() {
-  // Get quiz ID from URL
   const getQuizIdFromUrl = () => {
     const path = window.location.pathname;
     const segments = path.split('/');
@@ -98,46 +17,71 @@ export default function QuizRankingsDetail() {
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Fetch quiz rankings
+  // Navigate function
+  const navigateTo = (path) => {
+    window.location.href = path;
+  };
+
   const fetchRankings = async () => {
     try {
-      const userData = localStorage.getItem('user');
-      const user = userData ? JSON.parse(userData) : null;
+      if (!AuthService.isAuthenticated()) {
+        console.log('User not authenticated');
+        toast.error('Please login to view quiz rankings');
+        navigateTo('/login');
+        return;
+      }
+
+      const user = AuthService.getCurrentUser();
+      console.log('Current user:', user);
       
       if (!user || !user.id) {
+        console.log('User or user.id not found');
         toast.error('User not found. Please login again.');
-        window.location.href = '/login';
+        navigateTo('/login');
         return;
       }
 
       setCurrentUserId(user.id);
-
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/quiz-rankings/${quizId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'X-User-Id': user.id.toString()
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("quiz" + data.quiz)
+      const data = await UserService.getQuizRankings(quizId);
+      
+      if (data && data.quiz) {
+        console.log("Setting quiz:", data.quiz);
         setQuiz(data.quiz);
+      } else {
+        console.log("No quiz data in response");
+        throw new Error('No quiz data received');
+      }
+      
+      if (data && data.rankings) {
         setRankings(data.rankings);
       } else {
-        toast.error('Failed to load quiz rankings');
-        window.location.href = '/rankings';
+        setRankings([]);
       }
+
     } catch (error) {
-      console.error('Error fetching quiz rankings:', error);
-      toast.error('Failed to load quiz rankings');
-      window.location.href = '/rankings';
+      console.error('Error in fetchRankings:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      setError(error.message || 'Failed to load quiz rankings');
+      toast.error(error.message || 'Failed to load quiz rankings');
+      
+      if (error.message && error.message.includes('login')) {
+        navigateTo('/login');
+      } 
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBackToRankings = () => {
+    navigateTo('/rankings');
+  };
+
+  const handleTakeQuiz = () => {
+    navigateTo(`/quiz/${quizId}`);
   };
 
   useEffect(() => {
@@ -146,61 +90,155 @@ export default function QuizRankingsDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#BBBFCA' }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent" style={{ borderColor: '#495464' }}></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <div className="text-center">
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent mx-auto mb-4" 
+            style={{ borderColor: '#495464' }}
+          ></div>
+          <p className="text-lg" style={{ color: '#495464' }}>Loading rankings...</p>
+        </div>
       </div>
     );
   }
 
-  if (!quiz) {
+  if (!quiz && !error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#BBBFCA' }}>
-        <div className="text-center">
-          <p className="text-gray-600 text-lg">Quiz not found</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <div className="text-center p-8 rounded-2xl shadow-lg" style={{ backgroundColor: '#E8E8E8' }}>
+          <Trophy className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.5 }} />
+          <p className="text-lg mb-4" style={{ color: '#495464' }}>Quiz not found</p>
+          <button
+            onClick={handleBackToRankings}
+            className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
+            style={{ 
+              backgroundColor: '#495464',
+              color: 'white'
+            }}
+          >
+            Back to Rankings
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}>
+        <div className="text-center p-8 rounded-2xl shadow-lg" style={{ backgroundColor: '#E8E8E8' }}>
+          <Trophy className="h-16 w-16 mx-auto mb-4" style={{ color: '#ef4444', opacity: 0.7 }} />
+          <p className="text-lg mb-2" style={{ color: '#495464' }}>Error Loading Rankings</p>
+          <p className="text-sm mb-4" style={{ color: '#495464', opacity: 0.7 }}>{error}</p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => {
+                setError(null);
+                setLoading(true);
+                fetchRankings();
+              }}
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
+              style={{ 
+                backgroundColor: '#22c55e',
+                color: 'white'
+              }}
+            >
+              Try Again
+            </button>
+            <button
+              onClick={handleBackToRankings}
+              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
+              style={{ 
+                backgroundColor: '#495464',
+                color: 'white'
+              }}
+            >
+              Back to Rankings
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#BBBFCA' }}>
+    <div className="min-h-screen" style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="mb-6">
           <button
-            onClick={() => window.location.href = '/rankings'}
-            className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+            onClick={handleBackToRankings}
+            className="flex items-center mb-4 font-medium transition-all duration-200 hover:opacity-80"
+            style={{ color: '#495464' }}
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Rankings
           </button>
           <div className="flex items-center mb-2">
-            <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
-            <h1 className="text-3xl font-bold text-gray-900">Quiz Leaderboard</h1>
+            <Trophy className="h-8 w-8 mr-3" style={{ color: '#f59e0b' }} />
+            <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+              Quiz Leaderboard
+            </h1>
           </div>
+          <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+            See how players performed on this quiz
+          </p>
         </div>
 
         {/* Quiz Info */}
         <div className="rounded-lg p-6 shadow-md mb-8" style={{ backgroundColor: '#E8E8E8' }}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{quiz.name}</h2>
-          <p className="text-gray-600 mb-4">{quiz.description}</p>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: '#495464' }}>
+            {quiz.name}
+          </h2>
+          <p className="mb-4" style={{ color: '#495464', opacity: 0.8 }}>
+            {quiz.description}
+          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="text-lg font-bold text-gray-900">{quiz.category}</div>
-              <div className="text-gray-600">Category</div>
+            <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
+              <div className="text-lg font-bold" style={{ color: '#495464' }}>
+                {quiz.category}
+              </div>
+              <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                Category
+              </div>
             </div>
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="text-lg font-bold text-gray-900">{quiz.difficulty}</div>
-              <div className="text-gray-600">Difficulty</div>
+            <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
+              <div className="text-lg font-bold" style={{ color: '#495464' }}>
+                {quiz.difficulty}
+              </div>
+              <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                Difficulty
+              </div>
             </div>
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="text-lg font-bold text-gray-900">{quiz.numberOfQuestions}</div>
-              <div className="text-gray-600">Questions</div>
+            <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
+              <div className="text-lg font-bold" style={{ color: '#495464' }}>
+                {quiz.numberOfQuestions}
+              </div>
+              <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                Questions
+              </div>
             </div>
-            <div className="text-center p-3 bg-white rounded-lg">
-              <div className="text-lg font-bold text-gray-900">{quiz.timeLimitMinutes} min</div>
-              <div className="text-gray-600">Time Limit</div>
+            <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
+              <div className="text-lg font-bold" style={{ color: '#495464' }}>
+                {quiz.timeLimitMinutes} min
+              </div>
+              <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                Time Limit
+              </div>
             </div>
           </div>
         </div>
@@ -208,8 +246,8 @@ export default function QuizRankingsDetail() {
         {/* Rankings */}
         <div className="rounded-lg p-6 shadow-md" style={{ backgroundColor: '#E8E8E8' }}>
           <div className="flex items-center mb-6">
-            <Target className="h-6 w-6 text-blue-600 mr-2" />
-            <h3 className="text-xl font-bold text-gray-900">
+            <Target className="h-6 w-6 mr-2" style={{ color: '#3b82f6' }} />
+            <h3 className="text-xl font-bold" style={{ color: '#495464' }}>
               Top Performers ({rankings.length} players)
             </h3>
           </div>
@@ -227,18 +265,44 @@ export default function QuizRankingsDetail() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">No Results Yet</h3>
-              <p className="text-gray-600 mb-6">Be the first to take this quiz and claim the top spot!</p>
+              <Trophy className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.4 }} />
+              <h3 className="text-xl font-semibold mb-2" style={{ color: '#495464' }}>
+                No Results Yet
+              </h3>
+              <p className="mb-6" style={{ color: '#495464', opacity: 0.7 }}>
+                Be the first to take this quiz and claim the top spot!
+              </p>
               <button
-                onClick={() => window.location.href = `/quiz/${quizId}`}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                onClick={handleTakeQuiz}
+                className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 flex items-center mx-auto"
+                style={{ 
+                  backgroundColor: '#3b82f6',
+                  color: 'white'
+                }}
               >
+                <Users className="h-5 w-5 mr-2" />
                 Take Quiz Now
               </button>
             </div>
           )}
         </div>
+
+        {/* Additional Info Section */}
+        {rankings.length > 0 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleTakeQuiz}
+              className="px-8 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
+              style={{ 
+                backgroundColor: '#22c55e',
+                color: 'white'
+              }}
+            >
+              <Trophy className="h-5 w-5 mr-2" />
+              Challenge Yourself - Take This Quiz
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
