@@ -253,5 +253,39 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "Failed to delete question", error = ex.Message });
             }
         }
+
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _adminService.GetAllUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to fetch users", error = ex.Message });
+            }
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetUserResults(int userId)
+        {
+            try
+            {
+                var userResults = await _adminService.GetUserResultsAsync(userId);
+                if (userResults == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                return Ok(userResults);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to fetch user results", error = ex.Message });
+            }
+        }
     }
 }

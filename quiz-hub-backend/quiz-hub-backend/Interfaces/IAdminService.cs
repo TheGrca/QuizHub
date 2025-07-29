@@ -18,5 +18,10 @@ namespace quiz_hub_backend.Interfaces
         Task<QuestionEditDetailDTO> AddQuestionToQuizAsync(int quizId, EditQuestionDTO questionDto);
         Task<bool> UpdateQuestionAsync(int questionId, EditQuestionDTO questionDto);
         Task<bool> DeleteQuestionAsync(int questionId);
+
+
+        //Results
+        Task<List<UserSummaryDTO>> GetAllUsersAsync();
+        Task<UserDetailResultsDTO?> GetUserResultsAsync(int userId);
     }
 }

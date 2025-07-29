@@ -14,6 +14,9 @@ import RankingsPage from './Components/Rankings/Rankings';
 import QuizPage from './Components/Quiz/Quiz'; 
 import MyResultDetailPage from './Components/MyResultDetailPage/MyResultDetailPage'
 import RankingsDetailPage from './Components/RankingsDetailPage/RankingsDetailPage'
+import UserResults from './Components/UserResults/UserResults';
+import UserResultsDetailPage from './Components/UserResultsDetailPage/UserResultsDetailPage';
+
 const getUserFromStorage = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -53,6 +56,8 @@ const App = () => {
             <Route path="/add-quiz" element={<AddQuizPage />} />
             <Route path="/edit-quiz" element={<EditQuizPage />} />
             <Route path="/edit-quiz/:id" element={<EditQuizDetails />} />
+            <Route path="/user-results" element={<UserResults/>}/>
+            <Route path="/user-results/:id" element={<UserResultsDetailPage/>}/>
             <Route path="/" element={<Navigate to="/add-quiz" replace />} />
             <Route path="*" element={<Navigate to="/add-quiz" replace />} />
           </>

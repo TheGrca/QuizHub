@@ -648,5 +648,126 @@ namespace quiz_hub_backend.Services
 
             return dto;
         }
+
+
+
+        //For results
+        public async Task<List<UserSummaryDTO>> GetAllUsersAsync()
+        {
+            var users = await _context.Users
+                .Where(u => u.isAdmin == UserType.User) // Only regular users, not admins
+                .ToListAsync();
+
+            var userSummaries = new List<UserSummaryDTO>();
+
+            foreach (var user in users)
+            {
+                var quizResults = await _context.UserQuizResults
+                    .Where(qr => qr.UserId == user.Id)
+                    .ToListAsync();
+
+                var summary = new UserSummaryDTO
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    ProfilePicture = Convert.ToBase64String(user.Image),
+                    TotalQuizzesTaken = quizResults.Count,
+                    AverageScore = quizResults.Any() ? quizResults.Average(qr => qr.Percentage) : 0,
+                    LastQuizDate = quizResults.Any() ? quizResults.Max(qr => qr.CompletionDate) : DateTime.MinValue
+                };
+
+                userSummaries.Add(summary);
+            }
+
+            return userSummaries.OrderByDescending(u => u.LastQuizDate).ToList();
+        }
+
+        public async Task<UserDetailResultsDTO?> GetUserResultsAsync(int userId)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId && u.isAdmin == UserType.User);
+
+            if (user == null)
+                return null;
+
+            var quizResults = await _context.UserQuizResults
+                .Include(qr => qr.Quiz)
+                .ThenInclude(q => q.Category)
+                .Include(qr => qr.UserAnswers)
+                .Where(qr => qr.UserId == userId)
+                .OrderByDescending(qr => qr.CompletionDate)
+                .ToListAsync();
+
+            var quizResultDetails = new List<UserQuizResultDetailDTO>();
+
+            foreach (var result in quizResults)
+            {
+                var correctAnswers = await CalculateCorrectAnswers(result.Id);
+
+                var resultDetail = new UserQuizResultDetailDTO
+                {
+                    ResultId = result.Id,
+                    QuizId = result.QuizId,
+                    QuizName = result.Quiz.Name,
+                    Category = result.Quiz.Category.Name,
+                    Difficulty = result.Quiz.Difficulty.ToString(),
+                    Score = result.Score,
+                    TotalPoints = await CalculateTotalPoints(result.QuizId),
+                    CorrectAnswers = correctAnswers,
+                    TotalQuestions = result.Quiz.NumberOfQuestions,
+                    Percentage = result.Percentage,
+                    TimeTakenSeconds = FormatTimeSpent(result.TimeTakenSeconds),
+                    CompletionDate = result.CompletionDate
+                };
+
+                quizResultDetails.Add(resultDetail);
+            }
+
+            // Calculate user stats
+            var stats = new UserStatsDTO();
+            if (quizResults.Any())
+            {
+                stats.TotalQuizzes = quizResults.Count;
+                stats.AverageScore = quizResults.Average(qr => qr.Score);
+                stats.AveragePercentage = quizResults.Average(qr => qr.Percentage);
+                stats.BestScore = quizResults.Max(qr => qr.Score);
+                stats.BestPercentage = quizResults.Max(qr => qr.Percentage);
+                stats.TotalTimeSpent = FormatTimeSpent(quizResults.Sum(qr => qr.TimeTakenSeconds));
+                stats.FirstQuizDate = quizResults.Min(qr => qr.CompletionDate);
+                stats.LastQuizDate = quizResults.Max(qr => qr.CompletionDate);
+            }
+
+            return new UserDetailResultsDTO
+            {
+                UserId = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                ProfilePicture = Convert.ToBase64String(user.Image),
+                QuizResults = quizResultDetails,
+                Stats = stats
+            };
+        }
+
+        private async Task<int> CalculateCorrectAnswers(int userQuizResultId)
+        {
+            return await _context.UserAnswers
+                .Where(ua => ua.UserQuizResultId == userQuizResultId && ua.IsCorrect)
+                .CountAsync();
+        }
+
+        private async Task<int> CalculateTotalPoints(int quizId)
+        {
+            return await _context.Questions
+                .Where(q => q.QuizId == quizId)
+                .SumAsync(q => q.Points);
+        }
+
+        private string FormatTimeSpent(int seconds)
+        {
+            var minutes = seconds / 60;
+            var remainingSeconds = seconds % 60;
+            return $"{minutes}:{remainingSeconds:D2}";
+        }
     }
 }

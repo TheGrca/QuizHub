@@ -313,6 +313,52 @@ class AdminService {
       throw new Error('Failed to fetch categories');
     }
   }
+
+
+  async getAllUsers() {
+    try {
+      const response = await fetch(`${this.baseURL}/admin/users`, {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server error:', errorText);
+        throw new Error('Failed to fetch users');
+      }
+
+      const users = await response.json();
+      console.log('Users fetched:', users);
+      return users;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw new Error('Failed to fetch users');
+    }
+  }
+
+  async getUserResults(userId) {
+    try {
+      const response = await fetch(`${this.baseURL}/admin/user/${userId}`, {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server error:', errorText);
+        throw new Error('Failed to fetch user results');
+      }
+
+      const userResults = await response.json();
+      console.log('User results fetched:', userResults);
+      return userResults;
+    } catch (error) {
+      console.error('Error fetching user results:', error);
+      throw new Error('Failed to fetch user results');
+    }
+  }
+
 }
 
 export default new AdminService();
