@@ -187,80 +187,7 @@ export default function UserResultsDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* User Stats Panel */}
-          <div className="lg:col-span-1">
-            <div className="rounded-2xl shadow-lg p-6" style={{ backgroundColor: '#E8E8E8' }}>
-              <h2 className="text-xl font-bold mb-6" style={{ color: '#495464' }}>
-                User Statistics
-              </h2>
-              
-              {userResults.stats && userResults.stats.totalQuizzes > 0 ? (
-                <div className="space-y-4">
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
-                    <Trophy className="h-6 w-6 mx-auto mb-2" style={{ color: '#f59e0b' }} />
-                    <div className="text-2xl font-bold" style={{ color: '#495464' }}>
-                      {userResults.stats.totalQuizzes}
-                    </div>
-                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                      Total Quizzes
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
-                    <BarChart3 className="h-6 w-6 mx-auto mb-2" style={{ color: '#22c55e' }} />
-                    <div className="text-2xl font-bold" style={{ color: '#495464' }}>
-                      {userResults.stats.averagePercentage ? userResults.stats.averagePercentage.toFixed(1) : '0.0'}%
-                    </div>
-                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                      Average Score
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
-                    <Target className="h-6 w-6 mx-auto mb-2" style={{ color: '#3b82f6' }} />
-                    <div className="text-2xl font-bold" style={{ color: '#495464' }}>
-                      {userResults.stats.bestPercentage ? userResults.stats.bestPercentage.toFixed(1) : '0.0'}%
-                    </div>
-                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                      Best Score
-                    </div>
-                  </div>
-
-                  <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
-                    <Clock className="h-6 w-6 mx-auto mb-2" style={{ color: '#8b5cf6' }} />
-                    <div className="text-2xl font-bold" style={{ color: '#495464' }}>
-                      {userResults.stats.totalTimeSpent || '0:00'}
-                    </div>
-                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                      Total Time
-                    </div>
-                  </div>
-
-                  {userResults.stats.firstQuizDate && userResults.stats.lastQuizDate && (
-                    <div className="pt-4 border-t" style={{ borderColor: '#BBBFCA' }}>
-                      <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                        <p className="mb-2">
-                          <strong>First Quiz:</strong><br />
-                          {formatDate(userResults.stats.firstQuizDate)}
-                        </p>
-                        <p>
-                          <strong>Last Quiz:</strong><br />
-                          {formatDate(userResults.stats.lastQuizDate)}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 mx-auto mb-4" style={{ color: '#495464', opacity: 0.3 }} />
-                  <p style={{ color: '#495464', opacity: 0.7 }}>No quiz attempts yet</p>
-                </div>
-              )}
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">    
           {/* Quiz Results Panel */}
           <div className="lg:col-span-3">
             <div className="rounded-2xl shadow-lg p-6" style={{ backgroundColor: '#E8E8E8' }}>
@@ -322,15 +249,6 @@ export default function UserResultsDetailPage() {
                           </div>
 
                           <div className="text-center">
-                            <div className="text-lg font-bold" style={{ color: '#495464' }}>
-                              {result.score}/{result.totalPoints}
-                            </div>
-                            <div className="text-xs" style={{ color: '#495464', opacity: 0.7 }}>
-                              Points
-                            </div>
-                          </div>
-
-                          <div className="text-center">
                             <div 
                               className="text-xl font-bold"
                               style={{ color: getPercentageColor(result.percentage) }}
@@ -351,9 +269,6 @@ export default function UserResultsDetailPage() {
                   <Trophy className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.3 }} />
                   <p className="text-lg mb-2" style={{ color: '#495464' }}>
                     No quiz results yet
-                  </p>
-                  <p className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                    This user hasn't taken any quizzes yet.
                   </p>
                 </div>
               )}

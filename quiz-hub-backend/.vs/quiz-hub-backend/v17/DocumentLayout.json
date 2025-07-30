@@ -321,8 +321,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserStatsDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-26T14:51:58.797Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-26T14:51:58.797Z"
             },
             {
               "$type": "Document",
@@ -334,8 +333,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Interfaces\\IAdminService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:04:59.674Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T13:04:59.674Z"
             },
             {
               "$type": "Document",
@@ -347,8 +345,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Services\\AdminService.cs",
               "ViewState": "AgIAAMICAAAAAAAAAAAowN8CAABjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:05:48.643Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T13:05:48.643Z"
             },
             {
               "$type": "Document",
@@ -360,8 +357,7 @@
               "RelativeToolTip": "quiz-hub-backend\\Controllers\\AdminController.cs",
               "ViewState": "AgIAAPcAAAAAAAAAAADwvwMBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-25T13:09:10.853Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-25T13:09:10.853Z"
             },
             {
               "$type": "Document",
@@ -373,8 +369,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserDetailResultsDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-29T17:58:48.766Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-29T17:58:48.766Z"
             },
             {
               "$type": "Document",
@@ -384,10 +379,14 @@
               "RelativeDocumentMoniker": "quiz-hub-backend\\Program.cs",
               "ToolTip": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\Program.cs",
               "RelativeToolTip": "quiz-hub-backend\\Program.cs",
-              "ViewState": "AgIAADcAAAAAAAAAAAAjwEsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADEAAAAAAAAAAAAAAC0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T12:16:12.945Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
             },
             {
               "$type": "Document",
@@ -399,12 +398,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserQuizResultDetailDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-29T17:59:15.602Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
+              "WhenOpened": "2025-07-29T17:59:15.602Z"
             },
             {
               "$type": "Document",
@@ -416,8 +410,7 @@
               "RelativeToolTip": "quiz-hub-backend\\DTO\\UserSummaryDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-29T17:58:19.051Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-29T17:58:19.051Z"
             },
             {
               "$type": "Document",

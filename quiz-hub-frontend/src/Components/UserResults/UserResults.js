@@ -232,30 +232,6 @@ export default function UserResults() {
                           Quizzes
                         </div>
                       </div>
-
-                      <div className="text-center">
-                        <div className="flex items-center justify-center mb-1">
-                          <TrendingUp className="h-4 w-4 mr-1" style={{ color: '#22c55e' }} />
-                          <span className="text-lg font-bold" style={{ color: '#495464' }}>
-                            {user.averageScore.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="text-xs" style={{ color: '#495464', opacity: 0.7 }}>
-                          Avg Score
-                        </div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="flex items-center justify-center mb-1">
-                          <Clock className="h-4 w-4 mr-1" style={{ color: '#8b5cf6' }} />
-                          <span className="text-sm font-medium" style={{ color: '#495464' }}>
-                            {formatDate(user.lastQuizDate)}
-                          </span>
-                        </div>
-                        <div className="text-xs" style={{ color: '#495464', opacity: 0.7 }}>
-                          Last Quiz
-                        </div>
-                      </div>
                     </div>
 
                     {/* Arrow Indicator */}
@@ -278,9 +254,6 @@ export default function UserResults() {
                 <Users className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.5 }} />
                 <p className="text-lg mb-2" style={{ color: '#495464' }}>
                   {searchTerm ? 'No users found matching your search.' : 'No users available.'}
-                </p>
-                <p className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                  {searchTerm ? 'Try adjusting your search term.' : 'Users will appear here once they register.'}
                 </p>
               </div>
             )}
