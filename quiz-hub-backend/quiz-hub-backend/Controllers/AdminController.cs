@@ -15,6 +15,7 @@ namespace quiz_hub_backend.Controllers
             _adminService = adminService;
         }
 
+        //This function makes a quiz
         [HttpPost("quiz")]
         public async Task<ActionResult<QuizResponseDTO>> CreateQuiz([FromBody] CreateQuizDTO createQuizDto)
         {
@@ -34,6 +35,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
+        //This function fetches the categories
         [HttpGet("categories")]
         public async Task<ActionResult<List<CategoryDTO>>> GetCategories()
         {
@@ -48,6 +50,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
+        //This function fetches all quizzes
         [HttpGet("quizzes")]
         public async Task<ActionResult<List<QuizResponseDTO>>> GetAllQuizzes()
         {
@@ -62,6 +65,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
+        //This function fetches a single quiz
         [HttpGet("quiz/{id}")]
         public async Task<ActionResult<QuizResponseDTO>> GetQuiz(int id)
         {
@@ -82,51 +86,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
-        [HttpPut("quiz/{id}")]
-        public async Task<ActionResult> UpdateQuiz(int id, [FromBody] CreateQuizDTO updateQuizDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var success = await _adminService.UpdateQuizAsync(id, updateQuizDto);
-
-                if (!success)
-                {
-                    return NotFound(new { message = "Quiz not found." });
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred while updating the quiz.", error = ex.Message });
-            }
-        }
-
-        [HttpDelete("quiz/{id}")]
-        public async Task<ActionResult> DeleteQuiz(int id)
-        {
-            try
-            {
-                var success = await _adminService.DeleteQuizAsync(id);
-
-                if (!success)
-                {
-                    return NotFound(new { message = "Quiz not found." });
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred while deleting the quiz.", error = ex.Message });
-            }
-        }
-
+        //This function selects one quiz that will be edited
         [HttpGet("quiz/{quizId}/edit")]
         public async Task<IActionResult> GetQuizForEdit(int quizId)
         {
@@ -146,6 +106,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
+        //This function edits a quiz
         [HttpPut("quiz/{quizId}/edit")]
         public async Task<IActionResult> UpdateQuizWithEdit(int quizId, [FromBody] EditQuizDTO editQuizDto)
         {
@@ -170,7 +131,8 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
-        [HttpDelete("quiz/{quizId}/complete")]
+        //This function deletes the quiz
+        [HttpDelete("quiz/{quizId}/delete")]
         public async Task<IActionResult> DeleteQuizCompletely(int quizId)
         {
             try
@@ -189,72 +151,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
-        // New endpoint: Add question to quiz
-        [HttpPost("quiz/{quizId}/question")]
-        public async Task<IActionResult> AddQuestionToQuiz(int quizId, [FromBody] EditQuestionDTO questionDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var question = await _adminService.AddQuestionToQuizAsync(quizId, questionDto);
-                return CreatedAtAction(nameof(GetQuizForEdit), new { quizId }, question);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Failed to add question", error = ex.Message });
-            }
-        }
-
-        // New endpoint: Update single question
-        [HttpPut("question/{questionId}/edit")]
-        public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] EditQuestionDTO questionDto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var success = await _adminService.UpdateQuestionAsync(questionId, questionDto);
-                if (!success)
-                {
-                    return NotFound(new { message = "Question not found" });
-                }
-
-                return Ok(new { message = "Question updated successfully" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Failed to update question", error = ex.Message });
-            }
-        }
-
-        // New endpoint: Delete single question
-        [HttpDelete("question/{questionId}")]
-        public async Task<IActionResult> DeleteQuestion(int questionId)
-        {
-            try
-            {
-                var success = await _adminService.DeleteQuestionAsync(questionId);
-                if (!success)
-                {
-                    return NotFound(new { message = "Question not found" });
-                }
-
-                return Ok(new { message = "Question deleted successfully" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Failed to delete question", error = ex.Message });
-            }
-        }
-
-
+        //This function fetches all users
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -269,6 +166,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
+        //This function fetches one user and all of his quizzes
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserResults(int userId)
         {

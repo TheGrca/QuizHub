@@ -15,6 +15,7 @@ namespace quiz_hub_backend.Services
             _context = context;
         }
 
+        //For adding quiz
         public async Task<QuizResponseDTO> CreateQuizAsync(CreateQuizDTO createQuizDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -68,107 +69,6 @@ namespace quiz_hub_backend.Services
                 })
             .ToListAsync();
         }
-
-        public async Task<List<QuizResponseDTO>> GetAllQuizzesAsync()
-        {
-            var quizzes = await _context.Quizzes
-                           .Include(q => q.Category)
-                           .Include(q => q.Questions)
-                           .ToListAsync();
-
-            return quizzes.Select(q => new QuizResponseDTO
-            {
-                Id = q.Id,
-                Name = q.Name,
-                Description = q.Description,
-                NumberOfQuestions = q.NumberOfQuestions,
-                Difficulty = (int)q.Difficulty,
-                TimeLimitMinutes = q.TimeLimitMinutes,
-                CategoryName = q.Category.Name,
-                Questions = q.Questions.Select(question => MapQuestionToDto(question)).ToList()
-            }).ToList();
-        }
-
-        public async Task<QuizResponseDTO?> GetQuizByIdAsync(int quizId)
-        {
-            var quiz = await _context.Quizzes
-                .Include(q => q.Category)
-                .Include(q => q.Questions)
-                .FirstOrDefaultAsync(q => q.Id == quizId);
-
-            if (quiz == null)
-                return null;
-
-            return new QuizResponseDTO
-            {
-                Id = quiz.Id,
-                Name = quiz.Name,
-                Description = quiz.Description,
-                NumberOfQuestions = quiz.NumberOfQuestions,
-                Difficulty = (int)quiz.Difficulty,
-                TimeLimitMinutes = quiz.TimeLimitMinutes,
-                CategoryName = quiz.Category.Name,
-                Questions = quiz.Questions.Select(q => MapQuestionToDto(q)).ToList()
-            };
-        }
-
-        public async Task<bool> UpdateQuizAsync(int quizId, CreateQuizDTO updateQuizDto)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                var quiz = await _context.Quizzes
-                    .Include(q => q.Questions)
-                    .FirstOrDefaultAsync(q => q.Id == quizId);
-
-                if (quiz == null)
-                    return false;
-
-                // Update quiz properties
-                quiz.Name = updateQuizDto.Name;
-                quiz.Description = updateQuizDto.Description;
-                quiz.NumberOfQuestions = updateQuizDto.Questions.Count;
-                quiz.Difficulty = (Difficulty)updateQuizDto.Difficulty;
-                quiz.TimeLimitMinutes = updateQuizDto.TimeLimitMinutes;
-                quiz.CategoryId = updateQuizDto.CategoryId;
-
-                // Remove existing questions
-                _context.Questions.RemoveRange(quiz.Questions);
-
-                // Add new questions
-                var newQuestions = updateQuizDto.Questions
-                    .Select(q => CreateQuestionFromDto(q, quizId))
-                    .ToList();
-
-                _context.Questions.AddRange(newQuestions);
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
-        }
-
-        public async Task<bool> DeleteQuizAsync(int quizId)
-        {
-            var quiz = await _context.Quizzes
-                .Include(q => q.Questions)
-                .FirstOrDefaultAsync(q => q.Id == quizId);
-
-            if (quiz == null)
-                return false;
-
-            _context.Quizzes.Remove(quiz);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
         private Question CreateQuestionFromDto(CreateQuestionDTO dto, int quizId)
         {
             return dto.QuestionType switch
@@ -259,7 +159,49 @@ namespace quiz_hub_backend.Services
         }
 
 
+
         //For editing
+        public async Task<List<QuizResponseDTO>> GetAllQuizzesAsync()
+        {
+            var quizzes = await _context.Quizzes
+                           .Include(q => q.Category)
+                           .Include(q => q.Questions)
+                           .ToListAsync();
+
+            return quizzes.Select(q => new QuizResponseDTO
+            {
+                Id = q.Id,
+                Name = q.Name,
+                Description = q.Description,
+                NumberOfQuestions = q.NumberOfQuestions,
+                Difficulty = (int)q.Difficulty,
+                TimeLimitMinutes = q.TimeLimitMinutes,
+                CategoryName = q.Category.Name,
+                Questions = q.Questions.Select(question => MapQuestionToDto(question)).ToList()
+            }).ToList();
+        }
+        public async Task<QuizResponseDTO?> GetQuizByIdAsync(int quizId)
+        {
+            var quiz = await _context.Quizzes
+                .Include(q => q.Category)
+                .Include(q => q.Questions)
+                .FirstOrDefaultAsync(q => q.Id == quizId);
+
+            if (quiz == null)
+                return null;
+
+            return new QuizResponseDTO
+            {
+                Id = quiz.Id,
+                Name = quiz.Name,
+                Description = quiz.Description,
+                NumberOfQuestions = quiz.NumberOfQuestions,
+                Difficulty = (int)quiz.Difficulty,
+                TimeLimitMinutes = quiz.TimeLimitMinutes,
+                CategoryName = quiz.Category.Name,
+                Questions = quiz.Questions.Select(q => MapQuestionToDto(q)).ToList()
+            };
+        }
         public async Task<QuizEditDetailDTO?> GetQuizForEditAsync(int quizId)
         {
             var quiz = await _context.Quizzes
@@ -324,8 +266,6 @@ namespace quiz_hub_backend.Services
                 Questions = questionsDetail
             };
         }
-
-        // New method: Update quiz with full edit capabilities
         public async Task<bool> UpdateQuizWithEditAsync(int quizId, EditQuizDTO editQuizDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -405,8 +345,6 @@ namespace quiz_hub_backend.Services
                 throw;
             }
         }
-
-        // New method: Delete quiz and all associated data
         public async Task<bool> DeleteQuizAndAllDataAsync(int quizId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -460,82 +398,6 @@ namespace quiz_hub_backend.Services
                 throw;
             }
         }
-
-        // New method: Add single question to quiz
-        public async Task<QuestionEditDetailDTO> AddQuestionToQuizAsync(int quizId, EditQuestionDTO questionDto)
-        {
-            var question = CreateQuestionFromEditDto(questionDto, quizId);
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync();
-
-            // Update quiz question count
-            var quiz = await _context.Quizzes.FindAsync(quizId);
-            if (quiz != null)
-            {
-                quiz.NumberOfQuestions = await _context.Questions.CountAsync(q => q.QuizId == quizId);
-                await _context.SaveChangesAsync();
-            }
-
-            // Return the created question details
-            return MapQuestionToEditDetailDto(question);
-        }
-
-        // New method: Update single question
-        public async Task<bool> UpdateQuestionAsync(int questionId, EditQuestionDTO questionDto)
-        {
-            var question = await _context.Questions.FindAsync(questionId);
-            if (question == null)
-                return false;
-
-            UpdateExistingQuestion(question, questionDto);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        // New method: Delete single question
-        public async Task<bool> DeleteQuestionAsync(int questionId)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                var question = await _context.Questions.FindAsync(questionId);
-                if (question == null)
-                    return false;
-
-                var quizId = question.QuizId;
-
-                // Delete associated user answers
-                var userAnswers = await _context.UserAnswers
-                    .Where(ua => ua.QuestionId == questionId)
-                    .ToListAsync();
-                _context.UserAnswers.RemoveRange(userAnswers);
-
-                // Delete the question
-                _context.Questions.Remove(question);
-
-                // Update quiz question count
-                var quiz = await _context.Quizzes.FindAsync(quizId);
-                if (quiz != null)
-                {
-                    quiz.NumberOfQuestions = await _context.Questions.CountAsync(q => q.QuizId == quizId && q.Id != questionId);
-                    await _context.SaveChangesAsync();
-                }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
-        }
-
-        // Helper method: Create question from EditQuestionDTO
         private Question CreateQuestionFromEditDto(EditQuestionDTO dto, int quizId)
         {
             return dto.QuestionType switch
@@ -579,8 +441,6 @@ namespace quiz_hub_backend.Services
                 _ => throw new ArgumentException($"Unknown question type: {dto.QuestionType}")
             };
         }
-
-        // Helper method: Update existing question
         private void UpdateExistingQuestion(Question question, EditQuestionDTO dto)
         {
             question.Text = dto.Text;
@@ -611,47 +471,9 @@ namespace quiz_hub_backend.Services
             }
         }
 
-        // Helper method: Map question to edit detail DTO
-        private static QuestionEditDetailDTO MapQuestionToEditDetailDto(Question question)
-        {
-            var dto = new QuestionEditDetailDTO
-            {
-                Id = question.Id,
-                Text = question.Text,
-                Points = question.Points,
-                QuestionType = question.GetType().Name
-            };
-
-            switch (question)
-            {
-                case MultipleChoiceQuestion mcq:
-                    dto.Option1 = mcq.Option1;
-                    dto.Option2 = mcq.Option2;
-                    dto.Option3 = mcq.Option3;
-                    dto.Option4 = mcq.Option4;
-                    dto.CorrectAnswerIndex = mcq.CorrectAnswerIndex;
-                    break;
-                case MultipleAnswerQuestion maq:
-                    dto.Option1 = maq.Option1;
-                    dto.Option2 = maq.Option2;
-                    dto.Option3 = maq.Option3;
-                    dto.Option4 = maq.Option4;
-                    dto.CorrectAnswerIndices = maq.CorrectAnswerIndices;
-                    break;
-                case TrueFalseQuestion tfq:
-                    dto.TrueFalseCorrectAnswer = tfq.CorrectAnswer;
-                    break;
-                case TextInputQuestion tiq:
-                    dto.CorrectAnswer = tiq.CorrectAnswer;
-                    break;
-            }
-
-            return dto;
-        }
 
 
-
-        //For results
+        //For User Results
         public async Task<List<UserSummaryDTO>> GetAllUsersAsync()
         {
             var users = await _context.Users
