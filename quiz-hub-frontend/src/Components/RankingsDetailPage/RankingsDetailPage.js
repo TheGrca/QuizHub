@@ -188,7 +188,7 @@ export default function QuizRankingsDetail() {
             Back to Rankings
           </button>
           <div className="flex items-center mb-2">
-            <Trophy className="h-8 w-8 mr-3" style={{ color: '#f59e0b' }} />
+            <Trophy className="h-8 w-8 mr-3" style={{ color: '#495464' }}/>
             <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
               Quiz Leaderboard
             </h1>

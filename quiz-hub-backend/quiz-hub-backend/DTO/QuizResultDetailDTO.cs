@@ -13,5 +13,6 @@
         public int TimeTakenSeconds { get; set; }
         public DateTime CompletionDate { get; set; }
         public List<QuestionResultDTO> QuestionResults { get; set; } = new List<QuestionResultDTO>();
+        public List<QuizProgressDTO> ProgressData { get; set; } = new List<QuizProgressDTO>();
     }
 }

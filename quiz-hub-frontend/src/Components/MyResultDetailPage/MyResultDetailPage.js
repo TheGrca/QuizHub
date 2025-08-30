@@ -27,67 +27,75 @@ export default function QuizResultDetail() {
 
   // Fetch quiz result using UserService
   const fetchResult = async () => {
-    try {
-      console.log('Starting fetchResult for resultId:', resultId);
-      
-      // Check authentication first
-      if (!AuthService.isAuthenticated()) {
-        console.log('User not authenticated');
-        toast.error('Please login to view quiz results');
-        navigateTo('/login');
-        return;
-      }
-
-      const user = AuthService.getCurrentUser();
-      console.log('Current user:', user);
-      
-      if (!user || !user.id) {
-        console.log('User or user.id not found');
-        toast.error('User not found. Please login again.');
-        navigateTo('/login');
-        return;
-      }
-
-      // Use UserService to fetch result details
-      console.log('Attempting to fetch quiz result...');
-      const resultData = await UserService.getQuizResultDetail(resultId);
-      console.log("Quiz result data received:", resultData);
-      
-      if (resultData) {
-        console.log("Setting result:", resultData);
-        setResult(resultData);
-        
-        // Set progress data if available
-        if (resultData.progressData && resultData.progressData.length > 0) {
-          console.log("Setting progress data:", resultData.progressData);
-          setProgressData(resultData.progressData);
-        }
-      } else {
-        console.log("No result data received");
-        throw new Error('No result data received');
-      }
-
-    } catch (error) {
-      console.error('Error in fetchResult:', error);
-      console.error('Error message:', error.message);
-      
-      // Set error state
-      setError(error.message || 'Failed to load quiz result');
-      
-      // Show toast notification
-      toast.error(error.message || 'Failed to load quiz result');
-      
-      // Only redirect if it's an authentication error
-      if (error.message && error.message.includes('login')) {
-        navigateTo('/login');
-      } else {
-        console.log('Staying on page to show error state');
-      }
-    } finally {
-      console.log('Setting loading to false');
-      setLoading(false);
+  try {
+    console.log('Starting fetchResult for resultId:', resultId);
+    
+    // Check authentication first
+    if (!AuthService.isAuthenticated()) {
+      console.log('User not authenticated');
+      toast.error('Please login to view quiz results');
+      navigateTo('/login');
+      return;
     }
-  };
+
+    const user = AuthService.getCurrentUser();
+    console.log('Current user:', user);
+    
+    if (!user || !user.id) {
+      console.log('User or user.id not found');
+      toast.error('User not found. Please login again.');
+      navigateTo('/login');
+      return;
+    }
+
+    // Use UserService to fetch result details
+    console.log('Attempting to fetch quiz result...');
+    const resultData = await UserService.getQuizResultDetail(resultId);
+    console.log("Quiz result data received:", resultData);
+    
+    if (resultData) {
+      console.log("Setting result:", resultData);
+      setResult(resultData);
+      
+      // Set progress data if available - handle null/undefined
+      if (resultData.progressData && Array.isArray(resultData.progressData) && resultData.progressData.length > 0) {
+        console.log("Setting progress data:", resultData.progressData);
+        // Convert date format for the chart
+        const formattedProgressData = resultData.progressData.map(item => ({
+          ...item,
+          date: new Date(item.date).toISOString().split('T')[0] // Ensure proper date format
+        }));
+        setProgressData(formattedProgressData);
+      } else {
+        console.log("No progress data available or single attempt");
+        setProgressData([]);
+      }
+    } else {
+      console.log("No result data received");
+      throw new Error('No result data received');
+    }
+
+  } catch (error) {
+    console.error('Error in fetchResult:', error);
+    console.error('Error message:', error.message);
+    
+    // Set error state
+    setError(error.message || 'Failed to load quiz result');
+    
+    // Show toast notification
+    toast.error(error.message || 'Failed to load quiz result');
+    
+    // Only redirect if it's an authentication error
+    if (error.message && error.message.includes('login')) {
+      navigateTo('/login');
+    } else {
+      console.log('Staying on page to show error state');
+    }
+  } finally {
+    console.log('Setting loading to false');
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchResult();
@@ -118,8 +126,6 @@ export default function QuizResultDetail() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
     });
   };
 

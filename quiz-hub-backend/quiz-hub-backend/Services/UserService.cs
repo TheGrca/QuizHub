@@ -164,7 +164,7 @@ namespace quiz_hub_backend.Services
                     PointsEarned = pointsEarned
                 });
             }
-
+            var progressData = await GetQuizProgressAsync(userId, result.QuizId);
             return new QuizResultDetailDTO
             {
                 Id = result.Id,
@@ -177,7 +177,8 @@ namespace quiz_hub_backend.Services
                 TotalQuestions = result.UserAnswers.Count,
                 TimeTakenSeconds = result.TimeTakenSeconds,
                 CompletionDate = result.CompletionDate,
-                QuestionResults = questionResults
+                QuestionResults = questionResults,
+                ProgressData = progressData
             };
         }
 
