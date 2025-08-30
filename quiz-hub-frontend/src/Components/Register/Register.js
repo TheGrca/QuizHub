@@ -328,9 +328,9 @@ export default function Register() {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5" style={{ color: '#BBBFCA' }} />
-                  ) : (
                     <Eye className="h-5 w-5" style={{ color: '#BBBFCA' }} />
+                  ) : (
+                    <EyeOff className="h-5 w-5" style={{ color: '#BBBFCA' }} />
                   )}
                 </button>
               </div>

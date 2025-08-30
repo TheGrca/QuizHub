@@ -127,29 +127,28 @@ export default function EditQuiz() {
     );
   }
 
-  return (
-    <div>
-      <div className="min-h-screen" style={{ 
-        backgroundColor: '#BBBFCA',
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-      }}>
+return (
+  <div>
+    <div className="min-h-screen" style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
+      <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <Settings className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
-              <div>
-                <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
-                  Edit Quizzes
-                </h1>
-                <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
-                  Select a quiz to edit its details and questions
-                </p>
-              </div>
-            </div>
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <Settings className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
+            <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+              Edit Quizzes
+            </h1>
           </div>
-          
-          {/* Search Bar */}
+          <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+            Select a quiz to edit its details and questions
+          </p>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="py-6">
           <div className="flex gap-4 justify-between items-center">
             <div className="flex-1 max-w-md relative">
               <div className="relative">
@@ -178,13 +177,13 @@ export default function EditQuiz() {
         </div>
 
         {/* Quiz Display Area */}
-        <div className="px-8 pb-8">
+        <div className="pb-8">
           <div 
             className="w-full rounded-2xl shadow-lg p-8"
             style={{ backgroundColor: '#E8E8E8' }}
           >
             {filteredQuizzes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredQuizzes.map(quiz => (
                   <div key={quiz.id} className="relative group">
                     <QuizBox 
@@ -218,5 +217,6 @@ export default function EditQuiz() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

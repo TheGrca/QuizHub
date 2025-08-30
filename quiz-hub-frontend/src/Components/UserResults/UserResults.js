@@ -124,29 +124,28 @@ export default function UserResults() {
     );
   }
 
-  return (
-    <div>
-      <div className="min-h-screen" style={{ 
-        backgroundColor: '#BBBFCA',
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-      }}>
+ return (
+  <div>
+    <div className="min-h-screen" style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
+      <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <Users className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
-              <div>
-                <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
-                  User Results
-                </h1>
-                <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
-                  View all users and their quiz performance
-                </p>
-              </div>
-            </div>
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
+            <Users className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
+            <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+              User Results
+            </h1>
           </div>
-          
-          {/* Search Bar */}
+          <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+            View all users and their quiz performance
+          </p>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="py-6">
           <div className="flex gap-4 justify-between items-center">
             <div className="flex-1 max-w-md relative">
               <div className="relative">
@@ -175,7 +174,7 @@ export default function UserResults() {
         </div>
 
         {/* Users Display Area */}
-        <div className="px-8 pb-8">
+        <div className="pb-8">
           <div 
             className="w-full rounded-2xl shadow-lg p-8"
             style={{ backgroundColor: '#E8E8E8' }}
@@ -195,8 +194,8 @@ export default function UserResults() {
                     {/* Profile Picture */}
                     <div className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2" style={{ borderColor: '#BBBFCA' }}>
                       <img 
-                        src={user.profilePictureBase64 ? 
-                          `data:image/jpeg;base64,${user.profilePictureBase64}` : 
+                        src={user.profilePicture ? 
+                          `data:image/jpeg;base64,${user.profilePicture}` : 
                           `https://ui-avatars.com/api/?name=${user.username}&background=random&color=fff&size=48`
                         }
                         alt={user.username}
@@ -261,5 +260,6 @@ export default function UserResults() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

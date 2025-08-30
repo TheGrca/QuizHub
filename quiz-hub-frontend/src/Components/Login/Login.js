@@ -160,9 +160,9 @@ export default function Login() {
                   style={{ cursor: 'pointer' }}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5" style={{ color: '#BBBFCA' }} />
-                  ) : (
                     <Eye className="h-5 w-5" style={{ color: '#BBBFCA' }} />
+                  ) : (
+                    <EyeOff className="h-5 w-5" style={{ color: '#BBBFCA' }} />
                   )}
                 </button>
               </div>

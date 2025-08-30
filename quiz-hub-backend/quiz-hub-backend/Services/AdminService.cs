@@ -174,7 +174,7 @@ namespace quiz_hub_backend.Services
                 Name = q.Name,
                 Description = q.Description,
                 NumberOfQuestions = q.NumberOfQuestions,
-                Difficulty = (int)q.Difficulty,
+                Difficulty = q.Difficulty.ToString(),
                 TimeLimitMinutes = q.TimeLimitMinutes,
                 CategoryName = q.Category.Name,
                 Questions = q.Questions.Select(question => MapQuestionToDto(question)).ToList()
@@ -196,7 +196,7 @@ namespace quiz_hub_backend.Services
                 Name = quiz.Name,
                 Description = quiz.Description,
                 NumberOfQuestions = quiz.NumberOfQuestions,
-                Difficulty = (int)quiz.Difficulty,
+                Difficulty = quiz.Difficulty.ToString(),
                 TimeLimitMinutes = quiz.TimeLimitMinutes,
                 CategoryName = quiz.Category.Name,
                 Questions = quiz.Questions.Select(q => MapQuestionToDto(q)).ToList()
@@ -477,7 +477,7 @@ namespace quiz_hub_backend.Services
         public async Task<List<UserSummaryDTO>> GetAllUsersAsync()
         {
             var users = await _context.Users
-                .Where(u => u.isAdmin == UserType.User) // Only regular users, not admins
+                .Where(u => u.isAdmin == UserType.User)
                 .ToListAsync();
 
             var userSummaries = new List<UserSummaryDTO>();

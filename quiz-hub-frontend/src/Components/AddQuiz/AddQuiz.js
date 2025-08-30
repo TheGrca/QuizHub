@@ -582,30 +582,29 @@ const [isLoading, setIsLoading] = useState(false);
     }
   };
 return (
-    <div 
-      className="min-h-screen"
-      style={{ 
-        backgroundColor: '#BBBFCA',
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-      }}
-    >
+  <div 
+    className="min-h-screen"
+    style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}
+  >
+    <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
-      <div className="px-8 py-6">
-        <div className="flex items-center mb-6">
+      <div className="mb-8">
+        <div className="flex items-center mb-4">
           <Plus className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
-          <div>
-            <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
-              Add New Quiz
-            </h1>
-            <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
-              Create a new quiz
-            </p>
-          </div>
+          <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+            Add New Quiz
+          </h1>
         </div>
+        <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+          Create a new quiz
+        </p>
       </div>
 
       {/* Main Content */}
-      <div className="px-8 pb-8">
+      <div className="pb-8">
         <div 
           className="w-full rounded-2xl shadow-lg p-8 space-y-8"
           style={{ backgroundColor: '#E8E8E8' }}
@@ -836,7 +835,8 @@ return (
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AddQuiz;

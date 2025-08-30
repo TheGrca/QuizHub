@@ -87,7 +87,7 @@ namespace quiz_hub_backend.Services
                 Name = quiz.Name,
                 Description = quiz.Description,
                 NumberOfQuestions = quiz.NumberOfQuestions,
-                Difficulty = (int)quiz.Difficulty,
+                Difficulty = quiz.Difficulty.ToString(),
                 TimeLimitMinutes = quiz.TimeLimitMinutes,
                 CategoryName = quiz.Category.Name,
                 Questions = quiz.Questions.Select(q => MapQuestionToDto(q)).ToList()

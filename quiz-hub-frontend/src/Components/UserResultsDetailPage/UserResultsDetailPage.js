@@ -3,6 +3,7 @@ import { ArrowLeft, User, Trophy, BarChart3, Clock, Calendar, Target } from 'luc
 import toast from 'react-hot-toast';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService'
+import UserResults from '../UserResults/UserResults';
 export default function UserResultsDetailPage() {
   // Get user ID from URL
   const getUserIdFromUrl = () => {
@@ -150,7 +151,7 @@ export default function UserResultsDetailPage() {
       backgroundColor: '#BBBFCA',
       fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
@@ -164,10 +165,10 @@ export default function UserResultsDetailPage() {
             <div className="flex items-center">
               <div className="w-16 h-16 rounded-full overflow-hidden mr-4 border-2" style={{ borderColor: '#495464' }}>
                 <img 
-                  src={userResults.profilePictureBase64 ? 
-                    `data:image/jpeg;base64,${userResults.profilePictureBase64}` : 
-                    `https://ui-avatars.com/api/?name=${userResults.username}&background=random&color=fff&size=64`
-                  }
+                        src={userResults.profilePicture ? 
+                          `data:image/jpeg;base64,${userResults.profilePicture}` : 
+                          `https://ui-avatars.com/api/?name=${userResults.username}&background=random&color=fff&size=48`
+                        }
                   alt={userResults.username}
                   className="w-full h-full object-cover"
                   onError={(e) => {
