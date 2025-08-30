@@ -16,6 +16,7 @@ import MyResultDetailPage from './Components/MyResultDetailPage/MyResultDetailPa
 import RankingsDetailPage from './Components/RankingsDetailPage/RankingsDetailPage'
 import UserResults from './Components/UserResults/UserResults';
 import UserResultsDetailPage from './Components/UserResultsDetailPage/UserResultsDetailPage';
+import LiveQuizArena from './Components/LiveQuizArena/LiveQuizArena';
 
 const getUserFromStorage = () => {
   try {
@@ -58,6 +59,7 @@ const App = () => {
             <Route path="/edit-quiz/:id" element={<EditQuizDetails />} />
             <Route path="/user-results" element={<UserResults/>}/>
             <Route path="/user-results/:id" element={<UserResultsDetailPage/>}/>
+            <Route path="/live-quiz-arena" element={<LiveQuizArena/>}/>
             <Route path="/" element={<Navigate to="/add-quiz" replace />} />
             <Route path="*" element={<Navigate to="/add-quiz" replace />} />
           </>

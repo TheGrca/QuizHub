@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Settings, Save, X, Edit3 } from 'lucide-react';
+import AdminService from '../../Services/AdminService';
+
 // Editable Single Choice Question Component
 const EditableSingleChoiceQuestion = ({ question, onSave, onCancel }) => {
   const [questionText, setQuestionText] = useState(question?.text || '');
@@ -400,26 +402,14 @@ const AddQuiz = () => {
 const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  // You should also fetch categories from the API instead of hardcoded values
   useEffect(() => {
-    // Fetch categories from your API
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/admin/categories`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log("Categories: " + response)
-        if (response.ok) {
-          const fetchedCategories = await response.json();
-          setCategories(fetchedCategories);
-        } else {
-          throw new Error('Failed to fetch categories');
-        }
+        const fetchedCategories = await AdminService.getCategories();
+        setCategories(fetchedCategories);
       } catch (error) {
         console.error('Failed to fetch categories:', error);
+        toast.error('Failed to load categories');
       }
     };
     

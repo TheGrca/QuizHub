@@ -38,6 +38,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<ILiveQuizService, LiveQuizService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -57,7 +58,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+app.UseWebSockets();
+app.UseMiddleware<LiveQuizWebSocketMiddleware>();
 
+app.UseRouting();
+app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

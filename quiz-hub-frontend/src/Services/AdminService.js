@@ -98,7 +98,7 @@ class AdminService {
 
   async getCategories() {
     try {
-      const response = await fetch(`${this.baseURL}/admin/GetCategories`, {
+      const response = await fetch(`${this.baseURL}/admin/categories`, {
         method: 'GET',
         headers: this.getAuthHeaders(),
       });
