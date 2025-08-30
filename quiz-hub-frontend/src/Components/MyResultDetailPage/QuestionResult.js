@@ -31,8 +31,7 @@ const QuestionResult = ({ question, userAnswer, isCorrect, pointsEarned }) => {
     }
   };
 
-  const renderAnswerOptions = () => {
-    const correctAnswers = getCorrectAnswers();
+  const renderUserAnswerSection = () => {
     const userAnswers = getUserAnswers();
 
     switch (question.questionType) {
@@ -42,29 +41,21 @@ const QuestionResult = ({ question, userAnswer, isCorrect, pointsEarned }) => {
         return (
           <div className="space-y-2">
             {options.map((option, index) => {
-              const isCorrectOption = correctAnswers.includes(index);
               const isUserSelected = userAnswers.includes(index);
               
               let className = 'p-3 rounded-lg border ';
-              if (isCorrectOption) {
-                className += 'bg-green-100 border-green-300 ';
-              }
-              if (isUserSelected && !isCorrectOption) {
-                className += 'bg-red-100 border-red-300 ';
-              }
-              if (!isCorrectOption && !isUserSelected) {
-                className += 'bg-gray-50 border-gray-200 ';
+              if (isUserSelected) {
+                className += 'bg-blue-100 border-blue-300';
+              } else {
+                className += 'bg-gray-50 border-gray-200';
               }
 
               return (
                 <div key={index} className={className}>
                   <div className="flex items-center">
                     <span className="flex-1">{option}</span>
-                    {isCorrectOption && (
-                      <CheckCircle className="h-5 w-5 text-green-600 ml-2" />
-                    )}
-                    {isUserSelected && !isCorrectOption && (
-                      <XCircle className="h-5 w-5 text-red-600 ml-2" />
+                    {isUserSelected && (
+                      <div className="w-4 h-4 bg-blue-600 rounded-full ml-2"></div>
                     )}
                   </div>
                 </div>
@@ -74,52 +65,81 @@ const QuestionResult = ({ question, userAnswer, isCorrect, pointsEarned }) => {
         );
 
       case 'TrueFalseQuestion':
-        const correctAnswer = correctAnswers[0];
         const userAnswer = userAnswers[0];
         
         return (
           <div className="space-y-2">
             <div className={`p-3 rounded-lg border ${
-              correctAnswer === true ? 'bg-green-100 border-green-300' : 
-              (userAnswer === true && correctAnswer !== true) ? 'bg-red-100 border-red-300' : 'bg-gray-50 border-gray-200'
+              userAnswer === true ? 'bg-blue-100 border-blue-300' : 'bg-gray-50 border-gray-200'
             }`}>
               <div className="flex items-center">
                 <span className="flex-1">True</span>
-                {correctAnswer === true && <CheckCircle className="h-5 w-5 text-green-600 ml-2" />}
-                {userAnswer === true && correctAnswer !== true && <XCircle className="h-5 w-5 text-red-600 ml-2" />}
+                {userAnswer === true && <div className="w-4 h-4 bg-blue-600 rounded-full ml-2"></div>}
               </div>
             </div>
             <div className={`p-3 rounded-lg border ${
-              correctAnswer === false ? 'bg-green-100 border-green-300' : 
-              (userAnswer === false && correctAnswer !== false) ? 'bg-red-100 border-red-300' : 'bg-gray-50 border-gray-200'
+              userAnswer === false ? 'bg-blue-100 border-blue-300' : 'bg-gray-50 border-gray-200'
             }`}>
               <div className="flex items-center">
                 <span className="flex-1">False</span>
-                {correctAnswer === false && <CheckCircle className="h-5 w-5 text-green-600 ml-2" />}
-                {userAnswer === false && correctAnswer !== false && <XCircle className="h-5 w-5 text-red-600 ml-2" />}
+                {userAnswer === false && <div className="w-4 h-4 bg-blue-600 rounded-full ml-2"></div>}
               </div>
             </div>
           </div>
         );
 
       case 'TextInputQuestion':
-        const correctText = correctAnswers[0];
         const userText = userAnswers[0] || 'No answer provided';
         
         return (
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-green-100 border border-green-300">
-              <div className="text-sm font-medium text-green-800 mb-1">Correct Answer:</div>
-              <div className="text-green-700">{correctText}</div>
-            </div>
-            <div className={`p-3 rounded-lg border ${
-              isCorrect ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'
-            }`}>
-              <div className={`text-sm font-medium mb-1 ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                Your Answer:
+          <div className="p-3 rounded-lg bg-blue-100 border border-blue-300">
+            <div className="text-blue-700">{userText}</div>
+          </div>
+        );
+
+      default:
+        return <div>Unknown question type</div>;
+    }
+  };
+
+  const renderCorrectAnswerSection = () => {
+    const correctAnswers = getCorrectAnswers();
+
+    switch (question.questionType) {
+      case 'MultipleChoiceQuestion':
+      case 'MultipleAnswerQuestion':
+        const options = [question.option1, question.option2, question.option3, question.option4];
+        return (
+          <div className="space-y-2">
+            {correctAnswers.map((correctIndex) => (
+              <div key={correctIndex} className="p-3 rounded-lg bg-green-100 border border-green-300">
+                <div className="flex items-center">
+                  <span className="flex-1">{options[correctIndex]}</span>
+                  <CheckCircle className="h-5 w-5 text-green-600 ml-2" />
+                </div>
               </div>
-              <div className={isCorrect ? 'text-green-700' : 'text-red-700'}>{userText}</div>
+            ))}
+          </div>
+        );
+
+      case 'TrueFalseQuestion':
+        const correctAnswer = correctAnswers[0];
+        
+        return (
+          <div className="p-3 rounded-lg bg-green-100 border border-green-300">
+            <div className="flex items-center">
+              <span className="flex-1">{correctAnswer ? 'True' : 'False'}</span>
+              <CheckCircle className="h-5 w-5 text-green-600 ml-2" />
             </div>
+          </div>
+        );
+
+      case 'TextInputQuestion':
+        const correctText = correctAnswers[0];
+        
+        return (
+          <div className="p-3 rounded-lg bg-green-100 border border-green-300">
+            <div className="text-green-700">{correctText}</div>
           </div>
         );
 
@@ -148,8 +168,16 @@ const QuestionResult = ({ question, userAnswer, isCorrect, pointsEarned }) => {
         </div>
       </div>
       
-      <div className="mt-4">
-        {renderAnswerOptions()}
+      <div className="mt-6 space-y-6">
+        <div>
+          <h4 className="text-md font-medium text-gray-800 mb-3">Your Answer:</h4>
+          {renderUserAnswerSection()}
+        </div>
+        
+        <div>
+          <h4 className="text-md font-medium text-gray-800 mb-3">Correct Answer:</h4>
+          {renderCorrectAnswerSection()}
+        </div>
       </div>
     </div>
   );

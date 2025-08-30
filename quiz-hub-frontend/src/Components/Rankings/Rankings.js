@@ -89,25 +89,28 @@ export default function Rankings() {
     );
   }
 
-  return (
-    <div>
-      <div className="min-h-screen" style={{ 
-        backgroundColor: '#BBBFCA',
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-      }}>
+return (
+  <div>
+    <div className="min-h-screen" style={{ 
+      backgroundColor: '#BBBFCA',
+      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
+      <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
-        <div className="px-8 py-6">
-          <div className="flex items-center mb-6">
+        <div className="mb-8">
+          <div className="flex items-center mb-4">
             <Trophy className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
             <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
               Quiz Rankings
             </h1>
           </div>
-          <p className="text-lg mb-6" style={{ color: '#495464', opacity: 0.7 }}>
+          <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
             See how you stack up against other quiz takers
           </p>
-          
-          {/* Search and Filter Section */}
+        </div>
+        
+        {/* Search and Filter Section */}
+        <div className="py-6">
           <div className="flex gap-4 justify-between items-center">
             {/* Search Bar */}
             <div className="flex-1 max-w-md relative">
@@ -172,7 +175,7 @@ export default function Rankings() {
         </div>
 
         {/* Quiz Display Area */}
-        <div className="px-8 pb-8">
+        <div className="pb-8">
           <div 
             className="w-full rounded-2xl shadow-lg p-8"
             style={{ backgroundColor: '#E8E8E8' }}
@@ -186,7 +189,7 @@ export default function Rankings() {
                 <span className="ml-3" style={{ color: '#495464' }}>Loading quizzes...</span>
               </div>
             ) : quizzes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {quizzes.map(quiz => (
                   <QuizBox 
                     key={quiz.id} 
@@ -211,5 +214,6 @@ export default function Rankings() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
