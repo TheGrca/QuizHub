@@ -30,8 +30,9 @@ public class LiveQuizWebSocketMiddleware
 
     private async Task HandleWebSocketConnection(WebSocket webSocket)
     {
-        var buffer = new byte[1024 * 4];
+        var buffer = new byte[1024 * 4]; // Back to 4KB buffer
         string? userId = null;
+        var messageBuilder = new StringBuilder();
 
         try
         {
@@ -41,9 +42,29 @@ public class LiveQuizWebSocketMiddleware
 
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    var data = JsonSerializer.Deserialize<WebSocketMessageDTO>(message);
-                    await HandleMessage(data, webSocket, userId);
+                    var partialMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    messageBuilder.Append(partialMessage);
+
+                    // Check if this is the end of the message
+                    if (result.EndOfMessage)
+                    {
+                        var completeMessage = messageBuilder.ToString();
+                        messageBuilder.Clear();
+
+                        try
+                        {
+                            var data = JsonSerializer.Deserialize<WebSocketMessageDTO>(completeMessage);
+                            await HandleMessage(data, webSocket, userId); // Note: ref userId
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine($"JSON parsing error: {ex.Message}");
+                            Console.WriteLine($"Message length: {completeMessage.Length}");
+                            Console.WriteLine($"First 200 chars: {completeMessage.Substring(0, Math.Min(200, completeMessage.Length))}");
+                            // Send error back to client
+                            await SendErrorMessage(webSocket, "Invalid message format");
+                        }
+                    }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -61,7 +82,6 @@ public class LiveQuizWebSocketMiddleware
             {
                 await _liveQuizService.DisconnectUser(userId);
             }
-
             if (webSocket.State != WebSocketState.Closed)
             {
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Connection closed", CancellationToken.None);
@@ -69,6 +89,16 @@ public class LiveQuizWebSocketMiddleware
         }
     }
 
+    private async Task SendErrorMessage(WebSocket webSocket, string errorMessage)
+    {
+        if (webSocket.State == WebSocketState.Open)
+        {
+            var error = new { Type = "ERROR", Payload = new { Message = errorMessage } };
+            var errorJson = JsonSerializer.Serialize(error);
+            var errorBytes = Encoding.UTF8.GetBytes(errorJson);
+            await webSocket.SendAsync(new ArraySegment<byte>(errorBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+    }
     private async Task HandleMessage(WebSocketMessageDTO? data, WebSocket webSocket, string? userId)
     {
         if (data?.Payload == null) return;
@@ -110,6 +140,30 @@ public class LiveQuizWebSocketMiddleware
 
             case "LIVE_QUIZ_ENDED":
                 await _liveQuizService.HandleLiveQuizEnded();
+                break;
+            case "JOIN_QUIZ_ROOM":
+                var joinData = data.Payload.Deserialize<LiveJoinQuizRoomDTO>();
+                if (joinData != null)
+                {
+                    userId = joinData.UserId;
+                    await _liveQuizService.HandleUserJoinedRoom(joinData, webSocket);
+                }
+                break;
+
+            case "LEAVE_QUIZ_ROOM":
+                var leaveData = JsonSerializer.Deserialize<LiveUserConnectedDTO>(payloadJson);
+                if (leaveData != null)
+                {
+                    await _liveQuizService.HandleUserLeftRoom(leaveData.UserId);
+                }
+                break;
+
+            case "STOP_QUIZ":
+                var stopData = JsonSerializer.Deserialize<LiveUserConnectedDTO>(payloadJson);
+                if (stopData != null)
+                {
+                    await _liveQuizService.HandleStopQuiz(stopData.UserId);
+                }
                 break;
         }
     }

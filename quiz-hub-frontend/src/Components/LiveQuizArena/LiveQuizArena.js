@@ -508,9 +508,8 @@ const LiveQuizArena = () => {
   }, 100);
       toast.success('Live quiz room created!');
       
-      // Navigate to live quiz room
       const quizName = quizData.name.replace(/\s+/g, '-').toLowerCase();
-      //navigateTo(`/live-quiz-arena/${quizName}`);
+      navigateTo(`/live-quiz-room/${quizName}`);
     };
     
     ws.onerror = (error) => {

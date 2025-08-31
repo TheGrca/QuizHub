@@ -17,6 +17,7 @@ import RankingsDetailPage from './Components/RankingsDetailPage/RankingsDetailPa
 import UserResults from './Components/UserResults/UserResults';
 import UserResultsDetailPage from './Components/UserResultsDetailPage/UserResultsDetailPage';
 import LiveQuizArena from './Components/LiveQuizArena/LiveQuizArena';
+import LiveQuizRoom from './Components/LiveQuizArenaRoom/LiveQuizArenaRoom';
 
 const getUserFromStorage = () => {
   try {
@@ -60,6 +61,7 @@ const App = () => {
             <Route path="/user-results" element={<UserResults/>}/>
             <Route path="/user-results/:id" element={<UserResultsDetailPage/>}/>
             <Route path="/live-quiz-arena" element={<LiveQuizArena/>}/>
+            <Route path="/live-quiz-room/:quizName"element={<LiveQuizRoom />} />
             <Route path="/" element={<Navigate to="/add-quiz" replace />} />
             <Route path="*" element={<Navigate to="/add-quiz" replace />} />
           </>
@@ -72,6 +74,7 @@ const App = () => {
   <Route path="/quiz/:id" element={<QuizPage />} />
   <Route path="/rankings" element={<RankingsPage />} />
   <Route path="/rankings/:id" element={<RankingsDetailPage />}/>
+   <Route path="/live-quiz-room/:quizName" element={<LiveQuizRoom />} />
   <Route path="/" element={<Navigate to="/home" replace />} />
   <Route path="*" element={<Navigate to="/home" replace />} />
           </>

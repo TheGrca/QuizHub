@@ -138,13 +138,12 @@ export default function Home() {
     }
   };
 
-  const handleLiveQuizJoin = () => {
-    if (liveQuiz) {
-      // Navigate to live quiz join page or send join message
-      const quizName = liveQuiz.quizData.Name.replace(/\s+/g, '-').toLowerCase();
-      navigateTo(`/live-quiz/${quizName}`);
-    }
-  };
+const handleLiveQuizJoin = () => {
+  if (liveQuiz) {
+    const quizName = liveQuiz.QuizData.name.replace(/\s+/g, '-').toLowerCase();
+    navigateTo(`/live-quiz-room/${quizName}`);
+  }
+};
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -244,6 +243,9 @@ export default function Home() {
             </p>
           </div>
 
+              <h2 className="text-xl font-semibold mb-4" style={{ color: '#495464' }}>
+                Live quiz
+              </h2>
           {/* Live Quiz Banner */}
           {liveQuiz && (
             <div className="mb-8">
@@ -256,19 +258,20 @@ export default function Home() {
                 }}
               >
                 <div className="flex items-center justify-between">
+                  
                   <div className="flex items-center">
                     <Zap className="h-8 w-8 mr-3 text-white" />
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-1">
-                        🔴 LIVE: {liveQuiz.QuizData.Name}
+                       {liveQuiz.QuizData.name}
                       </h2>
                       <p className="text-green-100 text-lg">
-                        {liveQuiz.QuizData.Description}
+                        {liveQuiz.QuizData.description}
                       </p>
                       <div className="flex items-center mt-2 text-green-100">
                         <Users className="h-4 w-4 mr-1" />
                         <span className="text-sm">
-                          {liveQuiz.Questions.Length} questions • Real-time competition
+                          {liveQuiz.Questions.length} questions
                         </span>
                       </div>
                     </div>

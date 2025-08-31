@@ -10,5 +10,9 @@ namespace quiz_hub_backend.Interfaces
         Task HandleLiveQuizEnded();
         Task DisconnectUser(string userId);
         LiveQuizResponseDTO? GetCurrentLiveQuiz();
+        Task HandleUserJoinedRoom(LiveJoinQuizRoomDTO participant, WebSocket webSocket);
+        Task HandleUserLeftRoom(string userId);
+        Task HandleStopQuiz(string adminId);
+        LiveQuizRoomStateDTO? GetCurrentRoomState();
     }
 }
