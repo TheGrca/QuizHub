@@ -14,6 +14,29 @@ namespace quiz_hub_backend.Services
             _context = context;
         }
 
+        public async Task<UserDTO?> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                    return null;
+
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    ProfilePicture = user.Image != null ? Convert.ToBase64String(user.Image) : null,
+                    isAdmin = user.isAdmin
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching user by ID: {ex.Message}", ex);
+            }
+        }
+
+
         //For home page
         public async Task<List<QuizListDTO>> GetAllQuizzesAsync(QuizFilterDTO? filters = null)
         {

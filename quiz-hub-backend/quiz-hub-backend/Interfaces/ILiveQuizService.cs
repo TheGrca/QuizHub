@@ -5,14 +5,15 @@ namespace quiz_hub_backend.Interfaces
 {
     public interface ILiveQuizService
     {
-        Task HandleUserConnected(string userId, string username, WebSocket webSocket);
-        Task HandleLiveQuizCreated(LiveQuizCreateDTO liveQuizData);
-        Task HandleLiveQuizEnded();
-        Task DisconnectUser(string userId);
-        LiveQuizResponseDTO? GetCurrentLiveQuiz();
-        Task HandleUserJoinedRoom(LiveJoinQuizRoomDTO participant, WebSocket webSocket);
-        Task HandleUserLeftRoom(string userId);
-        Task HandleStopQuiz(string adminId);
-        LiveQuizRoomStateDTO? GetCurrentRoomState();
+        Task<LiveQuizResponseDTO> CreateLiveQuizAsync(LiveQuizCreateRequestDTO request, int adminId);
+        Task<LiveQuizResponseDTO> JoinLiveQuizAsync(string quizId, int userId);
+        Task<LiveQuizResponseDTO> LeaveLiveQuizAsync(string quizId, int userId);
+        Task<LiveQuizResponseDTO> CancelLiveQuizAsync(string quizId, int adminId);
+        Task<LiveQuizRoomDTO> GetLiveQuizRoomAsync(string quizId, int userId);
+        Task<LiveQuizRoomDTO> GetLiveQuizRoomInternalAsync(string quizId);
+        Task<List<LiveQuizParticipantDTO>> GetParticipantsAsync(string quizId);
+        Task<bool> IsUserInQuizAsync(string quizId, int userId);
+        Task<bool> IsQuizAdminAsync(string quizId, int adminId);
+        Task<LiveQuizRoomDTO?> GetCurrentActiveLiveQuizAsync();
     }
 }

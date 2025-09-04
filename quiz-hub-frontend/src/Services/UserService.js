@@ -9,6 +9,25 @@ class UserService {
     return AuthService.getAuthHeaders();
   }
 
+  async getUserById(userId) {
+  try {
+    const response = await fetch(`${this.baseURL}/user/${userId}`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    const user = await response.json();
+    return user;
+  } catch (error) {
+    console.error('Error fetching user by ID:', error);
+    throw new Error('Failed to fetch user');
+  }
+}
+
   async fetchQuizzes(filters = {}) {
     try {
       const queryParams = new URLSearchParams();

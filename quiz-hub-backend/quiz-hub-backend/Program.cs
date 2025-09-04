@@ -8,6 +8,8 @@ using quiz_hub_backend.Services;
 using quiz_hub_backend.DTO;
 using quiz_hub_backend.Models;
 using BCrypt.Net;
+using quiz_hub_backend.Middleware;
+using System.Security.Claims;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +40,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<ILiveQuizService, LiveQuizService>();
+builder.Services.AddScoped<ILiveQuizService, LiveQuizService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -52,17 +54,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["JWT_ISSUER"],
             ValidAudience = builder.Configuration["JWT_AUDIENCE"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET_KEY"]))
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET_KEY"])),
+            ClockSkew = TimeSpan.Zero, // Add this
+            NameClaimType = ClaimTypes.Name, // Add this
+            RoleClaimType = ClaimTypes.Role  // Add this
         };
     });
 
 var app = builder.Build();
+app.UseWebSockets(new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(120),
+    ReceiveBufferSize = 4 * 1024
+});
 
-app.UseWebSockets();
 app.UseMiddleware<LiveQuizWebSocketMiddleware>();
 
-app.UseRouting();
-app.MapControllers();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -70,12 +78,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowReactApp");
+
+
+
+app.UseRouting();
+app.MapControllers();
+
+
+app.UseHttpsRedirection();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

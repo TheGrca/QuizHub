@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using quiz_hub_backend.DTO;
 using quiz_hub_backend.Interfaces;
 using quiz_hub_backend.Services;
@@ -16,6 +17,24 @@ namespace quiz_hub_backend.Controllers
         public UserController(IUserService userService)
         {
             _userService = userService;
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<UserDTO>> GetUserById(int userId)
+        {
+            try
+            {
+                var user = await _userService.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found." });
+                }
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching the user.", error = ex.Message });
+            }
         }
 
         [HttpGet("quizzes")]

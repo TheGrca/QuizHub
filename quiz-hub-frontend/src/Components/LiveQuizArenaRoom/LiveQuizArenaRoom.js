@@ -1,106 +1,112 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Users, Zap, X } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Users, Crown, X, Play, Clock, Zap } from 'lucide-react';
 import AuthService from '../../Services/AuthService';
-import UserService from '../../Services/UserService';
+import LiveQuizService from '../../Services/LiveQuizService';
 
-export default function LiveQuizRoom() {
-  const [quizData, setQuizData] = useState(null);
+const LiveQuizArenaRoom = () => {
+  const { quizName } = useParams();
+  const navigate = useNavigate();
+  const wsRef = useRef(null);
+  const [user] = useState(AuthService.getCurrentUser());
+  
+  const [quizRoom, setQuizRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [participantProfiles, setParticipantProfiles] = useState({}); // Store fetched profiles
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const wsRef = useRef(null);
-  const user = AuthService.getCurrentUser();
 
-  const navigateTo = (path) => {
-    window.location.href = path;
-  };
+  // Convert quiz name back to ID (you might need to adjust this based on your routing)
+  const quizId = quizName; // Assuming quizName is actually the quizId for now
 
-  // Fetch profile picture for a specific user
-  const fetchUserProfile = async (userId) => {
-    try {
-      if (participantProfiles[userId]) return; // Already fetched
-      
-      const profile = await UserService.getUserProfile();
-      setParticipantProfiles(prev => ({
-        ...prev,
-        [userId]: profile.profilePictureBase64
-      }));
-    } catch (error) {
-      console.error(`Failed to fetch profile for user ${userId}:`, error);
-      // Don't show error to user, just use default avatar
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
     }
-  };
 
-  // Fetch profiles for all participants
-  const fetchAllProfiles = async (newParticipants) => {
-    const regularParticipants = newParticipants.filter(p => !p.IsAdmin);
-    for (const participant of regularParticipants) {
-      if (!participantProfiles[participant.UserId]) {
-        await fetchUserProfile(participant.UserId);
+    initializeRoom();
+    initializeWebSocket();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
       }
+    };
+  }, []);
+
+  const initializeRoom = async () => {
+    try {
+      setLoading(true);
+      const roomData = await LiveQuizService.getQuizRoom(quizId);
+      setQuizRoom(roomData);
+      setParticipants(roomData.participants || []);
+      setIsAdmin(roomData.adminId === user.id);
+    } catch (error) {
+      console.error('Failed to load quiz room:', error);
+      toast.error('Failed to load quiz room');
+      navigate('/home');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Initialize WebSocket connection
   const initializeWebSocket = () => {
-    if (!user) return;
-
     try {
+          if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
       wsRef.current = new WebSocket('ws://localhost:5175/ws');
 
       wsRef.current.onopen = () => {
-        console.log('Quiz room WebSocket connection established');
+        console.log('WebSocket connection established');
         
-        // Join the quiz room
+        // Register user as connected
         const message = {
-          type: 'JOIN_QUIZ_ROOM',
+          type: 'USER_CONNECTED',
           payload: {
             userId: user.id.toString(),
-            username: user.username,
-            profilePicture: user.profilePictureBase64 || null,
-            isAdmin: user.role === 1
+            username: user.username
           }
         };
         wsRef.current.send(JSON.stringify(message));
-      };
 
+        // Join the quiz room if not admin
+        if (!isAdmin) {
+          handleJoinQuiz();
+        }
+      };
+      
       wsRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('Quiz room message received:', data);
+          console.log('WebSocket message received:', data);
           
           switch (data.Type) {
-            case 'QUIZ_ROOM_STATE':
-              // Update room state with current participants and quiz data
-              setQuizData(data.Payload.QuizData);
-              const newParticipants = data.Payload.Participants || [];
-              setParticipants(newParticipants);
-              fetchAllProfiles(newParticipants);
-              setLoading(false);
-              break;
+            case 'PARTICIPANTS_UPDATED':
+        const updatePayload = data.Payload || data.payload;
+        if (updatePayload?.quizId === quizId) {
+          console.log('Admin updating participants to:', updatePayload.participants);
+          
+          // Log each participant data
+          updatePayload.participants?.forEach((p, i) => {
+            console.log(`Admin sees participant ${i}:`, {
+              username: p.username,
+              profilePicture: p.profilePicture ? `${p.profilePicture.substring(0, 50)}...` : 'MISSING',
+              userId: p.userId
+            });
+          });
+          
+          setParticipants(updatePayload.participants || []);
+        }
+        break;
               
-            case 'USER_JOINED_ROOM':
-              // Add new participant
-              setParticipants(prev => {
-                const updated = [...prev, data.Payload];
-                fetchAllProfiles(updated);
-                return updated;
-              });
-              toast.success(`${data.Payload.Username} joined the room`);
-              break;
-              
-            case 'USER_LEFT_ROOM':
-              // Remove participant
-              setParticipants(prev => prev.filter(p => p.UserId !== data.Payload.UserId));
-              toast.info(`${data.Payload.Username} left the room`);
-              break;
-              
-            case 'QUIZ_STOPPED':
-              // Quiz was stopped by admin
-              toast.error('Quiz was canceled by the admin');
-              navigateTo('/home');
+            case 'QUIZ_CANCELLED':
+              if (data.Payload.quizId === quizId) {
+                toast.error('Quiz has been cancelled by the admin');
+                navigate('/home');
+              }
               break;
               
             default:
@@ -117,251 +123,327 @@ export default function LiveQuizRoom() {
       };
 
       wsRef.current.onclose = () => {
-        console.log('Quiz room WebSocket connection closed');
+        console.log('WebSocket connection closed');
       };
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error);
     }
   };
 
-  // Handle admin stopping the quiz
-  const handleStopQuiz = () => {
+  const handleJoinQuiz = async () => {
+   try {
+    // Double-check that user is not admin before attempting to join
+    if (isAdmin) {
+      console.log('Admin cannot join their own quiz');
+      return;
+    }
+
+    await LiveQuizService.joinQuiz(quizId);
+    
+     const updatedRoom = await LiveQuizService.getQuizRoom(quizId);
+    setParticipants(updatedRoom.participants || []);
+    // Notify others via WebSocket
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       const message = {
-        type: 'STOP_QUIZ',
+        type: 'USER_JOINED_QUIZ',
         payload: {
-          adminId: user.id.toString()
+          quizId: quizId,
+          userId: user.id
         }
       };
+      console.log("AHNSDKLA" + message.userId)
       wsRef.current.send(JSON.stringify(message));
     }
+  } catch (error) {
+    console.error('Failed to join quiz:', error);
+    // Don't show error toast for admin trying to join - this is expected behavior
+    if (!error.message.includes('Admin cannot join')) {
+      toast.error('Failed to join quiz');
+      navigate('/home');
+    }
+  }
   };
 
-  // Handle starting the quiz (placeholder for now)
-  const handleStartQuiz = () => {
-    toast.info('Start quiz functionality will be implemented next');
-  };
-
-  // Handle leaving the room
-  const handleLeaveRoom = () => {
+ const handleLeaveQuiz = async () => {
+  try {
+    await LiveQuizService.leaveQuiz(quizId);
+     const updatedRoom = await LiveQuizService.getQuizRoom(quizId);
+    setParticipants(updatedRoom.participants || []);
+    // Notify others via WebSocket
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       const message = {
-        type: 'LEAVE_QUIZ_ROOM',
+        type: 'USER_LEFT_QUIZ',
         payload: {
-          userId: user.id.toString()
+          quizId: quizId,
+          userId: user.id
         }
       };
       wsRef.current.send(JSON.stringify(message));
     }
     
-    // Navigate back
-    if (user.role === 1) {
-      navigateTo('/live-quiz-arena');
-    } else {
-      navigateTo('/home');
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    
+    navigate('/home');
+  } catch (error) {
+    console.error('Failed to leave quiz:', error);
+    toast.error('Failed to leave quiz');
+  }
+};
+
+  const handleCancelQuiz = async () => {
+    try {
+      await LiveQuizService.cancelQuiz(quizId);
+      
+      // Notify others via WebSocket
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        const message = {
+          type: 'QUIZ_CANCELLED',
+          payload: {
+            quizId: quizId,
+            adminId: user.id
+          }
+        };
+        wsRef.current.send(JSON.stringify(message));
+      }
+      
+      toast.success('Quiz cancelled successfully');
+      navigate('/home');
+    } catch (error) {
+      console.error('Failed to cancel quiz:', error);
+      toast.error('Failed to cancel quiz');
     }
   };
 
-  // Cleanup WebSocket on unmount
-  useEffect(() => {
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-  }, []);
+  const handleStartQuiz = () => {
+    // TODO: Implement quiz start functionality
+    toast.info('Starting quiz... (Coming soon!)');
+  };
 
-  useEffect(() => {
-    if (!AuthService.isAuthenticated()) {
-      navigateTo('/login');
-      return;
-    }
+  const renderParticipantSlot = (index) => {
+    const participant = participants[index];
+    const isEmpty = !participant;
 
-    setIsAdmin(user.role === 1);
-    initializeWebSocket();
-  }, []);
-
-  // Render participant slot
-  const renderParticipantSlot = (participant, index) => {
-    if (!participant) {
-      return (
-        <div 
-          key={index}
-          className="flex flex-col items-center p-6 rounded-lg border-2 border-dashed"
-          style={{ 
-            backgroundColor: '#F4F4F2',
-            borderColor: '#BBBFCA'
-          }}
-        >
-          <div className="w-16 h-16 rounded-full mb-3 flex items-center justify-center" style={{ backgroundColor: '#E8E8E8' }}>
-            <Users className="h-8 w-8" style={{ color: '#495464', opacity: 0.5 }} />
-          </div>
-          <p className="text-sm" style={{ color: '#495464', opacity: 0.6 }}>
-            Waiting for player...
-          </p>
-        </div>
-      );
-    }
+    // Debug logging
+    console.log(`Participant slot ${index}:`, participant);
 
     return (
-      <div 
-        key={participant.UserId}
-        className="flex flex-col items-center p-6 rounded-lg border"
-        style={{ 
-          backgroundColor: '#F4F4F2',
-          borderColor: '#495464'
-        }}
+      <div
+        key={index}
+        className={`relative rounded-xl p-6 border-2 transition-all duration-300 ${
+          isEmpty 
+            ? 'border-dashed border-gray-300 bg-gray-50' 
+            : 'border-green-500 bg-white shadow-lg'
+        }`}
+        style={{ minHeight: '120px' }}
       >
-        <div className="w-16 h-16 rounded-full overflow-hidden mb-3 border-2" style={{ borderColor: '#495464' }}>
-          <img 
-            src={participantProfiles[participant.UserId] ? 
-              `data:image/jpeg;base64,${participantProfiles[participant.UserId]}` : 
-              `https://ui-avatars.com/api/?name=${participant.Username}&background=random&color=fff&size=64`
-            }
-            alt={participant.Username}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.src = `https://ui-avatars.com/api/?name=${participant.Username}&background=random&color=fff&size=64`;
-            }}
-          />
-        </div>
-        <p className="font-medium text-center" style={{ color: '#495464' }}>
-          {participant.Username}
-          {participant.IsAdmin && (
-            <span className="block text-xs" style={{ color: '#495464', opacity: 0.7 }}>
-              (Admin)
-            </span>
-          )}
-        </p>
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+            <Users className="h-8 w-8 mb-2" />
+            <span className="text-sm font-medium">Waiting for player...</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="relative mb-3">
+              <img
+                src={participant.profilePicture || '/api/placeholder/48/48'}
+                alt={participant.username || 'Player'}
+                className="w-12 h-12 rounded-full border-2 border-green-500"
+                onError={(e) => {
+                  console.log('Image failed to load:', e.target.src);
+                  e.target.src = '/api/placeholder/48/48';
+                }}
+              />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            </div>
+            <h3 className="font-semibold text-gray-800 text-center">{participant.username || 'Unknown Player'}</h3>
+            <p className="text-xs text-gray-500 text-center mt-1">
+              Joined {participant.joinedAt ? new Date(participant.joinedAt).toLocaleTimeString() : 'Recently'}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ 
-        backgroundColor: '#BBBFCA',
-        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-      }}>
-        <div 
-          className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent"
-          style={{ borderColor: '#495464' }}
-        ></div>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#BBBFCA' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#495464' }}></div>
+          <p className="text-lg" style={{ color: '#495464' }}>Loading quiz room...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!quizRoom) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#BBBFCA' }}>
+        <div className="text-center">
+          <X className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464' }} />
+          <h2 className="text-2xl font-bold mb-2" style={{ color: '#495464' }}>Quiz Room Not Found</h2>
+          <p className="text-lg mb-4" style={{ color: '#495464', opacity: 0.7 }}>
+            The quiz room you're looking for doesn't exist or has been cancelled.
+          </p>
+          <button
+            onClick={() => navigate('/home')}
+            className="px-6 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: '#495464' }}
+          >
+            Back to Home
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ 
-      backgroundColor: '#BBBFCA',
-      fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-    }}>
+    <div 
+      className="min-h-screen"
+      style={{ 
+        backgroundColor: '#BBBFCA',
+        fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+      }}
+    >
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={handleLeaveRoom}
-            className="flex items-center mb-4 font-medium transition-all duration-200 hover:opacity-70"
-            style={{ color: '#495464' }}
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Leave Room
-          </button>
-          
-          <div className="flex items-center mb-4">
-            <Zap className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
-                {quizData?.Name || 'Live Quiz Room'}
-              </h1>
-              <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
-                {quizData?.Description || 'Waiting for quiz data...'}
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Zap className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
+              <div>
+                <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
+                  {quizRoom.name}
+                </h1>
+                <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
+                  {quizRoom.description}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center px-4 py-2 rounded-lg" style={{ backgroundColor: '#E8E8E8' }}>
+                <Clock className="h-4 w-4 mr-2" style={{ color: '#495464' }} />
+                <span style={{ color: '#495464' }}>
+                  {quizRoom.questions?.length || 0} Questions
+                </span>
+              </div>
+              {isAdmin && (
+                <Crown className="h-6 w-6" style={{ color: '#495464' }} />
+              )}
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="pb-8">
-          <div 
-            className="w-full rounded-2xl shadow-lg p-8"
-            style={{ backgroundColor: '#E8E8E8' }}
-          >
-            {/* Participants Section */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-6" style={{ color: '#495464' }}>
-                Players ({participants.filter(p => !p.IsAdmin).length}/4)
+        <div 
+          className="rounded-2xl shadow-lg p-8"
+          style={{ backgroundColor: '#E8E8E8' }}
+        >
+          {/* Participants Section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold" style={{ color: '#495464' }}>
+                Players ({participants.length}/4)
               </h2>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[0, 1, 2, 3].map(index => {
-                  const regularParticipants = participants.filter(p => !p.IsAdmin);
-                  return renderParticipantSlot(regularParticipants[index], index);
-                })}
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full ${participants.length > 0 ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                <span className="text-sm" style={{ color: '#495464' }}>
+                  {participants.length > 0 ? 'Players Connected' : 'Waiting for Players'}
+                </span>
               </div>
             </div>
 
-            {/* Quiz Info */}
-            {quizData && (
-              <div className="mb-8 p-6 rounded-lg" style={{ backgroundColor: '#F4F4F2' }}>
-                <h3 className="text-lg font-semibold mb-2" style={{ color: '#495464' }}>
-                  Quiz Information
-                </h3>
-                <p className="text-sm" style={{ color: '#495464', opacity: 0.8 }}>
-                  Questions: {quizData.Questions?.length || 0}
-                </p>
-              </div>
-            )}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }, (_, index) => renderParticipantSlot(index))}
+            </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-center gap-4">
-              {isAdmin && (
-                <>
+          {/* Quiz Status */}
+          <div className="border-t pt-6" style={{ borderColor: '#495464', borderOpacity: 0.2 }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                  <span style={{ color: '#495464' }}>Waiting for players</span>
+                </div>
+                {participants.length > 0 && (
+                  <span className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                    Ready to start when you are!
+                  </span>
+                )}
+              </div>
+
+              {/* Admin Controls */}
+              {isAdmin ? (
+                <div className="flex space-x-3">
                   <button
-                    onClick={handleStopQuiz}
-                    className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
-                    style={{ 
-                      backgroundColor: '#ef4444',
-                      color: 'white'
-                    }}
+                    onClick={handleCancelQuiz}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
                   >
                     <X className="h-4 w-4" />
-                    Stop Quiz
+                    Cancel Quiz
                   </button>
-                  
                   <button
                     onClick={handleStartQuiz}
                     disabled={participants.length === 0}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                      participants.length > 0 
-                        ? 'hover:opacity-90' 
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all ${
+                      participants.length > 0
+                        ? 'text-white hover:opacity-90'
                         : 'cursor-not-allowed opacity-50'
                     }`}
                     style={{ 
-                      backgroundColor: participants.length > 0 ? '#22c55e' : '#BBBFCA',
-                      color: 'white'
+                      backgroundColor: participants.length > 0 ? '#495464' : '#BBBFCA'
                     }}
                   >
-                    <Zap className="h-4 w-4" />
+                    <Play className="h-4 w-4" />
                     Start Quiz
                   </button>
-                </>
-              )}
-              
-              {!isAdmin && (
-                <div className="text-center">
-                  <p className="text-lg" style={{ color: '#495464' }}>
-                    Waiting for the admin to start the quiz...
-                  </p>
-                  <p className="text-sm mt-2" style={{ color: '#495464', opacity: 0.7 }}>
-                    Make sure you're ready!
-                  </p>
                 </div>
+              ) : (
+                <button
+                  onClick={handleLeaveQuiz}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium border-2 hover:bg-red-50 transition-colors"
+                  style={{ 
+                    color: '#495464',
+                    borderColor: '#495464',
+                    borderOpacity: 0.3
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                  Leave Quiz
+                </button>
               )}
             </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'white', opacity: 0.8 }}>
+            <h3 className="font-semibold mb-2" style={{ color: '#495464' }}>
+              {isAdmin ? 'Admin Instructions:' : 'Player Instructions:'}
+            </h3>
+            <ul className="text-sm space-y-1" style={{ color: '#495464', opacity: 0.8 }}>
+              {isAdmin ? (
+                <>
+                  <li>• Wait for players to join the quiz room</li>
+                  <li>• Click "Start Quiz" when ready to begin</li>
+                  <li>• You can cancel the quiz at any time</li>
+                </>
+              ) : (
+                <>
+                  <li>• You have joined the quiz room - wait for the admin to start</li>
+                  <li>• You can leave the quiz room at any time</li>
+                  <li>• Get ready for an exciting live quiz experience!</li>
+                </>
+              )}
+            </ul>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default LiveQuizArenaRoom;

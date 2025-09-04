@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Plus, Settings, Save, X, Edit3, Zap, Clock } from 'lucide-react';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService';
+import LiveQuizService from '../../Services/LiveQuizService';
 
 // Editable Single Choice Question Component for Live Quiz
 const EditableSingleChoiceQuestion = ({ question, onSave, onCancel }) => {
@@ -396,6 +398,9 @@ const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
 
 // Main Live Quiz Arena Component
 const LiveQuizArena = () => {
+  const navigate = useNavigate();
+  const wsRef = useRef(null);
+  const [user] = useState(AuthService.getCurrentUser());
   const [quizData, setQuizData] = useState({
     name: '',
     description: '',
@@ -407,21 +412,65 @@ const LiveQuizArena = () => {
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [selectedQuestionType, setSelectedQuestionType] = useState('');
   const [editingQuestionIndex, setEditingQuestionIndex] = useState(-1);
+  const [isCreating, setIsCreating] = useState(false);
 
-  // Fetch categories
+  // Initialize WebSocket connection
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const fetchedCategories = await AdminService.getCategories();
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-        toast.error('Failed to load categories');
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    initializeWebSocket();
+    fetchCategories();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
       }
     };
-    
-    fetchCategories();
   }, []);
+
+  const initializeWebSocket = () => {
+    try {
+      wsRef.current = new WebSocket('ws://localhost:5175/ws');
+
+      wsRef.current.onopen = () => {
+        console.log('WebSocket connection established');
+        
+        // Register user as connected
+        const message = {
+          type: 'USER_CONNECTED',
+          payload: {
+            userId: user.id.toString(),
+            username: user.username
+          }
+        };
+        wsRef.current.send(JSON.stringify(message));
+      };
+      
+      wsRef.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      wsRef.current.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+    } catch (error) {
+      console.error('Failed to create WebSocket connection:', error);
+    }
+  };
+
+  // Fetch categories
+  const fetchCategories = async () => {
+    try {
+      const fetchedCategories = await AdminService.getCategories();
+      setCategories(fetchedCategories);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+      toast.error('Failed to load categories');
+    }
+  };
 
   const handleQuizDataChange = (field, value) => {
     setQuizData(prev => ({ ...prev, [field]: value }));
@@ -466,65 +515,60 @@ const LiveQuizArena = () => {
            questions.length > 0;
   };
 
-  
-
-  const handleCreateLiveQuiz = () => {
-    if (!isQuizValid()) return;
+  const handleCreateLiveQuiz = async () => {
+    if (!isQuizValid()) {
+      toast.error('Please fill in all quiz details and add at least one question');
+      return;
+    }
     
-    // Create WebSocket connection to C# backend
-    const ws = new WebSocket('ws://localhost:5175/ws'); // Updated to correct port
-    
-    ws.onopen = () => {
-      console.log('WebSocket connection established');
+    try {
+      setIsCreating(true);
       
-      // Send live quiz data to all connected users
+      // Prepare quiz data for backend
       const liveQuizData = {
-        type: 'LIVE_QUIZ_CREATED',
-        payload: {
-          quizData: {
-            name: quizData.name,
-            description: quizData.description,
-            categoryId: quizData.categoryId
-          },
-          questions: questions.map(q => ({
+        name: quizData.name,
+        description: quizData.description,
+        categoryId: parseInt(quizData.categoryId),
+        questions: questions.map(q => {
+          const question = {
             type: q.type,
             text: q.text,
-            options: q.options,
-            correctAnswer: q.correctAnswer,
-            correctAnswers: q.correctAnswers,
             timeToAnswer: q.timeToAnswer
-          })),
-          adminId: AuthService.getCurrentUser().id.toString()
-        }
+          };
+
+          // Add type-specific properties
+          if (q.type === 'MultipleChoiceQuestion') {
+            question.options = q.options;
+            question.correctAnswer = q.correctAnswer; // This should be an integer
+          } else if (q.type === 'MultipleAnswerQuestion') {
+            question.options = q.options;
+            question.correctAnswers = q.correctAnswers; // This should be an array of integers
+          } else if (q.type === 'TrueFalseQuestion') {
+            question.correctAnswerBool = q.correctAnswer; // This should be a boolean
+          } else if (q.type === 'TextInputQuestion') {
+            question.correctAnswerText = q.correctAnswer; // This should be a string
+          }
+
+          return question;
+        })
       };
       
-  console.log('Sending message:', liveQuizData);
-  
-  ws.send(JSON.stringify(liveQuizData));
-  
-  // Check if message was sent
-  setTimeout(() => {
-    console.log('WebSocket readyState after sending:', ws.readyState);
-  }, 100);
+      // Call backend to create live quiz
+    const response = await LiveQuizService.createLiveQuiz(liveQuizData);
+    
+    if (response.success) {
+      // Remove the WebSocket sending - backend will handle broadcasting
       toast.success('Live quiz room created!');
-      
-      const quizName = quizData.name.replace(/\s+/g, '-').toLowerCase();
-      navigateTo(`/live-quiz-room/${quizName}`);
-    };
-    
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      toast.error('Failed to create live quiz room');
-    };
-    
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-  };
-
-  // Navigate function
-  const navigateTo = (path) => {
-    window.location.href = path;
+      navigate(`/live-quiz-room/${response.quizId}`);
+    } else {
+      throw new Error(response.message || 'Failed to create live quiz');
+    }
+  } catch (error) {
+    console.error('Error creating live quiz:', error);
+    toast.error(error.message || 'Failed to create live quiz room');
+  } finally {
+    setIsCreating(false);
+  }
   };
 
   const renderQuestionForm = () => {
@@ -763,18 +807,27 @@ const LiveQuizArena = () => {
               <div className="flex justify-end pt-6 border-t" style={{ borderColor: '#495464', borderOpacity: 0.2 }}>
                 <button
                   onClick={handleCreateLiveQuiz}
-                  disabled={!isQuizValid()}
+                  disabled={!isQuizValid() || isCreating}
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                    isQuizValid()
+                    isQuizValid() && !isCreating
                       ? 'text-white hover:opacity-90'
                       : 'cursor-not-allowed opacity-50'
                   }`}
                   style={{ 
-                    backgroundColor: isQuizValid() ? '#495464' : '#BBBFCA'
+                    backgroundColor: (isQuizValid() && !isCreating) ? '#495464' : '#BBBFCA'
                   }}
                 >
-                  <Zap className="h-4 w-4" />
-                  Create Live Quiz
+                  {isCreating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      Create Live Quiz
+                    </>
+                  )}
                 </button>
               </div>
             )}

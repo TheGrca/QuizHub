@@ -5,7 +5,7 @@ import QuizBox from '../../Shared/Quizbox';
 import QuizStartModal from '../../Shared/QuizStartModal';
 import AuthService from '../../Services/AuthService';
 import UserService from '../../Services/UserService';
-
+import LiveQuizService from '../../Services/LiveQuizService';
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,19 +21,32 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const wsRef = useRef(null); // WebSocket reference
-
   const navigateTo = (path) => {
     window.location.href = path;
   };
 
+ const fetchCurrentLiveQuiz = async () => {
+  try {
+    const currentQuiz = await LiveQuizService.getCurrentActiveLiveQuiz();
+    setLiveQuiz(currentQuiz);
+  } catch (error) {
+    console.error('Error fetching current live quiz:', error);
+  }
+};
+
   // Initialize WebSocket connection for live quizzes
   const initializeWebSocket = () => {
     if (!user) return;
+    
+    console.log('🔄 Attempting WebSocket connection...');
+    console.log('User:', user);
+    
     try {
-      wsRef.current = new WebSocket('ws://localhost:5175/ws'); // Updated to correct port
-
+      // Try the HTTP port from your launch settings
+      wsRef.current = new WebSocket('ws://localhost:5175/ws');
+      
       wsRef.current.onopen = () => {
-        console.log('WebSocket connection established');
+        console.log('✅ WebSocket connection established successfully');
         
         // Register user as connected
         const message = {
@@ -43,59 +56,64 @@ export default function Home() {
             username: user.username
           }
         };
+        
+        console.log('📤 Sending USER_CONNECTED message:', message);
         wsRef.current.send(JSON.stringify(message));
       };
       
       wsRef.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log('WebSocket message received:', data);
-          
-          switch (data.Type) {
-            case 'LIVE_QUIZ_CREATED':
-              // Show live quiz at the top
-              console.log('Live quiz received:', data.Payload);
-              setLiveQuiz(data.Payload);
-              toast.success('🎉 A new live quiz is available!', {
-                duration: 4000,
-                style: {
-                  background: '#22c55e',
-                  color: 'white',
-                }
-              });
-              break;
-              
-            case 'LIVE_QUIZ_ENDED':
-              // Remove live quiz
-              setLiveQuiz(null);
-              toast.info('Live quiz has ended');
-              break;
-              
-            default:
-              console.log('Unknown message type:', data.Type);
-          }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
+  try {
+    const data = JSON.parse(event.data);
+    console.log('WebSocket message received:', data);
+    
+    // Handle both possible message formats (Type and type)
+    const messageType = data.Type || data.type;
+    
+    switch (messageType) {
+      case 'LIVE_QUIZ_CREATED':
+        const payload = data.Payload || data.payload;
+        setLiveQuiz(payload);
+        toast.success('🎉 A new live quiz is available!');
+        break;
+        
+case 'QUIZ_CANCELLED':
+  console.log('Quiz cancelled message received:', data);
+  const cancelPayload = data.Payload || data.payload;
+  
+  // Always remove the live quiz, regardless of current state
+  console.log('Removing live quiz from home page due to cancellation');
+  setLiveQuiz(null);
+  toast.error('The quiz has been cancelled');
+  break;
+        
+      default:
+        console.log('Unknown message type:', messageType);
+    }
+  } catch (error) {
+    console.error('Error parsing WebSocket message:', error);
+  }
+};
 
       wsRef.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error('❌ WebSocket connection failed:', error);
+        console.log('🔍 Check if backend WebSocket is configured on port 5175');
         toast.error('Connection error - live quiz updates may not work');
       };
 
-      wsRef.current.onclose = () => {
-        console.log('WebSocket connection closed');
-        // Attempt to reconnect after 5 seconds
-        setTimeout(() => {
-          if (user) {
-            console.log('Attempting to reconnect WebSocket...');
+      wsRef.current.onclose = (event) => {
+        console.log(`🔌 WebSocket closed: Code ${event.code}, Reason: "${event.reason}"`);
+        
+        // Only attempt to reconnect if it wasn't a normal closure
+        if (event.code !== 1000 && user) {
+          setTimeout(() => {
+            console.log('🔄 Attempting to reconnect WebSocket...');
             initializeWebSocket();
-          }
-        }, 5000);
+          }, 5000);
+        }
       };
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error);
+      console.error('❌ Failed to create WebSocket:', error);
+      toast.error('Failed to connect to live quiz updates');
     }
   };
 
@@ -139,9 +157,24 @@ export default function Home() {
   };
 
 const handleLiveQuizJoin = () => {
-  if (liveQuiz) {
-    const quizName = liveQuiz.QuizData.name.replace(/\s+/g, '-').toLowerCase();
-    navigateTo(`/live-quiz-room/${quizName}`);
+  console.log("Live quiz object:", JSON.stringify(liveQuiz, null, 2));
+  
+  // Handle both data structures
+  let quizId = null;
+  
+  if (liveQuiz?.quizData?.quizId) {
+    // WebSocket structure
+    quizId = liveQuiz.quizData.quizId;
+  } else if (liveQuiz?.quizId) {
+    // API response structure
+    quizId = liveQuiz.quizId;
+  }
+  
+  if (quizId) {
+    console.log("Navigating to quiz room:", quizId);
+    navigateTo(`/live-quiz-room/${quizId}`);
+  } else {
+    console.log("No valid quiz ID found");
   }
 };
 
@@ -202,6 +235,7 @@ const handleLiveQuizJoin = () => {
   useEffect(() => {
     if (user) {
       initializeWebSocket();
+      fetchCurrentLiveQuiz();
     }
   }, [user]);
 
@@ -243,12 +277,12 @@ const handleLiveQuizJoin = () => {
             </p>
           </div>
 
-              <h2 className="text-xl font-semibold mb-4" style={{ color: '#495464' }}>
-                Live quiz
-              </h2>
           {/* Live Quiz Banner */}
           {liveQuiz && (
             <div className="mb-8">
+              <h2 className="text-xl font-semibold mb-4" style={{ color: '#495464' }}>
+                🔥 Live Quiz Available
+              </h2>
               <div 
                 className="w-full rounded-2xl shadow-lg p-6 border-2"
                 style={{ 
@@ -258,20 +292,19 @@ const handleLiveQuizJoin = () => {
                 }}
               >
                 <div className="flex items-center justify-between">
-                  
                   <div className="flex items-center">
                     <Zap className="h-8 w-8 mr-3 text-white" />
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-1">
-                       {liveQuiz.QuizData.name}
+                        {liveQuiz.quizData?.name || 'Live Quiz'}
                       </h2>
                       <p className="text-green-100 text-lg">
-                        {liveQuiz.QuizData.description}
+                        {liveQuiz.quizData?.description || 'Join the live quiz competition!'}
                       </p>
                       <div className="flex items-center mt-2 text-green-100">
                         <Users className="h-4 w-4 mr-1" />
                         <span className="text-sm">
-                          {liveQuiz.Questions.length} questions
+                          {liveQuiz.questions?.length || 0} questions • Live Competition
                         </span>
                       </div>
                     </div>
@@ -284,7 +317,7 @@ const handleLiveQuizJoin = () => {
                       JOIN LIVE QUIZ
                     </button>
                     <div className="mt-2 text-green-100 text-sm text-center">
-                      Limited spots available!
+                      Limited to 4 players!
                     </div>
                   </div>
                 </div>

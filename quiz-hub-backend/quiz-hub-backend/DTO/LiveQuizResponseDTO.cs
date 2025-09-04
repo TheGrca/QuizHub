@@ -2,9 +2,8 @@
 {
     public class LiveQuizResponseDTO
     {
-        public LiveQuizDataDTO QuizData { get; set; }
-        public List<LiveQuizQuestionDTO> Questions { get; set; }
-        public string AdminId { get; set; }
-        public long Timestamp { get; set; }
+        public string QuizId { get; set; }
+        public string Message { get; set; }
+        public bool Success { get; set; }
     }
 }

@@ -9,222 +9,313 @@ namespace quiz_hub_backend.Services
 {
     public class LiveQuizService : ILiveQuizService
     {
-        private static readonly ConcurrentDictionary<string, WebSocket> _connectedUsers = new();
-        private static LiveQuizResponseDTO? _currentLiveQuiz = null;
-        private static readonly ConcurrentDictionary<string, LiveQuizRoomParticipantDTO> _roomParticipants = new();
+        private readonly AppDbContext _context;
+        private readonly ILogger<LiveQuizService> _logger;
+        private readonly IUserService _userService;
 
-        public async Task HandleUserConnected(string userId, string username, WebSocket webSocket)
+        // In-memory storage for live quiz sessions
+        private static readonly ConcurrentDictionary<string, LiveQuizSession> _liveQuizzes = new();
+
+        public LiveQuizService(AppDbContext context, ILogger<LiveQuizService> logger, IUserService userService)
         {
-            _connectedUsers[userId] = webSocket;
+            _context = context;
+            _logger = logger;
+            _userService = userService;
+        }
 
-            // Send current live quiz if exists
-            if (_currentLiveQuiz != null)
+        public async Task<LiveQuizResponseDTO> CreateLiveQuizAsync(LiveQuizCreateRequestDTO request, int adminId)
+        {
+            try
             {
-                await SendMessage(webSocket, new
+                var existingActiveQuiz = _liveQuizzes.Values
+                .FirstOrDefault(q => q.Status == LiveQuizStatus.Waiting);
+
+                if (existingActiveQuiz != null)
                 {
-                    Type = "LIVE_QUIZ_CREATED",
-                    Payload = _currentLiveQuiz
-                });
-            }
-        }
-
-        public async Task HandleLiveQuizCreated(LiveQuizCreateDTO liveQuizData)
-        {
-            _currentLiveQuiz = new LiveQuizResponseDTO
-            {
-                QuizData = liveQuizData.QuizData,
-                Questions = liveQuizData.Questions,
-                AdminId = liveQuizData.AdminId,
-                Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-            };
-
-            await BroadcastToAllUsers(new
-            {
-                Type = "LIVE_QUIZ_CREATED",
-                Payload = _currentLiveQuiz
-            });
-        }
-
-        public async Task HandleLiveQuizEnded()
-        {
-            _currentLiveQuiz = null;
-            await BroadcastToAllUsers(new
-            {
-                Type = "LIVE_QUIZ_ENDED"
-            });
-        }
-
-        public async Task DisconnectUser(string userId)
-        {
-            _connectedUsers.TryRemove(userId, out _);
-
-            // Also remove from room participants if they were in a room
-            if (_roomParticipants.ContainsKey(userId))
-            {
-                await HandleUserLeftRoom(userId);
-            }
-        }
-
-        public LiveQuizResponseDTO? GetCurrentLiveQuiz()
-        {
-            return _currentLiveQuiz;
-        }
-
-        public async Task HandleUserJoinedRoom(LiveJoinQuizRoomDTO participant, WebSocket webSocket)
-        {
-            // Check if room is full
-            if (_roomParticipants.Count >= 4)
-            {
-                await SendMessage(webSocket, new
-                {
-                    Type = "ROOM_FULL",
-                    Payload = new { Message = "Quiz room is full" }
-                });
-                return;
-            }
-
-            // Add user to room participants
-            _roomParticipants[participant.UserId] = new LiveQuizRoomParticipantDTO
-            {
-                UserId = participant.UserId,
-                Username = participant.Username,
-                ProfilePicture = participant.ProfilePicture,
-                IsAdmin = participant.IsAdmin
-            };
-
-            // Add to connected users
-            _connectedUsers[participant.UserId] = webSocket;
-
-            // Send simplified room state (without full question details)
-            var simplifiedRoomState = GetSimplifiedRoomState();
-            if (simplifiedRoomState != null)
-            {
-                await SendMessage(webSocket, new
-                {
-                    Type = "QUIZ_ROOM_STATE",
-                    Payload = simplifiedRoomState
-                });
-            }
-
-            // Notify other participants that someone joined
-            await BroadcastToRoomParticipants(new
-            {
-                Type = "USER_JOINED_ROOM",
-                Payload = new LiveQuizRoomParticipantDTO
-                {
-                    UserId = participant.UserId,
-                    Username = participant.Username,
-                    ProfilePicture = participant.ProfilePicture,
-                    IsAdmin = participant.IsAdmin
+                    throw new InvalidOperationException("Another live quiz is already active. Only one live quiz can be active at a time.");
                 }
-            }, participant.UserId);
+
+                // Validate admin user exists using UserService
+                var admin = await _userService.GetUserByIdAsync(adminId);
+                if (admin == null)
+                {
+                    throw new InvalidOperationException("Admin user not found");
+                }
+
+                // Generate unique quiz ID
+                var quizId = Guid.NewGuid().ToString();
+
+                // Create live quiz session
+                var liveQuizSession = new LiveQuizSession
+                {
+                    QuizId = quizId,
+                    Name = request.Name,
+                    Description = request.Description,
+                    CategoryId = request.CategoryId,
+                    AdminId = adminId,
+                    Questions = request.Questions,
+                    Participants = new List<LiveQuizParticipantDTO>(),
+                    Status = LiveQuizStatus.Waiting,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _liveQuizzes.TryAdd(quizId, liveQuizSession);
+
+                _logger.LogInformation($"Live quiz created: {quizId} by admin: {adminId}");
+
+                return new LiveQuizResponseDTO
+                {
+                    QuizId = quizId,
+                    Message = "Live quiz created successfully",
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error creating live quiz: {ex.Message}");
+                throw;
+            }
         }
 
-        private object? GetSimplifiedRoomState()
+        public async Task<LiveQuizResponseDTO> JoinLiveQuizAsync(string quizId, int userId)
         {
-            if (_currentLiveQuiz == null) return null;
-
-            return new
+            try
             {
-                QuizData = new
+                if (!_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
                 {
-                    Name = _currentLiveQuiz.QuizData.Name,
-                    Description = _currentLiveQuiz.QuizData.Description,
-                    QuestionCount = _currentLiveQuiz.Questions.Count
-                },
-                Participants = _roomParticipants.Values.ToList(),
-                MaxParticipants = 4
+                    throw new InvalidOperationException("Live quiz not found");
+                }
+                if (liveQuiz.AdminId == userId)
+                {
+                    throw new InvalidOperationException("Admin cannot join their own quiz as a participant");
+                }
+
+                if (liveQuiz.Status != LiveQuizStatus.Waiting)
+                {
+                    throw new InvalidOperationException("Cannot join quiz - quiz is not in waiting state");
+                }
+
+                if (liveQuiz.Participants.Count >= 4)
+                {
+                    throw new InvalidOperationException("Quiz is full - maximum 4 participants allowed");
+                }
+
+                if (liveQuiz.Participants.Any(p => p.UserId == userId))
+                {
+                    throw new InvalidOperationException("User is already in the quiz");
+                }
+
+                // Get user details using UserService
+                var userDto = await _userService.GetUserByIdAsync(userId);
+                if (userDto == null)
+                {
+                    throw new InvalidOperationException("User not found");
+                }
+
+                // Add participant using UserService data
+                var participant = new LiveQuizParticipantDTO
+                {
+                    UserId = userId,
+                    Username = userDto.Username,
+                    ProfilePicture = !string.IsNullOrEmpty(userDto.ProfilePicture)
+                        ? $"data:image/jpeg;base64,{userDto.ProfilePicture}"
+                        : "/api/placeholder/40/40",
+                    JoinedAt = DateTime.UtcNow
+                };
+
+                liveQuiz.Participants.Add(participant);
+
+                _logger.LogInformation($"User {userId} joined live quiz: {quizId}");
+
+                return new LiveQuizResponseDTO
+                {
+                    QuizId = quizId,
+                    Message = "Successfully joined live quiz",
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error joining live quiz: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<LiveQuizResponseDTO> LeaveLiveQuizAsync(string quizId, int userId)
+        {
+            try
+            {
+                if (!_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+                {
+                    throw new InvalidOperationException("Live quiz not found");
+                }
+
+                var participant = liveQuiz.Participants.FirstOrDefault(p => p.UserId == userId);
+                if (participant == null)
+                {
+                    throw new InvalidOperationException("User is not in the quiz");
+                }
+
+                liveQuiz.Participants.Remove(participant);
+
+                _logger.LogInformation($"User {userId} left live quiz: {quizId}");
+
+                return new LiveQuizResponseDTO
+                {
+                    QuizId = quizId,
+                    Message = "Successfully left live quiz",
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error leaving live quiz: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<LiveQuizResponseDTO> CancelLiveQuizAsync(string quizId, int adminId)
+        {
+            try
+            {
+                if (!_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+                {
+                    throw new InvalidOperationException("Live quiz not found");
+                }
+
+                if (liveQuiz.AdminId != adminId)
+                {
+                    throw new UnauthorizedAccessException("Only the quiz admin can cancel the quiz");
+                }
+
+                liveQuiz.Status = LiveQuizStatus.Cancelled;
+
+                // Remove quiz after a short delay to allow clients to process cancellation
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(5000); // 5 second delay
+                    _liveQuizzes.TryRemove(quizId, out _);
+                });
+
+                _logger.LogInformation($"Live quiz cancelled: {quizId} by admin: {adminId}");
+
+                return new LiveQuizResponseDTO
+                {
+                    QuizId = quizId,
+                    Message = "Live quiz cancelled successfully",
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error cancelling live quiz: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<LiveQuizRoomDTO> GetLiveQuizRoomAsync(string quizId, int userId)
+        {
+            try
+            {
+                if (!_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+                {
+                    throw new InvalidOperationException("Live quiz not found");
+                }
+
+                bool canView = liveQuiz.AdminId == userId ||
+                              liveQuiz.Participants.Any(p => p.UserId == userId) ||
+                              liveQuiz.Status == LiveQuizStatus.Waiting;
+
+                if (!canView && userId != 0) // userId 0 is used for internal calls
+                {
+                    throw new UnauthorizedAccessException("You don't have permission to view this quiz room");
+                }
+
+                return new LiveQuizRoomDTO
+                {
+                    QuizId = liveQuiz.QuizId,
+                    Name = liveQuiz.Name,
+                    Description = liveQuiz.Description,
+                    AdminId = liveQuiz.AdminId,
+                    Participants = liveQuiz.Participants,
+                    Questions = liveQuiz.Questions,
+                    Status = liveQuiz.Status
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting live quiz room: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Add a method to get quiz room without user permission check (for internal use)
+        public async Task<LiveQuizRoomDTO> GetLiveQuizRoomInternalAsync(string quizId)
+        {
+            return await GetLiveQuizRoomAsync(quizId, 0);
+        }
+
+        public async Task<List<LiveQuizParticipantDTO>> GetParticipantsAsync(string quizId)
+        {
+            if (_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+            {
+                return liveQuiz.Participants;
+            }
+            return new List<LiveQuizParticipantDTO>();
+        }
+
+        public async Task<bool> IsUserInQuizAsync(string quizId, int userId)
+        {
+            if (_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+            {
+                return liveQuiz.Participants.Any(p => p.UserId == userId);
+            }
+            return false;
+        }
+
+        public async Task<bool> IsQuizAdminAsync(string quizId, int adminId)
+        {
+            if (_liveQuizzes.TryGetValue(quizId, out var liveQuiz))
+            {
+                return liveQuiz.AdminId == adminId;
+            }
+            return false;
+        }
+
+        public async Task<LiveQuizRoomDTO?> GetCurrentActiveLiveQuizAsync()
+        {
+            var activeQuiz = _liveQuizzes.Values
+                .FirstOrDefault(quiz => quiz.Status == LiveQuizStatus.Waiting);
+
+            if (activeQuiz == null)
+                return null;
+
+            return new LiveQuizRoomDTO
+            {
+                QuizId = activeQuiz.QuizId,
+                Name = activeQuiz.Name,
+                Description = activeQuiz.Description,
+                AdminId = activeQuiz.AdminId,
+                Participants = activeQuiz.Participants,
+                Questions = activeQuiz.Questions,
+                Status = activeQuiz.Status
             };
         }
 
-        public async Task HandleUserLeftRoom(string userId)
-        {
-            if (_roomParticipants.TryRemove(userId, out var participant))
-            {
-                _connectedUsers.TryRemove(userId, out _);
 
-                // Notify other participants
-                await BroadcastToRoomParticipants(new
-                {
-                    Type = "USER_LEFT_ROOM",
-                    Payload = participant
-                });
-            }
-        }
+    }
 
-        public async Task HandleStopQuiz(string adminId)
-        {
-            // Verify it's an admin stopping the quiz
-            if (_roomParticipants.TryGetValue(adminId, out var admin) && admin.IsAdmin)
-            {
-                // Clear current quiz
-                _currentLiveQuiz = null;
-
-                // Notify all participants that quiz was stopped
-                await BroadcastToRoomParticipants(new
-                {
-                    Type = "QUIZ_STOPPED"
-                });
-
-                // Clear all participants
-                _roomParticipants.Clear();
-            }
-        }
-
-        public LiveQuizRoomStateDTO? GetCurrentRoomState()
-        {
-            if (_currentLiveQuiz == null) return null;
-
-            return new LiveQuizRoomStateDTO
-            {
-                QuizData = _currentLiveQuiz.QuizData,
-                Participants = _roomParticipants.Values.ToList(),
-                MaxParticipants = 4
-            };
-        }
-
-        public int GetConnectedUsersCount()
-        {
-            return _connectedUsers.Count(ws => ws.Value.State == WebSocketState.Open);
-        }
-
-        public int GetRoomParticipantsCount()
-        {
-            return _roomParticipants.Count;
-        }
-
-        private async Task BroadcastToAllUsers(object message)
-        {
-            var messageJson = JsonSerializer.Serialize(message);
-            var messageBytes = Encoding.UTF8.GetBytes(messageJson);
-
-            var tasks = _connectedUsers.Values
-                .Where(ws => ws.State == WebSocketState.Open)
-                .Select(ws => ws.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None));
-
-            await Task.WhenAll(tasks);
-        }
-
-        private async Task BroadcastToRoomParticipants(object message, string? excludeUserId = null)
-        {
-            var messageJson = JsonSerializer.Serialize(message);
-            var messageBytes = Encoding.UTF8.GetBytes(messageJson);
-
-            var tasks = _roomParticipants.Keys
-                .Where(userId => userId != excludeUserId && _connectedUsers.ContainsKey(userId) && _connectedUsers[userId].State == WebSocketState.Open)
-                .Select(userId => _connectedUsers[userId].SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None));
-
-            await Task.WhenAll(tasks);
-        }
-
-        private async Task SendMessage(WebSocket webSocket, object message)
-        {
-            if (webSocket.State == WebSocketState.Open)
-            {
-                var messageJson = JsonSerializer.Serialize(message);
-                var messageBytes = Encoding.UTF8.GetBytes(messageJson);
-                await webSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-        }
+    // Internal class for managing live quiz sessions
+    internal class LiveQuizSession
+    {
+        public string QuizId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int CategoryId { get; set; }
+        public int AdminId { get; set; }
+        public List<LiveQuizQuestionDTO> Questions { get; set; }
+        public List<LiveQuizParticipantDTO> Participants { get; set; }
+        public LiveQuizStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
