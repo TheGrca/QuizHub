@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const TextInputQuestion = ({ question, placeholder, onAnswer }) => {
   const [answer, setAnswer] = useState('');
 
@@ -20,3 +22,5 @@ const TextInputQuestion = ({ question, placeholder, onAnswer }) => {
     </div>
   );
 };
+
+export default TextInputQuestion;

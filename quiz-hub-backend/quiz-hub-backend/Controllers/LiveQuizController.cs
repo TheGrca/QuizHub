@@ -184,6 +184,187 @@ namespace quiz_hub_backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("start")]
+        public async Task<IActionResult> StartLiveQuiz([FromBody] LiveQuizStartDTO request)
+        {
+            try
+            {
+                var adminId = GetCurrentUserId();
+                if (adminId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
+
+                var result = await _liveQuizService.StartLiveQuizAsync(request.QuizId, adminId.Value);
+
+                if (result.Success)
+                {
+                    // Broadcast quiz start to all participants
+                    var startPayload = new
+                    {
+                        quizId = request.QuizId,
+                        adminId = adminId.Value,
+                        message = "Quiz has started!",
+                        redirectTo = $"/live-quiz-game/{request.QuizId}/0"
+                    };
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var broadcastMessage = new
+                            {
+                                Type = "QUIZ_STARTED",
+                                Payload = startPayload
+                            };
+
+                            await LiveQuizWebSocketMiddleware.BroadcastToAll(broadcastMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Error broadcasting quiz start: {ex.Message}");
+                        }
+                    });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("submit-answer")]
+        public async Task<IActionResult> SubmitAnswer([FromBody] LiveQuizSubmitAnswerDTO request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
+
+                var result = await _liveQuizService.SubmitAnswerAsync(request.QuizId, userId.Value, request);
+
+                if (result.Success)
+                {
+                    // Broadcast answer submission to update leaderboard
+                    var gameState = await _liveQuizService.GetGameStateAsync(request.QuizId, userId.Value);
+
+                    var leaderboardPayload = new
+                    {
+                        quizId = request.QuizId,
+                        participants = gameState.Participants.Select(p => new
+                        {
+                            userId = p.UserId,
+                            username = p.Username,
+                            profilePicture = p.ProfilePicture,
+                            score = p.Score,
+                            joinedAt = p.JoinedAt
+                        }).ToList()
+                    };
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var broadcastMessage = new
+                            {
+                                Type = "LEADERBOARD_UPDATED", // Different message type
+                                Payload = leaderboardPayload
+                            };
+
+                            await LiveQuizWebSocketMiddleware.BroadcastToAll(broadcastMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Error broadcasting leaderboard update: {ex.Message}");
+                        }
+                    });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("next-question")]
+        public async Task<IActionResult> NextQuestion([FromBody] LiveQuizStartDTO request)
+        {
+            try
+            {
+                var adminId = GetCurrentUserId();
+                if (adminId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
+
+                var result = await _liveQuizService.NextQuestionAsync(request.QuizId, adminId.Value);
+
+                if (result.Success)
+                {
+                    var gameState = await _liveQuizService.GetGameStateAsync(request.QuizId, adminId.Value);
+
+                    var nextQuestionPayload = new
+                    {
+                        quizId = request.QuizId,
+                        gameState = gameState,
+                        isCompleted = gameState.Status == LiveQuizStatus.Completed
+                    };
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var broadcastMessage = new
+                            {
+                                Type = gameState.Status == LiveQuizStatus.Completed ? "QUIZ_COMPLETED" : "NEXT_QUESTION",
+                                Payload = nextQuestionPayload
+                            };
+
+                            await LiveQuizWebSocketMiddleware.BroadcastToAll(broadcastMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Error broadcasting next question: {ex.Message}");
+                        }
+                    });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("game-state/{quizId}")]
+        public async Task<IActionResult> GetGameState(string quizId)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
+
+                var gameState = await _liveQuizService.GetGameStateAsync(quizId, userId.Value);
+                return Ok(gameState);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         private int? GetCurrentUserId()
         {
 

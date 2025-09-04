@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const TrueFalseQuestion = ({ question, onAnswer }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
@@ -34,3 +36,5 @@ const TrueFalseQuestion = ({ question, onAnswer }) => {
     </div>
   );
 };
+
+export default TrueFalseQuestion;

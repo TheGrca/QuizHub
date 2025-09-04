@@ -40,3 +40,5 @@ const SingleChoiceQuestion = ({ question, options, onAnswer }) => {
     </div>
   );
 };
+
+export default SingleChoiceQuestion;

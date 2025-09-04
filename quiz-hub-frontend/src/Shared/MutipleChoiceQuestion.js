@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const MultipleChoiceQuestion = ({ question, options, onAnswer }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -42,3 +44,5 @@ const MultipleChoiceQuestion = ({ question, options, onAnswer }) => {
     </div>
   );
 };
+
+export default MultipleChoiceQuestion;

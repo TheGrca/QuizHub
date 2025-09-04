@@ -76,23 +76,38 @@ export default function Home() {
         toast.success('🎉 A new live quiz is available!');
         break;
         
-case 'QUIZ_CANCELLED':
-  console.log('Quiz cancelled message received:', data);
-  const cancelPayload = data.Payload || data.payload;
-  
-  // Always remove the live quiz, regardless of current state
-  console.log('Removing live quiz from home page due to cancellation');
-  setLiveQuiz(null);
-  toast.error('The quiz has been cancelled');
-  break;
-        
-      default:
-        console.log('Unknown message type:', messageType);
-    }
-  } catch (error) {
-    console.error('Error parsing WebSocket message:', error);
-  }
-};
+        case 'QUIZ_CANCELLED':
+          console.log('Quiz cancelled message received:', data);
+          const cancelPayload = data.Payload || data.payload;
+          
+          // Always remove the live quiz, regardless of current state
+          console.log('Removing live quiz from home page due to cancellation');
+          setLiveQuiz(null);
+          toast.error('The quiz has been cancelled');
+          break;
+        case 'QUIZ_STARTED':
+          console.log('Quiz started message received:', data);
+          const startPayload = data.Payload || data.payload;
+          
+          // Remove the live quiz from home page since it started
+          setLiveQuiz(null);
+          
+          // Only redirect if this user is NOT the admin who started the quiz
+          if (startPayload.redirectTo && startPayload.adminId && user && user.id !== parseInt(startPayload.adminId)) {
+            toast.success('Quiz is starting! Redirecting...');
+            setTimeout(() => {
+              navigateTo(startPayload.redirectTo);
+            }, 1000);
+          }
+          break;
+                        
+              default:
+                console.log('Unknown message type:', messageType);
+            }
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        };
 
       wsRef.current.onerror = (error) => {
         console.error('❌ WebSocket connection failed:', error);

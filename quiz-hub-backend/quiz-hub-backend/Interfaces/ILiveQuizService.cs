@@ -15,5 +15,9 @@ namespace quiz_hub_backend.Interfaces
         Task<bool> IsUserInQuizAsync(string quizId, int userId);
         Task<bool> IsQuizAdminAsync(string quizId, int adminId);
         Task<LiveQuizRoomDTO?> GetCurrentActiveLiveQuizAsync();
+        Task<LiveQuizResponseDTO> StartLiveQuizAsync(string quizId, int adminId);
+        Task<LiveQuizResponseDTO> SubmitAnswerAsync(string quizId, int userId, LiveQuizSubmitAnswerDTO answerDto);
+        Task<LiveQuizResponseDTO> NextQuestionAsync(string quizId, int adminId);
+        Task<LiveQuizGameStateDTO> GetGameStateAsync(string quizId, int userId);
     }
 }

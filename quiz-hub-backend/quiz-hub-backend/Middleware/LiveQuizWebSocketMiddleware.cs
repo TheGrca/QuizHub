@@ -142,6 +142,17 @@ namespace quiz_hub_backend.Middleware
                     case "QUIZ_CANCELLED":
                         await HandleQuizCancelled(connectionId, messageData.Payload, liveQuizService);
                         break;
+                    case "QUIZ_STARTED":
+                        await HandleQuizStarted(connectionId, messageData.Payload, liveQuizService);
+                        break;
+
+                    case "ANSWER_SUBMITTED":
+                        await HandleAnswerSubmitted(connectionId, messageData.Payload, liveQuizService);
+                        break;
+
+                    case "NEXT_QUESTION":
+                        await HandleNextQuestion(connectionId, messageData.Payload, liveQuizService);
+                        break;
 
                     default:
                         _logger.LogWarning($"Unknown message type: {messageData.Type}");
@@ -425,6 +436,97 @@ namespace quiz_hub_backend.Middleware
                 });
 
             await Task.WhenAll(tasks);
+        }
+
+
+        private async Task HandleQuizStarted(string connectionId, object payload, ILiveQuizService liveQuizService)
+        {
+            try
+            {
+                var startData = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload));
+                var quizId = startData.GetProperty("quizId").GetString();
+
+                var message = new LiveQuizWebSocketMessageDTO
+                {
+                    Type = "QUIZ_STARTED",
+                    Payload = payload
+                };
+
+                // Broadcast to all participants in the quiz room
+                await BroadcastToQuizRoom(message, quizId, liveQuizService);
+
+                _logger.LogInformation($"Quiz started broadcast sent for quiz: {quizId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error handling quiz started: {ex.Message}");
+            }
+        }
+
+        private async Task HandleAnswerSubmitted(string connectionId, object payload, ILiveQuizService liveQuizService)
+        {
+            try
+            {
+                var answerData = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload));
+                var quizId = answerData.GetProperty("quizId").GetString();
+                var userId = answerData.GetProperty("userId").GetInt32();
+
+                // Get the updated game state to broadcast to all participants
+                var gameState = answerData.GetProperty("gameState");
+
+                var message = new LiveQuizWebSocketMessageDTO
+                {
+                    Type = "ANSWER_SUBMITTED",
+                    Payload = new Dictionary<string, object>
+                    {
+                        ["quizId"] = quizId,
+                        ["userId"] = userId,
+                        ["gameState"] = JsonSerializer.Deserialize<object>(gameState.GetRawText())
+                    }
+                };
+
+                // Broadcast updated leaderboard to all participants
+                await BroadcastToQuizRoom(message, quizId, liveQuizService);
+
+                _logger.LogInformation($"Answer submitted broadcast sent for user {userId} in quiz: {quizId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error handling answer submitted: {ex.Message}");
+            }
+        }
+
+        private async Task HandleNextQuestion(string connectionId, object payload, ILiveQuizService liveQuizService)
+        {
+            try
+            {
+                var nextQuestionData = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload));
+                var quizId = nextQuestionData.GetProperty("quizId").GetString();
+                var gameState = nextQuestionData.GetProperty("gameState");
+                var isCompleted = nextQuestionData.GetProperty("isCompleted").GetBoolean();
+
+                var messageType = isCompleted ? "QUIZ_COMPLETED" : "NEXT_QUESTION";
+
+                var message = new LiveQuizWebSocketMessageDTO
+                {
+                    Type = messageType,
+                    Payload = new Dictionary<string, object>
+                    {
+                        ["quizId"] = quizId,
+                        ["gameState"] = JsonSerializer.Deserialize<object>(gameState.GetRawText()),
+                        ["isCompleted"] = isCompleted
+                    }
+                };
+
+                // Broadcast to all participants in the quiz room
+                await BroadcastToQuizRoom(message, quizId, liveQuizService);
+
+                _logger.LogInformation($"{messageType} broadcast sent for quiz: {quizId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error handling next question: {ex.Message}");
+            }
         }
     }
 

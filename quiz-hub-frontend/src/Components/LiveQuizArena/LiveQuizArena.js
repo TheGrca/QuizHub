@@ -22,7 +22,7 @@ const EditableSingleChoiceQuestion = ({ question, onSave, onCancel }) => {
   const handleSave = () => {
     if (questionText.trim() && options.every(opt => opt.trim())) {
       onSave({
-        type: 'MultipleChoiceQuestion',
+        type: 'SingleChoiceQuestion',
         text: questionText,
         options,
         correctAnswer,
@@ -120,7 +120,7 @@ const EditableMultipleChoiceQuestion = ({ question, onSave, onCancel }) => {
   const handleSave = () => {
     if (questionText.trim() && options.every(opt => opt.trim()) && correctAnswers.length > 0) {
       onSave({
-        type: 'MultipleAnswerQuestion',
+        type: 'MultipleChoiceQuestion',
         text: questionText,
         options,
         correctAnswers,
@@ -357,8 +357,8 @@ const EditableTextInputQuestion = ({ question, onSave, onCancel }) => {
 const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
   const getQuestionTypeLabel = (type) => {
     switch (type) {
-      case 'MultipleChoiceQuestion': return 'Single Choice';
-      case 'MultipleAnswerQuestion': return 'Multiple Choice';
+      case 'SingleChoiceQuestion': return 'Single Choice';
+      case 'MultipleChoiceQuestion': return 'Multiple Choice';
       case 'TrueFalseQuestion': return 'True/False';
       case 'TextInputQuestion': return 'Text Input';
       default: return type;
@@ -516,48 +516,57 @@ const LiveQuizArena = () => {
   };
 
   const handleCreateLiveQuiz = async () => {
-    if (!isQuizValid()) {
-      toast.error('Please fill in all quiz details and add at least one question');
-      return;
-    }
+   if (!isQuizValid()) {
+    toast.error('Please fill in all quiz details and add at least one question');
+    return;
+  }
+  
+  try {
+    setIsCreating(true);
     
-    try {
-      setIsCreating(true);
-      
-      // Prepare quiz data for backend
-      const liveQuizData = {
-        name: quizData.name,
-        description: quizData.description,
-        categoryId: parseInt(quizData.categoryId),
-        questions: questions.map(q => {
-          const question = {
-            type: q.type,
-            text: q.text,
-            timeToAnswer: q.timeToAnswer
-          };
+    // Prepare quiz data for backend
+    const liveQuizData = {
+  name: quizData.name,
+  description: quizData.description,
+  categoryId: parseInt(quizData.categoryId),
+  questions: questions.map((q, index) => {
+    // Base question object with all required fields
+    const question = {
+      type: q.type,
+      text: q.text,
+      timeToAnswer: q.timeToAnswer,
+      // Initialize all required fields with defaults
+      options: [],
+      correctAnswer: null,
+      correctAnswers: [],
+      correctAnswerBool: null,
+      correctAnswerText: null
+    };
 
-          // Add type-specific properties
-          if (q.type === 'MultipleChoiceQuestion') {
-            question.options = q.options;
-            question.correctAnswer = q.correctAnswer; // This should be an integer
-          } else if (q.type === 'MultipleAnswerQuestion') {
-            question.options = q.options;
-            question.correctAnswers = q.correctAnswers; // This should be an array of integers
-          } else if (q.type === 'TrueFalseQuestion') {
-            question.correctAnswerBool = q.correctAnswer; // This should be a boolean
-          } else if (q.type === 'TextInputQuestion') {
-            question.correctAnswerText = q.correctAnswer; // This should be a string
-          }
+if (q.type === 'SingleChoiceQuestion') {  // Fixed: was 'MultipleChoiceQuestion'
+      question.options = q.options;
+      question.correctAnswer = q.correctAnswer;
+      question.correctAnswers = [q.correctAnswer];
+    } else if (q.type === 'MultipleChoiceQuestion') {  // Fixed: was 'MultipleAnswerQuestion'
+      question.options = q.options;
+      question.correctAnswers = q.correctAnswers;
+    } else if (q.type === 'TrueFalseQuestion') {
+      question.correctAnswerBool = q.correctAnswer;
+      question.options = [];
+    } else if (q.type === 'TextInputQuestion') {
+      question.correctAnswerText = q.correctAnswer;
+      question.options = [];
+    }
 
-          return question;
-        })
-      };
-      
-      // Call backend to create live quiz
+    return question;
+  })
+};
+
+console.log('Full live quiz data being sent:', JSON.stringify(liveQuizData, null, 2));
+    
     const response = await LiveQuizService.createLiveQuiz(liveQuizData);
     
     if (response.success) {
-      // Remove the WebSocket sending - backend will handle broadcasting
       toast.success('Live quiz room created!');
       navigate(`/live-quiz-room/${response.quizId}`);
     } else {
@@ -569,13 +578,13 @@ const LiveQuizArena = () => {
   } finally {
     setIsCreating(false);
   }
-  };
+};
 
   const renderQuestionForm = () => {
     const questionToEdit = editingQuestionIndex >= 0 ? questions[editingQuestionIndex] : null;
 
     switch (selectedQuestionType) {
-      case 'MultipleChoiceQuestion':
+      case 'SingleChoiceQuestion':
         return (
           <EditableSingleChoiceQuestion
             question={questionToEdit}
@@ -583,7 +592,7 @@ const LiveQuizArena = () => {
             onCancel={handleCancelQuestion}
           />
         );
-      case 'MultipleAnswerQuestion':
+      case 'MultipleChoiceQuestion':
         return (
           <EditableMultipleChoiceQuestion
             question={questionToEdit}
@@ -737,8 +746,8 @@ const LiveQuizArena = () => {
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                      { type: 'MultipleChoiceQuestion', label: 'Single Choice' },
-                      { type: 'MultipleAnswerQuestion', label: 'Multiple Choice' },
+                      { type: 'SingleChoiceQuestion', label: 'Single Choice' },
+                      { type: 'MultipleChoiceQuestion', label: 'Multiple Choice' },
                       { type: 'TrueFalseQuestion', label: 'True/False' },
                       { type: 'TextInputQuestion', label: 'Text Input' }
                     ].map(({ type, label }) => (

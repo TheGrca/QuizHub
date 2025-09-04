@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("quiz-hub-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cee0d6e9f09456775f9d76e39a88ff3f7e863bc8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df2f3270273e032531a985a48769b2064d59e5cc")]
 [assembly: System.Reflection.AssemblyProductAttribute("quiz-hub-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("quiz-hub-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

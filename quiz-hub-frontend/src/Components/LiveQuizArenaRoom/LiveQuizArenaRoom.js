@@ -85,22 +85,18 @@ const LiveQuizArenaRoom = () => {
           
           switch (data.Type) {
             case 'PARTICIPANTS_UPDATED':
-        const updatePayload = data.Payload || data.payload;
-        if (updatePayload?.quizId === quizId) {
-          console.log('Admin updating participants to:', updatePayload.participants);
-          
-          // Log each participant data
-          updatePayload.participants?.forEach((p, i) => {
-            console.log(`Admin sees participant ${i}:`, {
-              username: p.username,
-              profilePicture: p.profilePicture ? `${p.profilePicture.substring(0, 50)}...` : 'MISSING',
-              userId: p.userId
-            });
-          });
-          
-          setParticipants(updatePayload.participants || []);
-        }
-        break;
+         const updatePayload = data.Payload || data.payload;
+          if (updatePayload?.quizId === quizId) {
+            console.log('Updating participants to:', updatePayload.participants);
+            
+            // Update both states
+            setParticipants(updatePayload.participants || []);
+            setQuizRoom(prevRoom => ({
+              ...prevRoom,
+              participants: updatePayload.participants || []
+            }));
+          }
+          break;
               
             case 'QUIZ_CANCELLED':
               if (data.Payload.quizId === quizId) {
@@ -108,6 +104,18 @@ const LiveQuizArenaRoom = () => {
                 navigate('/home');
               }
               break;
+
+              case 'QUIZ_STARTED':
+            console.log('Quiz started message received:', data);
+            const startPayload = data.Payload || data.payload;
+            
+            toast.success('Quiz is starting! Redirecting...');
+            
+            // Navigate to the game page
+            setTimeout(() => {
+              navigate(`/live-quiz-game/${quizId}/0`);
+            }, 1000);
+            break;
               
             default:
               console.log('Unknown message type:', data.Type);
@@ -217,10 +225,28 @@ const LiveQuizArenaRoom = () => {
     }
   };
 
-  const handleStartQuiz = () => {
-    // TODO: Implement quiz start functionality
-    toast.info('Starting quiz... (Coming soon!)');
-  };
+const handleStartQuiz = async () => {
+  try {
+    if (!quizRoom?.participants?.length) {
+      toast.error('Cannot start quiz with no participants');
+      return;
+    }
+
+    await LiveQuizService.startQuiz(quizId);
+    
+    // Navigate admin back to home (disconnects them from the room)
+    toast.success('Quiz started! Participants are being redirected...');
+    
+    // Small delay to allow WebSocket messages to be sent
+    setTimeout(() => {
+      navigate('/');
+    }, 1000);
+    
+  } catch (error) {
+    console.error('Error starting quiz:', error);
+    toast.error(error.message || 'Failed to start quiz');
+  }
+};
 
   const renderParticipantSlot = (index) => {
     const participant = participants[index];
