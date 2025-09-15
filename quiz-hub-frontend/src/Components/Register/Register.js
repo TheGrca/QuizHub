@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, Mail, User, Upload, Image } from 'lucide-react';
 import AuthService from '../../Services/AuthService'
 
@@ -29,6 +29,7 @@ export default function Register() {
     }
   };
 
+  //For uploading profile picture
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -122,12 +123,13 @@ export default function Register() {
     }
   };
 
+  //Register page UI
   return (
     <div className="min-h-screen flex flex-col" style={{ 
       backgroundColor: '#BBBFCA',
       fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
-      {/* Header with QuizHub */}
+      {/* Header */}
       <div className="absolute top-6 left-6">
         <h1 className="text-4xl font-bold" style={{ color: '#495464' }}>
           QuizHub

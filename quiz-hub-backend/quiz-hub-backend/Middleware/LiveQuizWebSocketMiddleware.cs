@@ -361,15 +361,9 @@ namespace quiz_hub_backend.Middleware
 
                 var quizRoom = await liveQuizService.GetLiveQuizRoomInternalAsync(quizId);
                 var targetUserIds = new HashSet<int> { quizRoom.AdminId };
-                if (message.Payload is JsonElement element && element.TryGetProperty("participants", out var participantsElement))
+                foreach (var participant in quizRoom.Participants)
                 {
-                    foreach (var participant in participantsElement.EnumerateArray())
-                    {
-                        if (participant.TryGetProperty("userId", out var userIdElement) && userIdElement.TryGetInt32(out var userId))
-                        {
-                            targetUserIds.Add(userId);
-                        }
-                    }
+                    targetUserIds.Add(participant.UserId);
                 }
 
                 var messageJson = JsonSerializer.Serialize(message);

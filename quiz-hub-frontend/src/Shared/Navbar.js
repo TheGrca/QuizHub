@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { LogOut, User } from 'lucide-react';
 
 const Navbar = ({ isAdmin }) => {
@@ -127,7 +127,7 @@ return (
             <span className="font-medium">{user.username}</span>
           </button>
 
-          {/* Dropdown Menu - Simplified to only show logout */}
+          {/* Logout */}
           {showDropdown && (
             <div 
               className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-2 z-50"

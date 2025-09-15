@@ -109,7 +109,7 @@ export default function LiveQuizGame() {
       }
       break;
         
-   case 'NEXT_QUESTION':
+ case 'NEXT_QUESTION':
   console.log('NEXT_QUESTION received:', data);
   const nextPayload = data.Payload || data.payload;
   
@@ -121,16 +121,32 @@ export default function LiveQuizGame() {
     
     console.log('Current question index:', currentQuestionIndex);
     
-    setGameState({
+    // Normalize participants from PascalCase to camelCase to match LEADERBOARD_UPDATED format
+    let normalizedParticipants = [];
+    const rawParticipants = newGameState.Participants || newGameState.participants;
+    
+    if (rawParticipants && rawParticipants.length > 0) {
+      normalizedParticipants = rawParticipants.map(p => ({
+        userId: p.UserId || p.userId,
+        username: p.Username || p.username,
+        profilePicture: p.ProfilePicture || p.profilePicture,
+        score: p.Score ?? p.score ?? 0,
+        joinedAt: p.JoinedAt || p.joinedAt
+      }));
+      console.log('Normalized participants:', normalizedParticipants);
+    }
+    
+    setGameState(prevState => ({
       ...newGameState,
       // Normalize the property names for frontend use
       currentQuestionIndex: currentQuestionIndex,
       status: newGameState.Status ?? newGameState.status,
-      participants: newGameState.Participants ?? newGameState.participants,
+      // Use normalized participants that match LEADERBOARD_UPDATED format
+      participants: normalizedParticipants.length > 0 ? normalizedParticipants : (prevState?.participants || []),
       currentQuestion: newGameState.CurrentQuestion ?? newGameState.currentQuestion,
       totalQuestions: newGameState.TotalQuestions ?? newGameState.totalQuestions,
       questionStartTime: newGameState.QuestionStartTime ?? newGameState.questionStartTime
-    });
+    }));
     
     if (typeof currentQuestionIndex === 'number') {
       console.log(`Navigating to question ${currentQuestionIndex}`);
@@ -482,67 +498,84 @@ useEffect(() => {
           {/* Question Area */}
 <div className="lg:col-span-3">
   <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-    {gameState?.currentQuestion ? (
-      <>
-        {renderQuestion}
+    {(() => {
+      // Check if quiz is completed first
+      if (gameState?.status === 'Completed' || gameState?.status === 2 || gameState?.Status === 'Completed' || gameState?.Status === 2) {
+        // Immediately redirect to results without showing loading state
+        setTimeout(() => {
+          navigate(`/live-quiz-game/${quizId}/results`);
+        }, 100); // Very short delay
         
-        {/* Answer Options */}
-        <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          {/* Don't Know Button */}
-          <button
-            onClick={handleDoNotKnow}
-            disabled={hasAnswered}
-            className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-              isDoNotKnow
-                ? 'bg-gray-500 text-white'
-                : hasAnswered
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Don't Know
-          </button>
-          
-          {/* Submit Answer Button */}
-          <button
-            onClick={() => handleSubmitAnswer(false)}
-            disabled={hasAnswered || (currentAnswer === null && !isDoNotKnow)}
-            className={`flex-1 px-8 py-3 rounded-lg font-medium transition-colors ${
-              hasAnswered
-                ? 'bg-green-500 text-white cursor-not-allowed'
-                : (currentAnswer !== null || isDoNotKnow)
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {hasAnswered ? 'Answer Submitted!' : 'Confirm Answer'}
-          </button>
-        </div>
-        
-        {/* Status Messages */}
-        {hasAnswered && (
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
-            <p className="text-green-700 font-medium">
-              Answer submitted! Waiting for other players...
-            </p>
+        return (
+          <div className="text-center py-12">
+            <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Quiz Completed!</h2>
+            <p className="text-gray-600">Redirecting to results...</p>
           </div>
-        )}
-      </>
-    ) : gameState?.status === 'Completed' || gameState?.status === 2 ? ( // 2 might be the enum value
-      <div className="text-center py-12">
-        <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Quiz Completed!</h2>
-        <p className="text-gray-600">Redirecting to results...</p>
-      </div>
-    ) : (
-      <div className="text-center py-12">
-        <p className="text-gray-600">Loading question...</p>
-        {/* Add debug info */}
-        <p className="text-xs text-gray-400 mt-2">
-          Status: {gameState?.status}, Current Question: {gameState?.currentQuestion ? 'Found' : 'Missing'}
-        </p>
-      </div>
-    )}
+        );
+      }
+      
+      // Check if we have a current question
+      if (gameState?.currentQuestion) {
+        return (
+          <>
+            {renderQuestion}
+            
+            {/* Answer Options */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              {/* Don't Know Button */}
+              <button
+                onClick={handleDoNotKnow}
+                disabled={hasAnswered}
+                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isDoNotKnow
+                    ? 'bg-gray-500 text-white'
+                    : hasAnswered
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Don't Know
+              </button>
+              
+              {/* Submit Answer Button */}
+              <button
+                onClick={() => handleSubmitAnswer(false)}
+                disabled={hasAnswered || (currentAnswer === null && !isDoNotKnow)}
+                className={`flex-1 px-8 py-3 rounded-lg font-medium transition-colors ${
+                  hasAnswered
+                    ? 'bg-green-500 text-white cursor-not-allowed'
+                    : (currentAnswer !== null || isDoNotKnow)
+                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                {hasAnswered ? 'Answer Submitted!' : 'Confirm Answer'}
+              </button>
+            </div>
+            
+            {/* Status Messages */}
+            {hasAnswered && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
+                <p className="text-green-700 font-medium">
+                  Answer submitted! Waiting for other players...
+                </p>
+              </div>
+            )}
+          </>
+        );
+      }
+      
+      // Default loading state (only shown if not completed and no current question)
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-600">Loading question...</p>
+          <p className="text-xs text-gray-400 mt-2">
+            Status: {gameState?.status || gameState?.Status}, Current Question: {gameState?.currentQuestion ? 'Found' : 'Missing'}
+          </p>
+        </div>
+      );
+    })()}
   </div>
 </div>
 

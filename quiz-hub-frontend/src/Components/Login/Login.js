@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, User } from 'lucide-react';
+import { useState } from 'react';
+import { Eye, EyeOff, User } from 'lucide-react';
 import AuthService from '../../Services/AuthService';
 
 export default function Login() {
@@ -22,6 +22,7 @@ export default function Login() {
     }
   };
 
+  //Log in
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,7 +30,6 @@ export default function Login() {
       setError('All fields must be filled');
       return;
     }
-    
     setIsLoading(true);
     setError('');
     
@@ -44,15 +44,13 @@ export default function Login() {
       } else {
         window.location.href = '/home';
       }
-      
     } catch (err) {
-      console.error('Login error:', err);
       setError('Username or password incorrect');
     } finally {
       setIsLoading(false);
     }
   };
-
+// Instead of clicking the button, users can click enter
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSubmit(e);
@@ -65,12 +63,13 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
+  //Login page UI
   return (
     <div className="min-h-screen flex flex-col" style={{ 
       backgroundColor: '#BBBFCA',
       fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
     }}>
-      {/* Header with QuizHub */}
+      {/* Header*/}
       <div className="absolute top-6 left-6">
         <h1 className="text-4xl font-bold" style={{ color: '#495464' }}>
           QuizHub

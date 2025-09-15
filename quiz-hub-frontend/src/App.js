@@ -20,6 +20,7 @@ import LiveQuizArena from './Components/LiveQuizArena/LiveQuizArena';
 import LiveQuizRoom from './Components/LiveQuizArenaRoom/LiveQuizArenaRoom';
 import LiveQuizGame from './Components/LiveQuizArenaGame/LiveQuizArenaGame';
 import LiveQuizResults from './Components/LiveQuizArenaResults/LiveQuizArenaResults';
+
 const getUserFromStorage = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -69,17 +70,17 @@ const App = () => {
         ) : (
           // User routes
           <>
-  <Route path="/home" element={<HomePage />} />
-  <Route path="/my-results" element={<MyResultsPage />} />
-  <Route path="/my-results/:id" element={<MyResultDetailPage />} />
-  <Route path="/quiz/:id" element={<QuizPage />} />
-  <Route path="/rankings" element={<RankingsPage />} />
-  <Route path="/rankings/:id" element={<RankingsDetailPage />}/>
-   <Route path="/live-quiz-room/:quizName" element={<LiveQuizRoom />} />
-               <Route path="/live-quiz-game/:quizId/:questionNumber" element={<LiveQuizGame />} />
-               <Route path="/live-quiz-game/:quizId/results" element={<LiveQuizResults />} />
-  <Route path="/" element={<Navigate to="/home" replace />} />
-  <Route path="*" element={<Navigate to="/home" replace />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/my-results" element={<MyResultsPage />} />
+            <Route path="/my-results/:id" element={<MyResultDetailPage />} />
+            <Route path="/quiz/:id" element={<QuizPage />} />
+            <Route path="/rankings" element={<RankingsPage />} />
+            <Route path="/rankings/:id" element={<RankingsDetailPage />}/>
+            <Route path="/live-quiz-room/:quizName" element={<LiveQuizRoom />} />
+            <Route path="/live-quiz-game/:quizId/:questionNumber" element={<LiveQuizGame />} />
+            <Route path="/live-quiz-game/:quizId/results" element={<LiveQuizResults />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
           </>
         )}
         

@@ -438,6 +438,7 @@ namespace quiz_hub_backend.Services
                         {
                             await Task.Delay(1000);
                             var gameStateForBroadcast = await GetGameStateAsync(quizId, 0);
+                           
                             var completionMessage = new
                             {
                                 Type = "QUIZ_COMPLETED",
@@ -458,6 +459,14 @@ namespace quiz_hub_backend.Services
                             await Task.Delay(1000);
                             var gameStateForBroadcast = await GetGameStateAsync(quizId, 0);
 
+                            var participantsWithFullData = liveQuiz.Participants.OrderByDescending(p => p.Score).Select(p => new
+                            {
+                                UserId = p.UserId,
+                                Username = p.Username,
+                                ProfilePicture = p.ProfilePicture,
+                                Score = p.Score,
+                                JoinedAt = p.JoinedAt
+                            }).ToList();
                             // Add this logging:
                             _logger.LogInformation($"Broadcasting next question - Current index: {gameStateForBroadcast.CurrentQuestionIndex}");
                             _logger.LogInformation($"Broadcasting next question - Status: {gameStateForBroadcast.Status}");
@@ -469,7 +478,24 @@ namespace quiz_hub_backend.Services
                                 Payload = new
                                 {
                                     quizId = quizId,
-                                    gameState = gameStateForBroadcast
+                                    gameState = new
+                                    {
+                                        QuizId = gameStateForBroadcast.QuizId,
+                                        Status = gameStateForBroadcast.Status,
+                                        CurrentQuestionIndex = gameStateForBroadcast.CurrentQuestionIndex,
+                                        CurrentQuestion = gameStateForBroadcast.CurrentQuestion,
+                                        Participants = liveQuiz.Participants.OrderByDescending(p => p.Score).Select(p => new LiveQuizParticipantDTO
+                                        {
+                                            UserId = p.UserId,
+                                            Username = p.Username ?? "Unknown", // Add null fallback
+                                            ProfilePicture = p.ProfilePicture ?? "/api/placeholder/32/32", // Add null fallback
+                                            Score = p.Score,
+                                            JoinedAt = p.JoinedAt
+                                        }).ToList(),
+                                        TotalQuestions = gameStateForBroadcast.TotalQuestions,
+                                        QuestionStartTime = gameStateForBroadcast.QuestionStartTime,
+                                        UserHasAnswered = false // Reset for new question
+                                    }
                                 }
                             };
 
@@ -878,7 +904,14 @@ namespace quiz_hub_backend.Services
                     Status = liveQuiz.Status,
                     CurrentQuestionIndex = liveQuiz.CurrentQuestionIndex,
                     CurrentQuestion = currentQuestion,
-                    Participants = liveQuiz.Participants.OrderByDescending(p => p.Score).ToList(),
+                    Participants = liveQuiz.Participants.OrderByDescending(p => p.Score).Select(p => new LiveQuizParticipantDTO
+                    {
+                        UserId = p.UserId,
+                        Username = p.Username ?? "Unknown", // Add null fallback
+                        ProfilePicture = p.ProfilePicture ?? "/api/placeholder/32/32", // Add null fallback
+                        Score = p.Score,
+                        JoinedAt = p.JoinedAt
+                    }).ToList(),
                     TotalQuestions = liveQuiz.Questions.Count,
                     QuestionStartTime = liveQuiz.QuestionStartTime,
                     UserHasAnswered = userId > 0 ? liveQuiz.QuestionAnswers.Any(a => a.UserId == userId && a.QuestionIndex == liveQuiz.CurrentQuestionIndex) : false

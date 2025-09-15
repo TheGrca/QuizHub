@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Trophy, BarChart3, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { FileText, Trophy, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import QuizResultBox from './QuizResultBox';
 import AuthService from '../../Services/AuthService';
@@ -31,34 +31,23 @@ export default function MyResults() {
         navigateTo('/login');
         return;
       }
-      console.log('Attempting to fetch quiz results...');
       const data = await UserService.getMyQuizResults();
-      console.log("Quiz results data received:", data);
       
       if (data && data.results) {
-        console.log("Setting results:", data.results);
         setResults(data.results);
       } else {
-        console.log("No results data, setting empty array");
         setResults([]);
       }
       
       if (data && data.stats) {
-        console.log("Setting stats:", data.stats);
         setStats(data.stats);
       } else {
-        console.log("No stats data");
         setStats(null);
       }
 
     } catch (error) {
-      console.error('Error in fetchResults:', error);
-      console.error('Error message:', error.message);
-    
-      setError(error.message || 'Failed to load quiz results');
-      
-      toast.error(error.message || 'Failed to load quiz results');
-      
+      setError(error.message || 'Failed to load quiz results');    
+      toast.error(error.message || 'Failed to load quiz results');  
       if (error.message && error.message.includes('login')) {
         navigateTo('/login');
       } else {
@@ -140,7 +129,7 @@ export default function MyResults() {
       </div>
     );
   }
-
+//My results UI
   return (
     <div className="min-h-screen" style={{ 
       backgroundColor: '#BBBFCA',

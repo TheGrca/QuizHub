@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Trophy, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import QuizBox from '../../Shared/Quizbox';
@@ -20,13 +20,23 @@ export default function Rankings() {
     window.location.href = path;
   };
 
+  useEffect(() => {
+    if (!AuthService.isAuthenticated()) {
+      toast.error('Please login to view rankings');
+      navigateTo('/login');
+      return;
+    }
+    fetchCategories();
+    fetchQuizzes();
+    setLoading(false);
+  }, []);
+
   const fetchQuizzes = async () => {
     setFetchingQuizzes(true);
     try {
       const fetchedQuizzes = await UserService.fetchQuizzes(filters);
       setQuizzes(fetchedQuizzes);
     } catch (error) {
-      console.error('Error fetching quizzes:', error);
       toast.error(error.message || 'Failed to fetch quizzes');
     } finally {
       setFetchingQuizzes(false);
@@ -38,7 +48,7 @@ export default function Rankings() {
       const fetchedCategories = await UserService.fetchCategories();
       setCategories(fetchedCategories);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+       toast.error(error.message || 'Error fetching categories');
     }
   };
 
@@ -61,16 +71,6 @@ export default function Rankings() {
     return () => clearTimeout(timeoutId);
   }, [filters]);
 
-  useEffect(() => {
-    if (!AuthService.isAuthenticated()) {
-      toast.error('Please login to view rankings');
-      navigateTo('/login');
-      return;
-    }
-    fetchCategories();
-    fetchQuizzes();
-    setLoading(false);
-  }, []);
 
   if (loading) {
     return (
@@ -89,6 +89,7 @@ export default function Rankings() {
     );
   }
 
+  //Rankings UI
 return (
   <div>
     <div className="min-h-screen" style={{ 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Trophy, Target, Users } from 'lucide-react';
 import RankingItem from './RankingItem';
 import toast from 'react-hot-toast';
@@ -19,7 +19,6 @@ export default function QuizRankingsDetail() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [error, setError] = useState(null);
 
-  // Navigate function
   const navigateTo = (path) => {
     window.location.href = path;
   };
@@ -27,7 +26,6 @@ export default function QuizRankingsDetail() {
   const fetchRankings = async () => {
     try {
       if (!AuthService.isAuthenticated()) {
-        console.log('User not authenticated');
         toast.error('Please login to view quiz rankings');
         navigateTo('/login');
         return;
@@ -37,7 +35,6 @@ export default function QuizRankingsDetail() {
       console.log('Current user:', user);
       
       if (!user || !user.id) {
-        console.log('User or user.id not found');
         toast.error('User not found. Please login again.');
         navigateTo('/login');
         return;
@@ -47,10 +44,8 @@ export default function QuizRankingsDetail() {
       const data = await UserService.getQuizRankings(quizId);
       
       if (data && data.quiz) {
-        console.log("Setting quiz:", data.quiz);
         setQuiz(data.quiz);
       } else {
-        console.log("No quiz data in response");
         throw new Error('No quiz data received');
       }
       
@@ -61,10 +56,6 @@ export default function QuizRankingsDetail() {
       }
 
     } catch (error) {
-      console.error('Error in fetchRankings:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      
       setError(error.message || 'Failed to load quiz rankings');
       toast.error(error.message || 'Failed to load quiz rankings');
       
@@ -129,7 +120,6 @@ export default function QuizRankingsDetail() {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ 
@@ -246,7 +236,7 @@ export default function QuizRankingsDetail() {
         {/* Rankings */}
         <div className="rounded-lg p-6 shadow-md" style={{ backgroundColor: '#E8E8E8' }}>
           <div className="flex items-center mb-6">
-            <Target className="h-6 w-6 mr-2" style={{ color: '#3b82f6' }} />
+            <Target className="h-6 w-6 mr-2" style={{ color: '#495464' }} />
             <h3 className="text-xl font-bold" style={{ color: '#495464' }}>
               Top Performers ({rankings.length} players)
             </h3>
@@ -276,7 +266,7 @@ export default function QuizRankingsDetail() {
                 onClick={handleTakeQuiz}
                 className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 flex items-center mx-auto"
                 style={{ 
-                  backgroundColor: '#3b82f6',
+                  backgroundColor: '#495464',
                   color: 'white'
                 }}
               >
@@ -294,12 +284,12 @@ export default function QuizRankingsDetail() {
               onClick={handleTakeQuiz}
               className="px-8 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
               style={{ 
-                backgroundColor: '#22c55e',
+                backgroundColor: '#495464',
                 color: 'white'
               }}
             >
               <Trophy className="h-5 w-5 mr-2" />
-              Challenge Yourself - Take This Quiz
+              Take This Quiz Again
             </button>
           </div>
         )}

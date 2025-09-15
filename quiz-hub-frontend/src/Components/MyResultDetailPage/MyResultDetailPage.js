@@ -6,93 +6,66 @@ import QuestionResult from './QuestionResult';
 import AuthService from '../../Services/AuthService';
 import UserService from '../../Services/UserService';
 
-export default function QuizResultDetail() {
-  // Get result ID from URL
-  const getResultIdFromUrl = () => {
+const getResultIdFromUrl = () => {
     const path = window.location.pathname;
     const segments = path.split('/');
     return segments[segments.length - 1];
   };
 
+
+export default function QuizResultDetail() {
   const resultId = getResultIdFromUrl();
   const [result, setResult] = useState(null);
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Navigate function
   const navigateTo = (path) => {
     window.location.href = path;
   };
 
-  // Fetch quiz result using UserService
-  const fetchResult = async () => {
+
+const fetchResult = async () => {
   try {
-    console.log('Starting fetchResult for resultId:', resultId);
-    
-    // Check authentication first
     if (!AuthService.isAuthenticated()) {
-      console.log('User not authenticated');
       toast.error('Please login to view quiz results');
       navigateTo('/login');
       return;
     }
 
     const user = AuthService.getCurrentUser();
-    console.log('Current user:', user);
     
     if (!user || !user.id) {
-      console.log('User or user.id not found');
       toast.error('User not found. Please login again.');
       navigateTo('/login');
       return;
     }
-
-    // Use UserService to fetch result details
-    console.log('Attempting to fetch quiz result...');
     const resultData = await UserService.getQuizResultDetail(resultId);
-    console.log("Quiz result data received:", resultData);
     
     if (resultData) {
-      console.log("Setting result:", resultData);
       setResult(resultData);
       
-      // Set progress data if available - handle null/undefined
+      // Set progress data if available
       if (resultData.progressData && Array.isArray(resultData.progressData) && resultData.progressData.length > 0) {
-        console.log("Setting progress data:", resultData.progressData);
-        // Convert date format for the chart
         const formattedProgressData = resultData.progressData.map(item => ({
           ...item,
-          date: new Date(item.date).toISOString().split('T')[0] // Ensure proper date format
+          date: new Date(item.date).toISOString().split('T')[0] 
         }));
         setProgressData(formattedProgressData);
       } else {
-        console.log("No progress data available or single attempt");
         setProgressData([]);
       }
     } else {
-      console.log("No result data received");
       throw new Error('No result data received');
     }
-
   } catch (error) {
-    console.error('Error in fetchResult:', error);
-    console.error('Error message:', error.message);
-    
-    // Set error state
     setError(error.message || 'Failed to load quiz result');
-    
-    // Show toast notification
     toast.error(error.message || 'Failed to load quiz result');
     
-    // Only redirect if it's an authentication error
     if (error.message && error.message.includes('login')) {
       navigateTo('/login');
-    } else {
-      console.log('Staying on page to show error state');
-    }
+    } 
   } finally {
-    console.log('Setting loading to false');
     setLoading(false);
   }
 };
@@ -173,7 +146,6 @@ export default function QuizResultDetail() {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ 
@@ -239,6 +211,7 @@ export default function QuizResultDetail() {
     );
   }
 
+  //Results Detail Page UI
   return (
     <div className="min-h-screen" style={{ 
       backgroundColor: '#BBBFCA',
@@ -365,36 +338,28 @@ export default function QuizResultDetail() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            
-            <div className="mt-4 text-center">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-bold" style={{ color: '#495464' }}>
-                    {progressData.length}
+
+              <div className="mt-4 text-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-lg font-bold" style={{ color: '#495464' }}>
+                      {progressData.length}
+                    </div>
+                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                      Total Attempts
+                    </div>
                   </div>
-                  <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                    Total Attempts
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold" style={{ color: '#3b82f6' }}>
-                    {Math.max(...progressData.map(p => p.score))}
-                  </div>
-                  <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                    Best Score
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold" style={{ color: '#22c55e' }}>
-                    {Math.max(...progressData.map(p => p.percentage)).toFixed(1)}%
-                  </div>
-                  <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
-                    Best Percentage
+                  <div className="text-center">
+                    <div className="text-lg font-bold" style={{ color: '#22c55e' }}>
+                      {Math.max(...progressData.map(p => p.percentage)).toFixed(1)}%
+                    </div>
+                    <div className="text-sm" style={{ color: '#495464', opacity: 0.7 }}>
+                      Best Percentage
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
         )}
 
         {/* Action Buttons */}
