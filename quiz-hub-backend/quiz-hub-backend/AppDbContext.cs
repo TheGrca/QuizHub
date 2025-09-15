@@ -24,10 +24,9 @@ namespace quiz_hub_backend
         public DbSet<UserQuizHistory> UserQuizHistory { get; set; }
         public DbSet<UserQuizResult> UserQuizResults { get; set; }
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Prevent cascade delete for all critical relationships
             modelBuilder.Entity<UserAnswer>()
                 .HasOne(ua => ua.QuizResult)
                 .WithMany(uqr => uqr.UserAnswers)
@@ -49,7 +48,6 @@ namespace quiz_hub_backend
                 .WithMany(q => q.QuizResults)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure TPH (Table-Per-Hierarchy) for questions
             modelBuilder.Entity<Question>()
                 .HasDiscriminator<string>("QuestionType")
                 .HasValue<MultipleChoiceQuestion>("MultipleChoice")
@@ -57,16 +55,13 @@ namespace quiz_hub_backend
                 .HasValue<TrueFalseQuestion>("TrueFalse")
                 .HasValue<TextInputQuestion>("TextInput");
 
-            // Configure TPH for user answers
             modelBuilder.Entity<UserAnswer>()
                 .HasDiscriminator<string>("AnswerType")
                 .HasValue<MultipleChoiceUserAnswer>("MultipleChoice")
                 .HasValue<MultipleAnswerUserAnswer>("MultipleAnswer")
                 .HasValue<TrueFalseUserAnswer>("TrueFalse")
                 .HasValue<TextInputUserAnswer>("TextInput");
+                
         }
-        
-
-
     }
 }

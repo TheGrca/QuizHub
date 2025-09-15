@@ -64,7 +64,33 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching quizzes.", error = ex.Message });
             }
         }
+[HttpPost("category")]
+public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCategoryDTO createCategoryDto)
+{
+    try
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
+        if (string.IsNullOrWhiteSpace(createCategoryDto.Name))
+        {
+            return BadRequest(new { message = "Category name is required." });
+        }
+
+        var createdCategory = await _adminService.CreateCategoryAsync(createCategoryDto);
+        return CreatedAtAction(nameof(GetCategories), createdCategory);
+    }
+    catch (InvalidOperationException ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "An error occurred while creating the category.", error = ex.Message });
+    }
+}
         //This function fetches a single quiz
         [HttpGet("quiz/{id}")]
         public async Task<ActionResult<QuizResponseDTO>> GetQuiz(int id)

@@ -8,6 +8,7 @@ namespace quiz_hub_backend.Interfaces
         Task<List<CategoryDTO>> GetCategoriesAsync();
         Task<List<QuizResponseDTO>> GetAllQuizzesAsync();
         Task<QuizResponseDTO?> GetQuizByIdAsync(int quizId);
+        Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO createCategoryDto);
 
         //Methods for edit page
         Task<QuizEditDetailDTO?> GetQuizForEditAsync(int quizId);

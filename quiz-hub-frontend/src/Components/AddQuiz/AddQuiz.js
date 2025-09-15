@@ -420,6 +420,29 @@ const [isLoading, setIsLoading] = useState(false);
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [selectedQuestionType, setSelectedQuestionType] = useState('');
   const [editingQuestionIndex, setEditingQuestionIndex] = useState(-1);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+const handleCreateCategory = async () => {
+  if (!newCategoryName.trim()) {
+    toast.error('Category name is required');
+    return;
+  }
+
+  setIsCreatingCategory(true);
+  try {
+    const newCategory = await AdminService.createCategory({ name: newCategoryName.trim() });
+    setCategories([...categories, newCategory]);
+    setNewCategoryName('');
+    setShowCategoryModal(false);
+    toast.success('Category created successfully!');
+  } catch (error) {
+    console.error('Error creating category:', error);
+    toast.error('Failed to create category');
+  } finally {
+    setIsCreatingCategory(false);
+  }
+};
 
   const handleQuizDataChange = (field, value) => {
     setQuizData(prev => ({ ...prev, [field]: value }));
@@ -582,12 +605,22 @@ return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
           <Plus className="h-8 w-8 mr-3" style={{ color: '#495464' }} />
           <h1 className="text-3xl font-bold" style={{ color: '#495464' }}>
             Add New Quiz
           </h1>
         </div>
+            <button
+      onClick={() => setShowCategoryModal(true)}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
+      style={{ backgroundColor: '#495464' }}
+    >
+      <Plus className="h-4 w-4" />
+      Add New Category
+    </button>
+    </div>
         <p className="text-lg" style={{ color: '#495464', opacity: 0.7 }}>
           Create a new quiz
         </p>
@@ -825,7 +858,85 @@ return (
         </div>
       </div>
     </div>
+    {showCategoryModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="rounded-2xl shadow-xl p-6 w-full max-w-md mx-4"
+      style={{ backgroundColor: '#E8E8E8' }}
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold" style={{ color: '#495464' }}>
+          Add New Category
+        </h2>
+        <button
+          onClick={() => {
+            setShowCategoryModal(false);
+            setNewCategoryName('');
+          }}
+          className="p-1 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          <X className="h-5 w-5" style={{ color: '#495464' }} />
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: '#495464' }}>
+            Category Name
+          </label>
+          <input
+            type="text"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            className="w-full p-3 rounded-lg border-0 focus:outline-none focus:ring-2"
+            style={{ 
+              backgroundColor: 'white',
+              color: '#495464',
+              focusRingColor: '#495464'
+            }}
+            placeholder="Enter category name..."
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleCreateCategory();
+              }
+            }}
+          />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            onClick={() => {
+              setShowCategoryModal(false);
+              setNewCategoryName('');
+            }}
+            className="flex-1 px-4 py-2 rounded-lg font-medium border hover:bg-gray-50 transition-colors"
+            style={{ color: '#495464', borderColor: '#495464' }}
+            disabled={isCreatingCategory}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleCreateCategory}
+            disabled={isCreatingCategory || !newCategoryName.trim()}
+            className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              isCreatingCategory || !newCategoryName.trim()
+                ? 'cursor-not-allowed opacity-50'
+                : 'hover:opacity-90'
+            }`}
+            style={{ 
+              backgroundColor: '#495464',
+              color: 'white'
+            }}
+          >
+            {isCreatingCategory ? 'Creating...' : 'Create Category'}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
+)}
+  </div>
+  
 );
 };
 

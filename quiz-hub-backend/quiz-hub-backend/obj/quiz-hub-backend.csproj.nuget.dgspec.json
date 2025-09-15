@@ -1,37 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\quiz-hub-backend.csproj": {}
+    "/Users/grca/Desktop/Web/quiz-hub-backend/quiz-hub-backend/quiz-hub-backend.csproj": {}
   },
   "projects": {
-    "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\quiz-hub-backend.csproj": {
+    "/Users/grca/Desktop/Web/quiz-hub-backend/quiz-hub-backend/quiz-hub-backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\quiz-hub-backend.csproj",
+        "projectUniqueName": "/Users/grca/Desktop/Web/quiz-hub-backend/quiz-hub-backend/quiz-hub-backend.csproj",
         "projectName": "quiz-hub-backend",
-        "projectPath": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\quiz-hub-backend.csproj",
-        "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "D:\\Faks\\Web2\\quiz-hub-backend\\quiz-hub-backend\\obj\\",
+        "projectPath": "/Users/grca/Desktop/Web/quiz-hub-backend/quiz-hub-backend/quiz-hub-backend.csproj",
+        "packagesPath": "/Users/grca/.nuget/packages/",
+        "outputPath": "/Users/grca/Desktop/Web/quiz-hub-backend/quiz-hub-backend/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/grca/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net8.0"
+          "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
+          "net9.0": {
+            "targetAlias": "net9.0",
             "projectReferences": {}
           }
         },
@@ -43,13 +37,13 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
+        "net9.0": {
+          "targetAlias": "net9.0",
           "dependencies": {
             "BCrypt.Net-Next": {
               "target": "Package",
@@ -97,7 +91,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

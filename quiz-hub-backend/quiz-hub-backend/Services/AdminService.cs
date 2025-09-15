@@ -158,7 +158,31 @@ namespace quiz_hub_backend.Services
             return dto;
         }
 
+public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO createCategoryDto)
+{
+    // Check if category with the same name already exists
+    var existingCategory = await _context.Categories
+        .FirstOrDefaultAsync(c => c.Name.ToLower() == createCategoryDto.Name.ToLower());
 
+    if (existingCategory != null)
+    {
+        throw new InvalidOperationException("A category with this name already exists.");
+    }
+
+    var category = new Category
+    {
+        Name = createCategoryDto.Name.Trim()
+    };
+
+    _context.Categories.Add(category);
+    await _context.SaveChangesAsync();
+
+    return new CategoryDTO
+    {
+        Id = category.Id,
+        Name = category.Name
+    };
+}
 
         //For editing
         public async Task<List<QuizResponseDTO>> GetAllQuizzesAsync()
