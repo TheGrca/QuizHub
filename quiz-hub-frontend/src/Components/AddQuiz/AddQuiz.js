@@ -2,353 +2,10 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Settings, Save, X, Edit3 } from 'lucide-react';
 import AdminService from '../../Services/AdminService';
-
-// Editable Single Choice Question Component
-const EditableSingleChoiceQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [options, setOptions] = useState(question?.options || ['', '', '', '']);
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer || 0);
-  const [points, setPoints] = useState(question?.points || 1);
-
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
-
-  const handleSave = () => {
-    if (questionText.trim() && options.every(opt => opt.trim())) {
-      onSave({
-        type: 'MultipleChoiceQuestion',
-        text: questionText,
-        options,
-        correctAnswer,
-        points: parseInt(points)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Answer Options</label>
-        {options.map((option, index) => (
-          <div key={index} className="flex items-center mb-2">
-            <input
-              type="radio"
-              name="correct-answer"
-              checked={correctAnswer === index}
-              onChange={() => setCorrectAnswer(index)}
-              className="mr-3"
-            />
-            <input
-              type="text"
-              value={option}
-              onChange={(e) => handleOptionChange(index, e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              placeholder={`Option ${index + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
-        <input
-          type="number"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
-          min="1"
-          max="10"
-          className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-         className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-         style={{ backgroundColor: '#2a303aff' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable Multiple Choice Question Component
-const EditableMultipleChoiceQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [options, setOptions] = useState(question?.options || ['', '', '', '']);
-  const [correctAnswers, setCorrectAnswers] = useState(question?.correctAnswers || []);
-  const [points, setPoints] = useState(question?.points || 1);
-
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
-
-  const handleCorrectAnswerToggle = (index) => {
-    const newCorrectAnswers = correctAnswers.includes(index)
-      ? correctAnswers.filter(i => i !== index)
-      : [...correctAnswers, index];
-    setCorrectAnswers(newCorrectAnswers);
-  };
-
-  const handleSave = () => {
-    if (questionText.trim() && options.every(opt => opt.trim()) && correctAnswers.length > 0) {
-      onSave({
-        type: 'MultipleAnswerQuestion',
-        text: questionText,
-        options,
-        correctAnswers,
-        points: parseInt(points)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Answer Options (Check all correct answers)</label>
-        {options.map((option, index) => (
-          <div key={index} className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              checked={correctAnswers.includes(index)}
-              onChange={() => handleCorrectAnswerToggle(index)}
-              className="mr-3"
-            />
-            <input
-              type="text"
-              value={option}
-              onChange={(e) => handleOptionChange(index, e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              placeholder={`Option ${index + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
-        <input
-          type="number"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
-          min="1"
-          max="10"
-          className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-         className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-         style={{ backgroundColor: '#2a303aff' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable True/False Question Component
-const EditableTrueFalseQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer ?? true);
-  const [points, setPoints] = useState(question?.points || 1);
-
-  const handleSave = () => {
-    if (questionText.trim()) {
-      onSave({
-        type: 'TrueFalseQuestion',
-        text: questionText,
-        correctAnswer,
-        points: parseInt(points)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Correct Answer</label>
-        <div className="flex space-x-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="trueFalse"
-              checked={correctAnswer === true}
-              onChange={() => setCorrectAnswer(true)}
-              className="mr-2"
-            />
-            True
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="trueFalse"
-              checked={correctAnswer === false}
-              onChange={() => setCorrectAnswer(false)}
-              className="mr-2"
-            />
-            False
-          </label>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
-        <input
-          type="number"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
-          min="1"
-          max="10"
-          className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-         className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-         style={{ backgroundColor: '#2a303aff' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable Text Input Question Component
-const EditableTextInputQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer || '');
-  const [points, setPoints] = useState(question?.points || 1);
-
-  const handleSave = () => {
-    if (questionText.trim() && correctAnswer.trim()) {
-      onSave({
-        type: 'TextInputQuestion',
-        text: questionText,
-        correctAnswer,
-        points: parseInt(points)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Correct Answer</label>
-        <input
-          type="text"
-          value={correctAnswer}
-          onChange={(e) => setCorrectAnswer(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter the correct answer..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Points</label>
-        <input
-          type="number"
-          value={points}
-          onChange={(e) => setPoints(e.target.value)}
-          min="1"
-          max="10"
-          className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-         className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-         style={{ backgroundColor: '#2a303aff' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
+import EditableMultipleChoiceQuestion from '../../Shared/EditableMultipleChoiceQuestion';
+import EditableSingleChoiceQuestion from '../../Shared/EditableSingleChoiceQuestion';
+import EditableTextInputQuestion from '../../Shared/EditableTextInputQuestion';
+import EditableTrueFalseQuestion from '../../Shared/EditableTrueFalseQuestion';
 
 // Question Display Component
 const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
@@ -392,15 +49,22 @@ const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
 
 // Main AddQuiz Component
 const AddQuiz = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+  const [selectedQuestionType, setSelectedQuestionType] = useState('');
+  const [editingQuestionIndex, setEditingQuestionIndex] = useState(-1);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [quizData, setQuizData] = useState({
     name: '',
     description: '',
-    difficulty: 0, // 0: Easy, 1: Medium, 2: Hard (matching your enum)
+    difficulty: 0, 
     categoryId: '',
     timeLimitMinutes: 5
   });
-const [isLoading, setIsLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -416,13 +80,7 @@ const [isLoading, setIsLoading] = useState(false);
     fetchCategories();
   }, []);
 
-  const [questions, setQuestions] = useState([]);
-  const [showQuestionForm, setShowQuestionForm] = useState(false);
-  const [selectedQuestionType, setSelectedQuestionType] = useState('');
-  const [editingQuestionIndex, setEditingQuestionIndex] = useState(-1);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+
 const handleCreateCategory = async () => {
   if (!newCategoryName.trim()) {
     toast.error('Category name is required');
@@ -500,7 +158,7 @@ const handleCreateCategory = async () => {
         questionType: q.type,
         points: q.points,
         // Map question data based on type
-        ...(q.type === 'MultipleChoiceQuestion' && {
+       ...(q.type === 'MultipleChoiceQuestion' && {
           option1: q.options[0],
           option2: q.options[1],
           option3: q.options[2],
