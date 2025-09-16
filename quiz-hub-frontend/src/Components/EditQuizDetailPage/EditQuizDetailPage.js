@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Save, Plus, Trash2, Edit3, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, Save, Plus, Trash2, Edit3, AlertTriangle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService';
@@ -21,6 +21,11 @@ export default function EditQuizDetails() {
   const [error, setError] = useState(null);
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [editingQuestionIndex, setEditingQuestionIndex] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState(null);
+  const [isDeletingQuestion, setIsDeletingQuestion] = useState(false)
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -73,7 +78,6 @@ export default function EditQuizDetails() {
     }
   };
 
-  // Initialize page
   useEffect(() => {
     // Check if user is authenticated and is admin
     if (!AuthService.isAuthenticated() || !AuthService.isAdmin()) {
@@ -86,7 +90,6 @@ export default function EditQuizDetails() {
     fetchCategories();
   }, [quizId]);
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -97,8 +100,7 @@ export default function EditQuizDetails() {
     }));
   };
 
-  // Handle quiz save
-  const handleSaveQuiz = async () => {
+const handleSaveQuiz = async () => {
     if (!formData.name.trim()) {
       toast.error('Quiz name is required');
       return;
@@ -150,8 +152,7 @@ export default function EditQuizDetails() {
     }
   };
 
-  // Handle question add/edit
-  const handleQuestionSave = (questionData) => {
+const handleQuestionSave = (questionData) => {
     if (editingQuestionIndex !== null) {
       // Update existing question
       setFormData(prev => ({
@@ -174,39 +175,175 @@ export default function EditQuizDetails() {
     setEditingQuestionIndex(null);
   };
 
-  // Handle question delete
-  const handleDeleteQuestion = (index) => {
-    if (window.confirm('Are you sure you want to delete this question?')) {
-      setFormData(prev => ({
-        ...prev,
-        questions: prev.questions.filter((_, i) => i !== index)
-      }));
-      toast.success('Question deleted');
-    }
-  };
+const handleDeleteQuestion = (index) => {
+  setQuestionToDelete(index);
+  setShowDeleteQuestionModal(true);
+};
 
-  // Handle question edit
-  const handleEditQuestion = (index) => {
+const confirmDeleteQuestion = () => {
+  setShowDeleteQuestionModal(false);
+  setIsDeletingQuestion(true);
+  
+  setTimeout(() => {
+    setFormData(prev => ({
+      ...prev,
+      questions: prev.questions.filter((_, i) => i !== questionToDelete)
+    }));
+    toast.success('Question deleted');
+    setIsDeletingQuestion(false);
+    setQuestionToDelete(null);
+  }, 300); // Small delay to show the deleting state
+};
+
+const handleEditQuestion = (index) => {
     setEditingQuestionIndex(index);
     setShowQuestionForm(true);
   };
 
-  // Handle delete entire quiz
-  const handleDeleteQuiz = async () => {
-    if (!window.confirm(`Are you sure you want to delete "${quiz?.name}"? This will remove it from all users and cannot be undone.`)) {
-      return;
-    }
 
-    try {
-      await AdminService.deleteQuizCompletely(quizId);
-      toast.success('Quiz deleted successfully');
-      navigateTo('/edit-quiz');
-    } catch (error) {
-      toast.error(error.message || 'Failed to delete quiz');
-    }
-  };
+  //modal for deleting question
+  const DeleteQuestionModal = ({ isOpen, onClose, onConfirm, questionIndex, isDeleting }) => {
+  if (!isOpen) return null;
 
-  // Get difficulty name
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div 
+        className="rounded-2xl shadow-xl p-6 w-full max-w-md mx-4"
+        style={{ backgroundColor: '#E8E8E8' }}
+      >
+        <div className="flex items-start gap-4 mb-6">
+          <div className="flex-shrink-0">
+            <AlertTriangle 
+              className="h-6 w-6" 
+              style={{ color: '#495464' }}
+            />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold mb-2" style={{ color: '#495464' }}>
+              Delete Question
+            </h2>
+            <p className="text-sm" style={{ color: '#495464', opacity: 0.8 }}>
+              Are you sure you want to delete <span className="font-medium">Question {questionIndex + 1}</span>?
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-shrink-0 p-1 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            <X className="h-5 w-5" style={{ color: '#495464' }} />
+          </button>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-1 px-4 py-2 rounded-lg font-medium border hover:bg-gray-50 transition-colors disabled:opacity-50"
+            style={{ color: '#495464', borderColor: '#495464' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              isDeleting 
+                ? 'cursor-not-allowed opacity-50' 
+                : 'hover:opacity-90'
+            }`}
+            style={{ 
+              backgroundColor: '#495464',
+              color: 'white'
+            }}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Question'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+  //modal for deleting quiz
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, quizName, isDeleting }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div 
+        className="rounded-2xl shadow-xl p-6 w-full max-w-md mx-4"
+        style={{ backgroundColor: '#E8E8E8' }}
+      >
+        <div className="flex items-start gap-4 mb-6">
+          <div className="flex-shrink-0">
+            <AlertTriangle 
+              className="h-6 w-6" 
+              style={{ color: '#495464' }} 
+            />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold mb-2" style={{ color: '#495464' }}>
+              Delete Quiz
+            </h2>
+            <p className="text-sm" style={{ color: '#495464', opacity: 0.8 }}>
+              Are you sure you want to delete <span className="font-medium">"{quizName}"</span>?
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-shrink-0 p-1 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            <X className="h-5 w-5" style={{ color: '#495464' }} />
+          </button>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-1 px-4 py-2 rounded-lg font-medium border hover:bg-gray-50 transition-colors disabled:opacity-50"
+            style={{ color: '#495464', borderColor: '#495464' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              isDeleting 
+                ? 'cursor-not-allowed opacity-50' 
+                : 'hover:opacity-90'
+            }`}
+            style={{ 
+              backgroundColor: '#495464', 
+              color: 'white'
+            }}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Quiz'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const handleDeleteQuiz = async () => {
+    setShowDeleteModal(false);
+      setIsDeleting(true);
+      
+      try {
+        await AdminService.deleteQuizCompletely(quizId);
+        toast.success('Quiz deleted successfully');
+        navigateTo('/edit-quiz');
+      } catch (error) {
+        toast.error(error.message || 'Failed to delete quiz');
+      } finally {
+        setIsDeleting(false);
+      }
+};
+
   const getDifficultyName = (difficulty) => {
     switch (difficulty) {
       case 0: return 'Easy';
@@ -214,19 +351,20 @@ export default function EditQuizDetails() {
       case 2: return 'Hard';
       default: return 'Easy';
     }
-  };
+};
 
   // Get question type display name
   const getQuestionTypeDisplay = (questionType) => {
     switch (questionType) {
-      case 'MultipleChoiceQuestion': return 'Multiple Choice';
-      case 'MultipleAnswerQuestion': return 'Multiple Answer';
+      case 'MultipleChoiceQuestion': return 'Single Choice';
+      case 'MultipleAnswerQuestion': return 'Multiple Choice';
       case 'TrueFalseQuestion': return 'True/False';
       case 'TextInputQuestion': return 'Text Input';
       default: return questionType;
     }
   };
 
+  // For page loading
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ 
@@ -297,10 +435,10 @@ export default function EditQuizDetails() {
           
           <div className="flex gap-3">
             <button
-              onClick={handleDeleteQuiz}
+              onClick={() => setShowDeleteModal(true)}
               className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
               style={{ 
-                backgroundColor: '#ef4444',
+                backgroundColor: '#353b42ff',
                 color: 'white'
               }}
             >
@@ -312,7 +450,7 @@ export default function EditQuizDetails() {
               disabled={saving}
               className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center disabled:opacity-50"
               style={{ 
-                backgroundColor: '#22c55e',
+                backgroundColor: '#495464',
                 color: 'white'
               }}
             >
@@ -465,7 +603,7 @@ export default function EditQuizDetails() {
                   }}
                   className="px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
                   style={{ 
-                    backgroundColor: '#22c55e',
+                    backgroundColor: '#495464',
                     color: 'white'
                   }}
                 >
@@ -503,14 +641,14 @@ export default function EditQuizDetails() {
                           <button
                             onClick={() => handleEditQuestion(index)}
                             className="p-2 rounded transition-all duration-200 hover:opacity-70"
-                            style={{ backgroundColor: '#3b82f6' }}
+                            style={{ backgroundColor: '#495464' }}
                           >
                             <Edit3 className="h-4 w-4" style={{ color: 'white' }} />
                           </button>
                           <button
                             onClick={() => handleDeleteQuestion(index)}
                             className="p-2 rounded transition-all duration-200 hover:opacity-70"
-                            style={{ backgroundColor: '#ef4444' }}
+                            style={{ backgroundColor: '#BBBFCA' }}
                           >
                             <Trash2 className="h-4 w-4" style={{ color: 'white' }} />
                           </button>
@@ -602,6 +740,27 @@ export default function EditQuizDetails() {
           }}
         />
       )}
+
+      {/* Quiz Delete modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteQuiz}
+        quizName={quiz?.name}
+        isDeleting={isDeleting}
+      />
+
+      {/* Question Delete modal */}
+      <DeleteQuestionModal
+          isOpen={showDeleteQuestionModal}
+          onClose={() => {
+            setShowDeleteQuestionModal(false);
+            setQuestionToDelete(null);
+          }}
+          onConfirm={confirmDeleteQuestion}
+          questionIndex={questionToDelete}
+          isDeleting={isDeletingQuestion}
+        />
     </div>
   );
 }

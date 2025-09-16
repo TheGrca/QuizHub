@@ -76,29 +76,29 @@ class AdminService {
   }
 
     async createCategory(categoryData) {
-  try {
-    const response = await fetch(`${this.baseURL}/admin/category`, {
-      method: 'POST',
-      headers: {
-        ...this.getAuthHeaders(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(categoryData)
-    });
+      try {
+        const response = await fetch(`${this.baseURL}/admin/category`, {
+          method: 'POST',
+          headers: {
+            ...this.getAuthHeaders(),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(categoryData)
+        });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Server error:', errorText);
-      throw new Error('Failed to create category');
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server error:', errorText);
+          throw new Error('Failed to create category');
+        }
+
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.error('Error creating category:', error);
+        throw new Error('Failed to create category');
+      }
     }
-
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error('Error creating category:', error);
-    throw new Error('Failed to create category');
-  }
-}
 
   async deleteQuizCompletely(quizId) {
     try {
@@ -120,8 +120,6 @@ class AdminService {
       throw new Error('Failed to delete quiz');
     }
   }
-
-  
 
   async getCategories() {
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -17,7 +17,6 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
     correctAnswer: ''
   });
 
-  // Initialize form data
   useEffect(() => {
     if (question) {
       setFormData({
@@ -36,7 +35,7 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
     }
   }, [question]);
 
-  // Handle input changes
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -47,7 +46,7 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
     }));
   };
 
-  // Handle multiple answer selection
+ 
   const handleMultipleAnswerChange = (optionIndex) => {
     const currentIndices = formData.correctAnswerIndices.split(',').filter(i => i !== '').map(i => parseInt(i));
     const isSelected = currentIndices.includes(optionIndex);
@@ -65,7 +64,7 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
     }));
   };
 
-  // Validate form
+
   const validateForm = () => {
     if (!formData.text.trim()) {
       toast.error('Question text is required');
@@ -107,7 +106,7 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
     return true;
   };
 
-  // Handle save
+
   const handleSave = () => {
     if (!validateForm()) {
       return;
@@ -348,7 +347,7 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
             onClick={handleSave}
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
             style={{ 
-              backgroundColor: '#22c55e',
+              backgroundColor: '#495464',
               color: 'white'
             }}
           >
