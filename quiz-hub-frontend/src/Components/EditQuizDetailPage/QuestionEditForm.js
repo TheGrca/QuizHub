@@ -175,8 +175,8 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
                     focusRingColor: '#495464'
                   }}
                 >
-                  <option value="MultipleChoiceQuestion">Multiple Choice</option>
-                  <option value="MultipleAnswerQuestion">Multiple Answer</option>
+                  <option value="MultipleChoiceQuestion">Single Choice</option>
+                  <option value="MultipleAnswerQuestion">Multiple Choice</option>
                   <option value="TrueFalseQuestion">True/False</option>
                   <option value="TextInputQuestion">Text Input</option>
                 </select>
@@ -323,9 +323,6 @@ export default function QuestionEditForm({ question, onSave, onClose }) {
                   }}
                   placeholder="Enter the correct answer"
                 />
-                <p className="text-sm mt-2" style={{ color: '#495464', opacity: 0.7 }}>
-                  Student answers will be checked against this text (case-insensitive)
-                </p>
               </div>
             )}
           </div>

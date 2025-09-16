@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Users, BarChart3, TrendingUp, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Users, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService';
@@ -48,7 +48,7 @@ export default function UserResults() {
     }
   }, [searchTerm, users]);
 
-  // Initialize page
+
   useEffect(() => {
     // Check if user is authenticated and is admin
     if (!AuthService.isAuthenticated() || !AuthService.isAdmin()) {
@@ -63,18 +63,6 @@ export default function UserResults() {
   // Handle user click
   const handleUserClick = (userId) => {
     navigateTo(`/user-results/${userId}`);
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (dateString === '0001-01-01T00:00:00' || !dateString) {
-      return 'Never';
-    }
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
   };
 
   if (loading) {

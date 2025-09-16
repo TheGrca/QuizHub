@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Trophy, Target, Users } from 'lucide-react';
+import { ArrowLeft, Trophy, Target, Users, ChevronDown } from 'lucide-react';
 import RankingItem from './RankingItem';
 import toast from 'react-hot-toast';
 import AuthService from '../../Services/AuthService';
@@ -15,12 +15,50 @@ export default function QuizRankingsDetail() {
   const quizId = getQuizIdFromUrl();
   const [quiz, setQuiz] = useState(null);
   const [rankings, setRankings] = useState([]);
+  const [filteredRankings, setFilteredRankings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [error, setError] = useState(null);
+  const [timeFilter, setTimeFilter] = useState('all');
 
   const navigateTo = (path) => {
     window.location.href = path;
+  };
+
+  const timeFilterOptions = [
+    { value: 'all', label: 'All Time' },
+    { value: 'week', label: 'This Week' },
+    { value: 'month', label: 'This Month' }
+  ];
+
+  const filterRankingsByTime = (rankingsData, filter) => {
+    if (filter === 'all') return rankingsData;
+
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    return rankingsData.filter(ranking => {
+      const completionDate = new Date(ranking.completionDate);
+      
+      switch (filter) {
+        case 'week':
+          return completionDate >= startOfWeek;
+        case 'month':
+          return completionDate >= startOfMonth;
+        default:
+          return true;
+      }
+    });
+  };
+
+  const handleTimeFilterChange = (newFilter) => {
+    setTimeFilter(newFilter);
+    const filtered = filterRankingsByTime(rankings, newFilter);
+    setFilteredRankings(filtered);
   };
 
   const fetchRankings = async () => {
@@ -51,8 +89,11 @@ export default function QuizRankingsDetail() {
       
       if (data && data.rankings) {
         setRankings(data.rankings);
+        const filtered = filterRankingsByTime(data.rankings, timeFilter);
+        setFilteredRankings(filtered);
       } else {
         setRankings([]);
+        setFilteredRankings([]);
       }
 
     } catch (error) {
@@ -235,16 +276,41 @@ export default function QuizRankingsDetail() {
 
         {/* Rankings */}
         <div className="rounded-lg p-6 shadow-md" style={{ backgroundColor: '#E8E8E8' }}>
-          <div className="flex items-center mb-6">
-            <Target className="h-6 w-6 mr-2" style={{ color: '#495464' }} />
-            <h3 className="text-xl font-bold" style={{ color: '#495464' }}>
-              Top Performers ({rankings.length} players)
-            </h3>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Target className="h-6 w-6 mr-2" style={{ color: '#495464' }} />
+              <h3 className="text-xl font-bold" style={{ color: '#495464' }}>
+                Top Performers ({filteredRankings.length} players)
+              </h3>
+            </div>
+
+            {/* Time Filter Dropdown */}
+            <div className="relative">
+              <select
+                value={timeFilter}
+                onChange={(e) => handleTimeFilterChange(e.target.value)}
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 font-medium focus:outline-none focus:ring-2 cursor-pointer"
+                style={{ 
+                  color: '#495464',
+                  focusRingColor: '#495464'
+                }}
+              >
+                {timeFilterOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none" 
+                style={{ color: '#495464' }}
+              />
+            </div>
           </div>
 
-          {rankings.length > 0 ? (
+          {filteredRankings.length > 0 ? (
             <div className="space-y-3">
-              {rankings.map((ranking, index) => (
+              {filteredRankings.map((ranking, index) => (
                 <RankingItem
                   key={ranking.userId}
                   ranking={ranking}
@@ -257,10 +323,13 @@ export default function QuizRankingsDetail() {
             <div className="text-center py-12">
               <Trophy className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.4 }} />
               <h3 className="text-xl font-semibold mb-2" style={{ color: '#495464' }}>
-                No Results Yet
+                {timeFilter === 'all' ? 'No Results Yet' : `No Results for ${timeFilterOptions.find(opt => opt.value === timeFilter)?.label}`}
               </h3>
               <p className="mb-6" style={{ color: '#495464', opacity: 0.7 }}>
-                Be the first to take this quiz and claim the top spot!
+                {timeFilter === 'all' 
+                  ? 'Be the first to take this quiz and claim the top spot!' 
+                  : 'No one has taken this quiz in the selected time period.'
+                }
               </p>
               <button
                 onClick={handleTakeQuiz}
@@ -278,7 +347,7 @@ export default function QuizRankingsDetail() {
         </div>
 
         {/* Additional Info Section */}
-        {rankings.length > 0 && (
+        {filteredRankings.length > 0 && (
           <div className="mt-6 text-center">
             <button
               onClick={handleTakeQuiz}

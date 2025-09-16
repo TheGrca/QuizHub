@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, User, Trophy, BarChart3, Clock, Calendar, Target } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, User, Trophy, Clock, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService'
-import UserResults from '../UserResults/UserResults';
+
 export default function UserResultsDetailPage() {
   // Get user ID from URL
   const getUserIdFromUrl = () => {
