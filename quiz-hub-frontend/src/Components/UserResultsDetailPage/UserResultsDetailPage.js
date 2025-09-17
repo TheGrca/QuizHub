@@ -54,7 +54,9 @@ export default function UserResultsDetailPage() {
 
   // Format date
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const utcDate = new Date(dateString + 'Z');
+
+    return utcDate.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

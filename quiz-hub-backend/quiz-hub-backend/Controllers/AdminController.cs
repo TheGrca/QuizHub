@@ -15,7 +15,7 @@ namespace quiz_hub_backend.Controllers
             _adminService = adminService;
         }
 
-        //This function makes a quiz
+        //This makes a quiz
         [HttpPost("quiz")]
         public async Task<ActionResult<QuizResponseDTO>> CreateQuiz([FromBody] CreateQuizDTO createQuizDto)
         {
@@ -35,7 +35,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
-        //This function fetches the categories
+        //This fetches the categories
         [HttpGet("categories")]
         public async Task<ActionResult<List<CategoryDTO>>> GetCategories()
         {
@@ -50,7 +50,7 @@ namespace quiz_hub_backend.Controllers
             }
         }
 
-        //This function fetches all quizzes
+        //This fetches all quizzes
         [HttpGet("quizzes")]
         public async Task<ActionResult<List<QuizResponseDTO>>> GetAllQuizzes()
         {
@@ -64,34 +64,37 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching quizzes.", error = ex.Message });
             }
         }
-[HttpPost("category")]
-public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCategoryDTO createCategoryDto)
-{
-    try
-    {
-        if (!ModelState.IsValid)
+       
+       //This creates a new category
+        [HttpPost("category")]
+        public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCategoryDTO createCategoryDto)
         {
-            return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (string.IsNullOrWhiteSpace(createCategoryDto.Name))
+                {
+                    return BadRequest(new { message = "Category name is required." });
+                }
+
+                var createdCategory = await _adminService.CreateCategoryAsync(createCategoryDto);
+                return CreatedAtAction(nameof(GetCategories), createdCategory);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the category.", error = ex.Message });
+            }
         }
 
-        if (string.IsNullOrWhiteSpace(createCategoryDto.Name))
-        {
-            return BadRequest(new { message = "Category name is required." });
-        }
-
-        var createdCategory = await _adminService.CreateCategoryAsync(createCategoryDto);
-        return CreatedAtAction(nameof(GetCategories), createdCategory);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(500, new { message = "An error occurred while creating the category.", error = ex.Message });
-    }
-}
-        //This function fetches a single quiz
+        //This fetches a single quiz
         [HttpGet("quiz/{id}")]
         public async Task<ActionResult<QuizResponseDTO>> GetQuiz(int id)
         {
@@ -112,7 +115,7 @@ public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCat
             }
         }
 
-        //This function selects one quiz that will be edited
+        //This selects one quiz that will be edited
         [HttpGet("quiz/{quizId}/edit")]
         public async Task<IActionResult> GetQuizForEdit(int quizId)
         {
@@ -132,7 +135,7 @@ public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCat
             }
         }
 
-        //This function edits a quiz
+        //This edits a quiz
         [HttpPut("quiz/{quizId}/edit")]
         public async Task<IActionResult> UpdateQuizWithEdit(int quizId, [FromBody] EditQuizDTO editQuizDto)
         {
@@ -157,7 +160,7 @@ public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCat
             }
         }
 
-        //This function deletes the quiz
+        //This deletes a quiz
         [HttpDelete("quiz/{quizId}/delete")]
         public async Task<IActionResult> DeleteQuizCompletely(int quizId)
         {
@@ -177,7 +180,7 @@ public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCat
             }
         }
 
-        //This function fetches all users
+        //This fetches all users
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -192,7 +195,7 @@ public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCat
             }
         }
 
-        //This function fetches one user and all of his quizzes
+        //This fetches one user and all of his quizz results
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserResults(int userId)
         {

@@ -51,7 +51,7 @@ export default function LiveQuizGame() {
   // Initialize WebSocket connection
   const initializeWebSocket = () => {
     try {
-      wsRef.current = new WebSocket('ws://localhost:5175/ws');
+      wsRef.current = new WebSocket(process.env.REACT_APP_WS_URL);
       
       wsRef.current.onopen = () => {
         if (user) {

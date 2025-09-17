@@ -35,7 +35,7 @@ namespace quiz_hub_backend.Controllers
 
                 if (result.Success)
                 {
-                    // Broadcast to all connected users via WebSocket middleware
+                    // Broadcast to all connected users with WebSocket middleware
                     var broadcastPayload = new
                     {
                         quizData = new
@@ -49,7 +49,6 @@ namespace quiz_hub_backend.Controllers
                         adminId = adminId.Value.ToString()
                     };
 
-                    // Use the static method to broadcast
                     _ = Task.Run(() => LiveQuizWebSocketMiddleware.BroadcastLiveQuizCreated(broadcastPayload));
                 }
 
@@ -273,7 +272,7 @@ namespace quiz_hub_backend.Controllers
                         {
                             var broadcastMessage = new
                             {
-                                Type = "LEADERBOARD_UPDATED", // Different message type
+                                Type = "LEADERBOARD_UPDATED", 
                                 Payload = leaderboardPayload
                             };
 

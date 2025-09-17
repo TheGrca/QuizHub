@@ -90,7 +90,7 @@ const LiveQuizArena = () => {
 
   const initializeWebSocket = () => {
     try {
-      wsRef.current = new WebSocket('ws://localhost:5175/ws');
+      wsRef.current = new WebSocket(process.env.REACT_APP_WS_URL);
 
       wsRef.current.onopen = () => {
         console.log('WebSocket connection established');

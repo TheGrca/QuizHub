@@ -191,7 +191,7 @@ namespace quiz_hub_backend.Middleware
         {
             try
             {
-                // Broadcast live quiz creation to all connected users (except admin)
+                // Broadcast live quiz creation to all connected users
                 var message = new LiveQuizWebSocketMessageDTO
                 {
                     Type = "LIVE_QUIZ_CREATED",
@@ -213,7 +213,7 @@ namespace quiz_hub_backend.Middleware
                 var joinData = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(payload));
                 var quizId = joinData.GetProperty("quizId").GetString();
 
-                // Get updated participants list with FULL participant data
+                // Get updated participants list 
                 var participants = await liveQuizService.GetParticipantsAsync(quizId);
 
                 Console.WriteLine($"Participants count: {participants.Count}");
@@ -315,9 +315,6 @@ namespace quiz_hub_backend.Middleware
             {
                 using var scope = _serviceProvider.CreateScope();
                 var liveQuizService = scope.ServiceProvider.GetRequiredService<ILiveQuizService>();
-
-                // Note: In a real implementation, you might want to track which quiz the user was in
-                // and automatically remove them from the quiz when they disconnect
 
                 _logger.LogInformation($"User {userId} disconnected");
             }
@@ -424,14 +421,12 @@ namespace quiz_hub_backend.Middleware
                     }
                     catch (Exception ex)
                     {
-                        // Log error but continue with other connections
                         Console.WriteLine($"Error sending message to connection {conn.Id}: {ex.Message}");
                     }
                 });
 
             await Task.WhenAll(tasks);
         }
-
 
         private async Task HandleQuizStarted(string connectionId, object payload, ILiveQuizService liveQuizService)
         {

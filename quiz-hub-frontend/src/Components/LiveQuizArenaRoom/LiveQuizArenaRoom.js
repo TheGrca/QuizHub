@@ -55,7 +55,7 @@ const LiveQuizArenaRoom = () => {
       wsRef.current.close();
       wsRef.current = null;
     }
-      wsRef.current = new WebSocket('ws://localhost:5175/ws');
+      wsRef.current = new WebSocket(process.env.REACT_APP_WS_URL);
 
       wsRef.current.onopen = () => {
         console.log('WebSocket connection established');
@@ -224,7 +224,6 @@ const handleStartQuiz = async () => {
     }
 
     await LiveQuizService.startQuiz(quizId);
-    toast.success('Quiz started! Participants are being redirected...');
     setTimeout(() => {
       navigate('/');
     }, 1000);
