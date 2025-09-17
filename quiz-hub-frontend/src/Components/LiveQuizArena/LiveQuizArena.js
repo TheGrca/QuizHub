@@ -1,359 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Plus, Settings, Save, X, Edit3, Zap, Clock } from 'lucide-react';
+import { Plus, Zap, Clock } from 'lucide-react';
 import AuthService from '../../Services/AuthService';
 import AdminService from '../../Services/AdminService';
 import LiveQuizService from '../../Services/LiveQuizService';
+import EditableSingleChoiceQuestion from '../../Shared/LiveEditableSingleChoiceQuestion';
+import EditableMultipleChoiceQuestion from '../../Shared/LiveEditableMultipleChoiceQuestion';
+import EditableTrueFalseQuestion from '../../Shared/LiveEditableTrueFalseQuestion';
+import EditableTextInputQuestion from '../../Shared/LiveEditableTextInputQuestion';
 
-// Editable Single Choice Question Component for Live Quiz
-const EditableSingleChoiceQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [options, setOptions] = useState(question?.options || ['', '', '', '']);
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer || 0);
-  const [timeToAnswer, setTimeToAnswer] = useState(question?.timeToAnswer || 30);
 
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
-
-  const handleSave = () => {
-    if (questionText.trim() && options.every(opt => opt.trim())) {
-      onSave({
-        type: 'SingleChoiceQuestion',
-        text: questionText,
-        options,
-        correctAnswer,
-        timeToAnswer: parseInt(timeToAnswer)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Answer Options</label>
-        {options.map((option, index) => (
-          <div key={index} className="flex items-center mb-2">
-            <input
-              type="radio"
-              name="correct-answer"
-              checked={correctAnswer === index}
-              onChange={() => setCorrectAnswer(index)}
-              className="mr-3"
-            />
-            <input
-              type="text"
-              value={option}
-              onChange={(e) => handleOptionChange(index, e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              placeholder={`Option ${index + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Time to Answer (seconds)</label>
-        <input
-          type="number"
-          value={timeToAnswer}
-          onChange={(e) => setTimeToAnswer(e.target.value)}
-          min="10"
-          max="120"
-          className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: '#495464' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable Multiple Choice Question Component for Live Quiz
-const EditableMultipleChoiceQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [options, setOptions] = useState(question?.options || ['', '', '', '']);
-  const [correctAnswers, setCorrectAnswers] = useState(question?.correctAnswers || []);
-  const [timeToAnswer, setTimeToAnswer] = useState(question?.timeToAnswer || 30);
-
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
-
-  const handleCorrectAnswerToggle = (index) => {
-    const newCorrectAnswers = correctAnswers.includes(index)
-      ? correctAnswers.filter(i => i !== index)
-      : [...correctAnswers, index];
-    setCorrectAnswers(newCorrectAnswers);
-  };
-
-  const handleSave = () => {
-    if (questionText.trim() && options.every(opt => opt.trim()) && correctAnswers.length > 0) {
-      onSave({
-        type: 'MultipleChoiceQuestion',
-        text: questionText,
-        options,
-        correctAnswers,
-        timeToAnswer: parseInt(timeToAnswer)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Answer Options (Check all correct answers)</label>
-        {options.map((option, index) => (
-          <div key={index} className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              checked={correctAnswers.includes(index)}
-              onChange={() => handleCorrectAnswerToggle(index)}
-              className="mr-3"
-            />
-            <input
-              type="text"
-              value={option}
-              onChange={(e) => handleOptionChange(index, e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              placeholder={`Option ${index + 1}`}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Time to Answer (seconds)</label>
-        <input
-          type="number"
-          value={timeToAnswer}
-          onChange={(e) => setTimeToAnswer(e.target.value)}
-          min="10"
-          max="120"
-          className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: '#495464' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable True/False Question Component for Live Quiz
-const EditableTrueFalseQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer ?? true);
-  const [timeToAnswer, setTimeToAnswer] = useState(question?.timeToAnswer || 30);
-
-  const handleSave = () => {
-    if (questionText.trim()) {
-      onSave({
-        type: 'TrueFalseQuestion',
-        text: questionText,
-        correctAnswer,
-        timeToAnswer: parseInt(timeToAnswer)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Correct Answer</label>
-        <div className="flex space-x-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="trueFalse"
-              checked={correctAnswer === true}
-              onChange={() => setCorrectAnswer(true)}
-              className="mr-2"
-            />
-            True
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="trueFalse"
-              checked={correctAnswer === false}
-              onChange={() => setCorrectAnswer(false)}
-              className="mr-2"
-            />
-            False
-          </label>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Time to Answer (seconds)</label>
-        <input
-          type="number"
-          value={timeToAnswer}
-          onChange={(e) => setTimeToAnswer(e.target.value)}
-          min="10"
-          max="120"
-          className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: '#495464' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Editable Text Input Question Component for Live Quiz
-const EditableTextInputQuestion = ({ question, onSave, onCancel }) => {
-  const [questionText, setQuestionText] = useState(question?.text || '');
-  const [correctAnswer, setCorrectAnswer] = useState(question?.correctAnswer || '');
-  const [timeToAnswer, setTimeToAnswer] = useState(question?.timeToAnswer || 30);
-
-  const handleSave = () => {
-    if (questionText.trim() && correctAnswer.trim()) {
-      onSave({
-        type: 'TextInputQuestion',
-        text: questionText,
-        correctAnswer,
-        timeToAnswer: parseInt(timeToAnswer)
-      });
-    }
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
-        <textarea
-          value={questionText}
-          onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          rows={2}
-          placeholder="Enter your question..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Correct Answer</label>
-        <input
-          type="text"
-          value={correctAnswer}
-          onChange={(e) => setCorrectAnswer(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter the correct answer..."
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Time to Answer (seconds)</label>
-        <input
-          type="number"
-          value={timeToAnswer}
-          onChange={(e) => setTimeToAnswer(e.target.value)}
-          min="10"
-          max="120"
-          className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: '#495464' }}
-        >
-          Save Question
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Question Display Component for Live Quiz
 const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
   const getQuestionTypeLabel = (type) => {
     switch (type) {
@@ -372,13 +29,13 @@ const QuestionDisplay = ({ question, index, onEdit, onDelete }) => {
         <div className="flex space-x-2">
           <button
             onClick={() => onEdit(index)}
-            className="text-blue-600 hover:text-blue-800 text-sm"
+            className="text-black-600 hover:text-black-800 text-sm"
           >
             Edit
           </button>
           <button
             onClick={() => onDelete(index)}
-            className="text-red-600 hover:text-red-800 text-sm"
+            className="text-black-600 hover:text-black-800 text-sm"
           >
             Delete
           </button>
@@ -523,19 +180,15 @@ const LiveQuizArena = () => {
   
   try {
     setIsCreating(true);
-    
-    // Prepare quiz data for backend
     const liveQuizData = {
   name: quizData.name,
   description: quizData.description,
   categoryId: parseInt(quizData.categoryId),
   questions: questions.map((q, index) => {
-    // Base question object with all required fields
     const question = {
       type: q.type,
       text: q.text,
       timeToAnswer: q.timeToAnswer,
-      // Initialize all required fields with defaults
       options: [],
       correctAnswer: null,
       correctAnswers: [],
@@ -543,11 +196,11 @@ const LiveQuizArena = () => {
       correctAnswerText: null
     };
 
-if (q.type === 'SingleChoiceQuestion') {  // Fixed: was 'MultipleChoiceQuestion'
+if (q.type === 'SingleChoiceQuestion') { 
       question.options = q.options;
       question.correctAnswer = q.correctAnswer;
       question.correctAnswers = [q.correctAnswer];
-    } else if (q.type === 'MultipleChoiceQuestion') {  // Fixed: was 'MultipleAnswerQuestion'
+    } else if (q.type === 'MultipleChoiceQuestion') {  
       question.options = q.options;
       question.correctAnswers = q.correctAnswers;
     } else if (q.type === 'TrueFalseQuestion') {
@@ -561,8 +214,6 @@ if (q.type === 'SingleChoiceQuestion') {  // Fixed: was 'MultipleChoiceQuestion'
     return question;
   })
 };
-
-console.log('Full live quiz data being sent:', JSON.stringify(liveQuizData, null, 2));
     
     const response = await LiveQuizService.createLiveQuiz(liveQuizData);
     

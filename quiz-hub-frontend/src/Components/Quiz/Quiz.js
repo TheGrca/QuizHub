@@ -21,6 +21,7 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const navigateTo = (path) => {
     window.location.href = path;
@@ -36,7 +37,7 @@ export default function Quiz() {
 
       const quizData = await UserService.getQuizById(id);
       setQuiz(quizData);
-      setTimeLeft(quizData.timeLimitMinutes * 60); // Convert to seconds
+      setTimeLeft(quizData.timeLimitMinutes * 60); 
     } catch (error) {
       console.error('Error fetching quiz:', error);
       toast.error(error.message || 'Failed to load quiz');
@@ -56,6 +57,7 @@ export default function Quiz() {
         navigateTo('/login');
         return;
       }
+      
       const userAnswers = quiz.questions.map((question, index) => ({
         QuestionId: question.id,
         AnswerType: question.questionType,
@@ -94,16 +96,18 @@ export default function Quiz() {
 
   // Timer effect
   useEffect(() => {
-    if (timeLeft > 0 && !submitting) {
+    if (timeLeft > 0 && !submitting && !hasSubmitted) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && quiz) {
-      toast.warning('Time is up! Submitting quiz automatically.');
+    } else if (timeLeft === 0 && quiz && !submitting && !hasSubmitted) {
+      setHasSubmitted(true);
+
+      toast.error('Time is up! Submitting quiz automatically.');
       submitQuiz();
     }
-  }, [timeLeft, submitting, quiz]);
+  }, [timeLeft, submitting, quiz, hasSubmitted]);
 
   useEffect(() => {
     fetchQuiz();
@@ -141,6 +145,7 @@ export default function Quiz() {
 
   const handleConfirmFinish = () => {
     setShowFinishModal(false);
+    setHasSubmitted(true);
     submitQuiz();
   };
 
@@ -260,7 +265,7 @@ export default function Quiz() {
               disabled={submitting}
               className="px-8 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ 
-                backgroundColor: '#22c55e',
+                backgroundColor: '#495464',
                 color: 'white'
               }}
             >
@@ -272,7 +277,7 @@ export default function Quiz() {
               onClick={handleNext}
               className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 flex items-center"
               style={{ 
-                backgroundColor: '#3b82f6',
+                backgroundColor: '#495464',
                 color: 'white'
               }}
             >

@@ -29,7 +29,11 @@ const FinishQuizModal = ({ isOpen, onClose, onConfirm }) => {
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+            className="flex-1 px-4 py-3 text-white rounded-lg transition-colors font-medium"
+            style={{ 
+              backgroundColor: '#495464',
+              color: 'white'
+            }}
           >
             Finish Quiz
           </button>

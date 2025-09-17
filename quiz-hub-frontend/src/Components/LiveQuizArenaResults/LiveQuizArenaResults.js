@@ -1,5 +1,4 @@
-// LiveQuizResults.js - Create this new component
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Award, Clock, Home } from 'lucide-react';
 import AuthService from '../../Services/AuthService';
@@ -23,7 +22,6 @@ const LiveQuizResults = () => {
     loadResults();
   }, []);
 
-  // Countdown timer
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
@@ -120,7 +118,7 @@ const LiveQuizResults = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Trophy className="h-12 w-12 mr-4 text-yellow-500" />
+            <Trophy className="h-12 w-12 mr-4" style={{ color: '#495464' }}/>
             <div>
               <h1 className="text-4xl font-bold" style={{ color: '#495464' }}>
                 Quiz Complete!
@@ -134,7 +132,7 @@ const LiveQuizResults = () => {
           {/* Countdown Timer */}
           <div className="flex items-center justify-center mt-6">
             <div className="bg-white rounded-lg shadow-lg px-6 py-4 flex items-center space-x-3">
-              <Clock className="h-5 w-5 text-blue-500" />
+              <Clock className="h-5 w-5 text-black-500" />
               <span className="text-lg font-semibold text-gray-700">
                 Returning to home in
               </span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Users, Crown, X, Play, Clock, Zap } from 'lucide-react';
@@ -10,14 +10,12 @@ const LiveQuizArenaRoom = () => {
   const navigate = useNavigate();
   const wsRef = useRef(null);
   const [user] = useState(AuthService.getCurrentUser());
-  
   const [quizRoom, setQuizRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Convert quiz name back to ID (you might need to adjust this based on your routing)
-  const quizId = quizName; // Assuming quizName is actually the quizId for now
+  const quizId = quizName; 
 
   useEffect(() => {
     if (!user) {
@@ -62,7 +60,6 @@ const LiveQuizArenaRoom = () => {
       wsRef.current.onopen = () => {
         console.log('WebSocket connection established');
         
-        // Register user as connected
         const message = {
           type: 'USER_CONNECTED',
           payload: {
@@ -72,7 +69,6 @@ const LiveQuizArenaRoom = () => {
         };
         wsRef.current.send(JSON.stringify(message));
 
-        // Join the quiz room if not admin
         if (!isAdmin) {
           handleJoinQuiz();
         }
@@ -140,7 +136,6 @@ const LiveQuizArenaRoom = () => {
 
   const handleJoinQuiz = async () => {
    try {
-    // Double-check that user is not admin before attempting to join
     if (isAdmin) {
       console.log('Admin cannot join their own quiz');
       return;
@@ -150,7 +145,6 @@ const LiveQuizArenaRoom = () => {
     
      const updatedRoom = await LiveQuizService.getQuizRoom(quizId);
     setParticipants(updatedRoom.participants || []);
-    // Notify others via WebSocket
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       const message = {
         type: 'USER_JOINED_QUIZ',
@@ -159,12 +153,10 @@ const LiveQuizArenaRoom = () => {
           userId: user.id
         }
       };
-      console.log("AHNSDKLA" + message.userId)
       wsRef.current.send(JSON.stringify(message));
     }
   } catch (error) {
     console.error('Failed to join quiz:', error);
-    // Don't show error toast for admin trying to join - this is expected behavior
     if (!error.message.includes('Admin cannot join')) {
       toast.error('Failed to join quiz');
       navigate('/home');
@@ -177,7 +169,7 @@ const LiveQuizArenaRoom = () => {
     await LiveQuizService.leaveQuiz(quizId);
      const updatedRoom = await LiveQuizService.getQuizRoom(quizId);
     setParticipants(updatedRoom.participants || []);
-    // Notify others via WebSocket
+
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       const message = {
         type: 'USER_LEFT_QUIZ',
@@ -205,7 +197,6 @@ const LiveQuizArenaRoom = () => {
     try {
       await LiveQuizService.cancelQuiz(quizId);
       
-      // Notify others via WebSocket
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
         const message = {
           type: 'QUIZ_CANCELLED',
@@ -233,11 +224,7 @@ const handleStartQuiz = async () => {
     }
 
     await LiveQuizService.startQuiz(quizId);
-    
-    // Navigate admin back to home (disconnects them from the room)
     toast.success('Quiz started! Participants are being redirected...');
-    
-    // Small delay to allow WebSocket messages to be sent
     setTimeout(() => {
       navigate('/');
     }, 1000);
@@ -248,12 +235,9 @@ const handleStartQuiz = async () => {
   }
 };
 
-  const renderParticipantSlot = (index) => {
+const renderParticipantSlot = (index) => {
     const participant = participants[index];
     const isEmpty = !participant;
-
-    // Debug logging
-    console.log(`Participant slot ${index}:`, participant);
 
     return (
       <div
@@ -407,7 +391,8 @@ const handleStartQuiz = async () => {
                 <div className="flex space-x-3">
                   <button
                     onClick={handleCancelQuiz}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-black-500 text-white hover:bg-red-600 transition-colors"
+                    style={{ color: '#ffffffff', backgroundColor: '#495464'}}
                   >
                     <X className="h-4 w-4" />
                     Cancel Quiz

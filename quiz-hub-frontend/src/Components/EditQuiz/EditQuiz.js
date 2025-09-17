@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Edit3, Settings, FileText, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Edit3, Settings, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import QuizBox from '../../Shared/Quizbox';
 import AuthService from '../../Services/AuthService';
@@ -24,7 +24,6 @@ export default function EditQuiz() {
       const fetchedQuizzes = await AdminService.getAllQuizzes();
       console.log('Fetched quizzes:', fetchedQuizzes);
       
-      // Transform the data to match QuizBox expectations
       const transformedQuizzes = fetchedQuizzes.map(quiz => ({
         id: quiz.id,
         name: quiz.name,
@@ -32,7 +31,7 @@ export default function EditQuiz() {
         category: quiz.categoryName || quiz.category,
         difficulty: quiz.difficulty?.toString() || quiz.difficultyName,
         numberOfQuestions: quiz.numberOfQuestions,
-        timeToFinish: quiz.timeLimitMinutes // QuizBox expects timeToFinish
+        timeToFinish: quiz.timeLimitMinutes 
       }));
       
       setQuizzes(transformedQuizzes);
@@ -47,7 +46,6 @@ export default function EditQuiz() {
     }
   };
 
-  // Filter quizzes based on search term
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredQuizzes(quizzes);
@@ -73,7 +71,6 @@ export default function EditQuiz() {
     fetchQuizzes();
   }, []);
 
-  // Handle quiz selection for editing
   const handleQuizClick = (quizId) => {
     navigateTo(`/edit-quiz/${quizId}`);
   };
@@ -103,7 +100,7 @@ export default function EditQuiz() {
         fontFamily: '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}>
         <div className="text-center p-8 rounded-2xl shadow-lg" style={{ backgroundColor: '#E8E8E8' }}>
-          <Settings className="h-16 w-16 mx-auto mb-4" style={{ color: '#ef4444', opacity: 0.7 }} />
+          <Settings className="h-16 w-16 mx-auto mb-4" style={{ color: '#495464', opacity: 0.7 }} />
           <p className="text-lg mb-2" style={{ color: '#495464' }}>Error Loading Quizzes</p>
           <p className="text-sm mb-4" style={{ color: '#495464', opacity: 0.7 }}>{error}</p>
           <div className="flex gap-4 justify-center">
@@ -115,7 +112,7 @@ export default function EditQuiz() {
               }}
               className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90"
               style={{ 
-                backgroundColor: '#22c55e',
+                backgroundColor: '#495464',
                 color: 'white'
               }}
             >

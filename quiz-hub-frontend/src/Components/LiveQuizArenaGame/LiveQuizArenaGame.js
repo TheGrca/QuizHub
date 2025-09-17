@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Trophy, Clock, Users, Brain, LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -13,13 +13,12 @@ export default function LiveQuizGame() {
   const { quizId, questionNumber } = useParams();
   const navigate = useNavigate();
   const wsRef = useRef(null);
-  
   const [user, setUser] = useState(null);
   const [gameState, setGameState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentAnswer, setCurrentAnswer] = useState(null);
   const [hasAnswered, setHasAnswered] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30); // 30 second timer
+  const [timeLeft, setTimeLeft] = useState(30); 
   const [isDoNotKnow, setIsDoNotKnow] = useState(false);
 
   const navigateTo = (path) => {
@@ -55,7 +54,6 @@ export default function LiveQuizGame() {
       wsRef.current = new WebSocket('ws://localhost:5175/ws');
       
       wsRef.current.onopen = () => {
-        console.log('WebSocket connected for game');
         if (user) {
           const message = {
             type: 'USER_CONNECTED',
@@ -82,8 +80,6 @@ export default function LiveQuizGame() {
       };
 
       wsRef.current.onclose = (event) => {
-        console.log('WebSocket closed in game');
-        // Attempt to reconnect
         if (user) {
           setTimeout(initializeWebSocket, 5000);
         }
@@ -93,13 +89,12 @@ export default function LiveQuizGame() {
     }
   };
 
-  // Handle WebSocket messages
-  const handleWebSocketMessage = (data) => {
+  //For handling live game
+const handleWebSocketMessage = (data) => {
     const messageType = data.Type || data.type;
     
     switch (messageType) {
     case 'LEADERBOARD_UPDATED':
-      // Only update leaderboard, keep everything else the same
       const leaderboardPayload = data.Payload || data.payload;
       if (leaderboardPayload.participants) {
         setGameState(prevState => ({
@@ -109,64 +104,52 @@ export default function LiveQuizGame() {
       }
       break;
         
- case 'NEXT_QUESTION':
-  console.log('NEXT_QUESTION received:', data);
-  const nextPayload = data.Payload || data.payload;
-  
-  if (nextPayload?.gameState) {
-    const newGameState = nextPayload.gameState;
-    
-    // Handle both casing possibilities
-    const currentQuestionIndex = newGameState.CurrentQuestionIndex ?? newGameState.currentQuestionIndex;
-    
-    console.log('Current question index:', currentQuestionIndex);
-    
-    // Normalize participants from PascalCase to camelCase to match LEADERBOARD_UPDATED format
-    let normalizedParticipants = [];
-    const rawParticipants = newGameState.Participants || newGameState.participants;
-    
-    if (rawParticipants && rawParticipants.length > 0) {
-      normalizedParticipants = rawParticipants.map(p => ({
-        userId: p.UserId || p.userId,
-        username: p.Username || p.username,
-        profilePicture: p.ProfilePicture || p.profilePicture,
-        score: p.Score ?? p.score ?? 0,
-        joinedAt: p.JoinedAt || p.joinedAt
-      }));
-      console.log('Normalized participants:', normalizedParticipants);
-    }
-    
-    setGameState(prevState => ({
-      ...newGameState,
-      // Normalize the property names for frontend use
-      currentQuestionIndex: currentQuestionIndex,
-      status: newGameState.Status ?? newGameState.status,
-      // Use normalized participants that match LEADERBOARD_UPDATED format
-      participants: normalizedParticipants.length > 0 ? normalizedParticipants : (prevState?.participants || []),
-      currentQuestion: newGameState.CurrentQuestion ?? newGameState.currentQuestion,
-      totalQuestions: newGameState.TotalQuestions ?? newGameState.totalQuestions,
-      questionStartTime: newGameState.QuestionStartTime ?? newGameState.questionStartTime
-    }));
-    
-    if (typeof currentQuestionIndex === 'number') {
-      console.log(`Navigating to question ${currentQuestionIndex}`);
-      navigate(`/live-quiz-game/${quizId}/${currentQuestionIndex}`, { replace: true });
-      resetForNewQuestion();
-    }
-  }
-  break;
+    case 'NEXT_QUESTION':
+      const nextPayload = data.Payload || data.payload;
+      
+      if (nextPayload?.gameState) {
+        const newGameState = nextPayload.gameState;
+        const currentQuestionIndex = newGameState.CurrentQuestionIndex ?? newGameState.currentQuestionIndex;
+        let normalizedParticipants = [];
+        const rawParticipants = newGameState.Participants || newGameState.participants;
         
-case 'QUIZ_COMPLETED':
-  const completedPayload = data.Payload || data.payload;
-  if (completedPayload.gameState) {
-    setGameState(completedPayload.gameState);
-    toast.success('Quiz completed! Showing final results...');
-    // Navigate to results page with results route
-    setTimeout(() => {
-      navigate(`/live-quiz-game/${quizId}/results`);
-    }, 1000); // Reduced delay since we'll have a countdown on the results page
-  }
-  break;
+        if (rawParticipants && rawParticipants.length > 0) {
+          normalizedParticipants = rawParticipants.map(p => ({
+            userId: p.UserId || p.userId,
+            username: p.Username || p.username,
+            profilePicture: p.ProfilePicture || p.profilePicture,
+            score: p.Score ?? p.score ?? 0,
+            joinedAt: p.JoinedAt || p.joinedAt
+          }));
+        }
+        
+        setGameState(prevState => ({
+          ...newGameState,
+          currentQuestionIndex: currentQuestionIndex,
+          status: newGameState.Status ?? newGameState.status,
+          participants: normalizedParticipants.length > 0 ? normalizedParticipants : (prevState?.participants || []),
+          currentQuestion: newGameState.CurrentQuestion ?? newGameState.currentQuestion,
+          totalQuestions: newGameState.TotalQuestions ?? newGameState.totalQuestions,
+          questionStartTime: newGameState.QuestionStartTime ?? newGameState.questionStartTime
+        }));
+        
+        if (typeof currentQuestionIndex === 'number') {
+          navigate(`/live-quiz-game/${quizId}/${currentQuestionIndex}`, { replace: true });
+          resetForNewQuestion();
+        }
+      }
+      break;
+        
+      case 'QUIZ_COMPLETED':
+        const completedPayload = data.Payload || data.payload;
+        if (completedPayload.gameState) {
+          setGameState(completedPayload.gameState);
+          toast.success('Quiz completed! Showing final results...');
+          setTimeout(() => {
+            navigate(`/live-quiz-game/${quizId}/results`);
+          }, 1000); 
+        }
+        break;
     }
   };
 
@@ -178,22 +161,14 @@ case 'QUIZ_COMPLETED':
   }, [user, quizId]);
 
   // Timer effect
-useEffect(() => {
-  const questionTimer = gameState?.currentQuestion?.Timer || 
-                       gameState?.currentQuestion?.timer || 
-                       gameState?.currentQuestion?.timeToAnswer ||
-                       30; // fallback to 30 if none found
+  useEffect(() => {
+    const questionTimer = gameState?.currentQuestion?.Timer || 
+                        gameState?.currentQuestion?.timer || 
+                        gameState?.currentQuestion?.timeToAnswer ||
+                        30; 
   
   const questionStartTime = gameState?.QuestionStartTime || gameState?.questionStartTime;
   const gameStatus = gameState?.Status || gameState?.status;
-
-  console.log('Timer effect triggered:', {
-    questionStartTime,
-    questionTimer,
-    hasAnswered,
-    status: gameStatus,
-    currentQuestion: gameState?.currentQuestion
-  });
 
   if (questionStartTime && questionTimer && !hasAnswered && (gameStatus === 'InProgress' || gameStatus === 1)) {
     const startTime = new Date(questionStartTime);
@@ -202,13 +177,10 @@ useEffect(() => {
       const now = new Date();
       const elapsed = Math.floor((now - startTime) / 1000);
       const remaining = Math.max(0, questionTimer - elapsed);
-      
-      console.log(`Timer update: ${remaining}s remaining (${elapsed}s elapsed of ${questionTimer}s)`);
-      
+     
       setTimeLeft(remaining);
       
       if (remaining === 0 && !hasAnswered) {
-        console.log('Time up! Auto-submitting as Don\'t Know');
         handleSubmitAnswer(true);
       }
     };
@@ -221,20 +193,19 @@ useEffect(() => {
 }, [gameState?.QuestionStartTime, gameState?.questionStartTime, 
     gameState?.currentQuestion?.Timer, gameState?.currentQuestion?.timer, gameState?.currentQuestion?.timeToAnswer,
     gameState?.Status, gameState?.status, hasAnswered]);
+
+
 const loadGameState = async () => {
   try {
     setLoading(true);
     const state = await LiveQuizGameService.getGameState(quizId);
     setGameState(state);
     setHasAnswered(state.userHasAnswered);
-    // Remove: setTimeLeft(30);
-    
     const currentQuestionIndex = parseInt(questionNumber);
     if (currentQuestionIndex !== state.currentQuestionIndex) {
       navigate(`/live-quiz-game/${quizId}/${state.currentQuestionIndex}`, { replace: true });
     }
   } catch (error) {
-    console.error('Error loading game state:', error);
     toast.error('Failed to load game state');
     navigate('/');
   } finally {
@@ -249,21 +220,16 @@ const loadGameState = async () => {
   };
 
 const handleAnswerChange = useCallback((answer) => {
-  console.log('handleAnswerChange called with:', answer, 'Type:', typeof answer);
   if (!hasAnswered) {
     setCurrentAnswer(answer);
     setIsDoNotKnow(false);
-    console.log('Answer set to:', answer);
   } else {
     console.log('Answer not set - already answered');
   }
 }, [hasAnswered]);
 
-useEffect(() => {
-  console.log('Current answer state:', currentAnswer, 'Has answered:', hasAnswered, 'Is do not know:', isDoNotKnow);
-}, [currentAnswer, hasAnswered, isDoNotKnow]);
 
-  const handleDoNotKnow = () => {
+const handleDoNotKnow = () => {
     if (!hasAnswered) {
       setIsDoNotKnow(true);
       setCurrentAnswer(null);
@@ -272,13 +238,6 @@ useEffect(() => {
 
  const handleSubmitAnswer = async (autoSubmitAsDoNotKnow = false) => {
    if (hasAnswered) return;
-
-  console.log('=== SUBMIT ANSWER DEBUG ===');
-  console.log('autoSubmitAsDoNotKnow:', autoSubmitAsDoNotKnow);
-  console.log('currentAnswer before processing:', currentAnswer);
-  console.log('currentAnswer type:', typeof currentAnswer);
-  console.log('isDoNotKnow before processing:', isDoNotKnow);
-
   try {
     const finalIsDoNotKnow = autoSubmitAsDoNotKnow || isDoNotKnow;
     let finalAnswer;
@@ -286,30 +245,14 @@ useEffect(() => {
     if (finalIsDoNotKnow) {
       finalAnswer = [];
     } else if (currentAnswer !== null) {
-      // Ensure currentAnswer is always wrapped in array for consistency
       finalAnswer = Array.isArray(currentAnswer) ? currentAnswer : [currentAnswer];
     } else {
       finalAnswer = [];
     }
     
-    console.log('Final processing:');
-    console.log('- finalIsDoNotKnow:', finalIsDoNotKnow);
-    console.log('- finalAnswer:', finalAnswer);
-    console.log('- finalAnswer types:', finalAnswer.map(a => typeof a));
-    console.log('- finalAnswer values:', finalAnswer.map(a => JSON.stringify(a)));
-    console.log('- Question type:', gameState?.currentQuestion?.type);
-    
-    // Convert boolean to string for backend compatibility
     if (gameState?.currentQuestion?.type?.toLowerCase().includes('truefalse')) {
       finalAnswer = finalAnswer.map(a => a.toString());
-      console.log('- Converted to strings for True/False:', finalAnswer);
     }
-    
-    console.log('About to call submitAnswer with:', {
-      quizId,
-      finalAnswer,
-      finalIsDoNotKnow
-    });
     
     await LiveQuizGameService.submitAnswer(quizId, finalAnswer, finalIsDoNotKnow);
     setHasAnswered(true);
@@ -320,17 +263,14 @@ useEffect(() => {
       toast.success('Answer submitted successfully!');
     }
   } catch (error) {
-    console.error('Error submitting answer:', error);
     toast.error(error.message);
   }
 };
 
-  const renderQuestion = useMemo(() => {
+const renderQuestion = useMemo(() => {
   if (!gameState?.currentQuestion) return null;
 
   const question = gameState.currentQuestion;
-  
-  // Handle both possible property names and add null check
   const questionType = question.Type || question.type;
   
   if (!questionType) {
@@ -338,10 +278,6 @@ useEffect(() => {
     return <div className="p-4 text-red-500">Error: Question type is missing</div>;
   }
 
-  // Only log once when question changes, not on every render
-  console.log('Rendering question type:', questionType);
-  console.log('Question data:', question);
-  
   const questionProps = {
     question: question.Text || question.text,
     onAnswer: handleAnswerChange
@@ -382,7 +318,7 @@ useEffect(() => {
         <div className="space-y-3">
          {gameState.participants.map((participant, index) => (
             <div
-                key={`participant-${participant.userId}-${index}`} // Add this key
+                key={`participant-${participant.userId}-${index}`} 
                 className={`flex items-center p-3 rounded-lg ${
                 index === 0 ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50'
                 }`}
@@ -482,7 +418,7 @@ useEffect(() => {
             {/* Leave Quiz */}
             <button
               onClick={() => {
-                if (window.confirm('Are you sure you want to leave the quiz?')) {
+                if (window.confirm('Are you sure you want to leave the quiz?')) { 
                   navigate('/');
                 }
               }}
@@ -496,88 +432,88 @@ useEffect(() => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Question Area */}
-<div className="lg:col-span-3">
-  <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-    {(() => {
-      // Check if quiz is completed first
-      if (gameState?.status === 'Completed' || gameState?.status === 2 || gameState?.Status === 'Completed' || gameState?.Status === 2) {
-        // Immediately redirect to results without showing loading state
-        setTimeout(() => {
-          navigate(`/live-quiz-game/${quizId}/results`);
-        }, 100); // Very short delay
-        
-        return (
-          <div className="text-center py-12">
-            <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Quiz Completed!</h2>
-            <p className="text-gray-600">Redirecting to results...</p>
-          </div>
-        );
-      }
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                {(() => {
+                  // Check if quiz is completed first
+                  if (gameState?.status === 'Completed' || gameState?.status === 2 || gameState?.Status === 'Completed' || gameState?.Status === 2) {
+                    // Immediately redirect to results without showing loading state
+                    setTimeout(() => {
+                      navigate(`/live-quiz-game/${quizId}/results`);
+                    }, 100); // Very short delay
+                    
+                    return (
+                      <div className="text-center py-12">
+                        <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Quiz Completed!</h2>
+                        <p className="text-gray-600">Redirecting to results...</p>
+                      </div>
+                    );
+                  }
       
-      // Check if we have a current question
-      if (gameState?.currentQuestion) {
-        return (
-          <>
-            {renderQuestion}
-            
-            {/* Answer Options */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              {/* Don't Know Button */}
-              <button
-                onClick={handleDoNotKnow}
-                disabled={hasAnswered}
-                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                  isDoNotKnow
-                    ? 'bg-gray-500 text-white'
-                    : hasAnswered
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Don't Know
-              </button>
-              
-              {/* Submit Answer Button */}
-              <button
-                onClick={() => handleSubmitAnswer(false)}
-                disabled={hasAnswered || (currentAnswer === null && !isDoNotKnow)}
-                className={`flex-1 px-8 py-3 rounded-lg font-medium transition-colors ${
-                  hasAnswered
-                    ? 'bg-green-500 text-white cursor-not-allowed'
-                    : (currentAnswer !== null || isDoNotKnow)
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                {hasAnswered ? 'Answer Submitted!' : 'Confirm Answer'}
-              </button>
+                // Check if we have a current question
+                if (gameState?.currentQuestion) {
+                  return (
+                    <>
+                      {renderQuestion}
+                      
+                      {/* Answer Options */}
+                      <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                        {/* Don't Know Button */}
+                        <button
+                          onClick={handleDoNotKnow}
+                          disabled={hasAnswered}
+                          className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                            isDoNotKnow
+                              ? 'bg-gray-500 text-white'
+                              : hasAnswered
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          Don't Know
+                        </button>
+                        
+                        {/* Submit Answer Button */}
+                        <button
+                          onClick={() => handleSubmitAnswer(false)}
+                          disabled={hasAnswered || (currentAnswer === null && !isDoNotKnow)}
+                          className={`flex-1 px-8 py-3 rounded-lg font-medium transition-colors ${
+                            hasAnswered
+                              ? 'bg-green-500 text-white cursor-not-allowed'
+                              : (currentAnswer !== null || isDoNotKnow)
+                              ? 'bg-blue-500 text-white hover:bg-blue-600'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          {hasAnswered ? 'Answer Submitted!' : 'Confirm Answer'}
+                        </button>
+                      </div>
+                      
+                      {/* Status Messages */}
+                      {hasAnswered && (
+                        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
+                          <p className="text-green-700 font-medium">
+                            Answer submitted! Waiting for other players...
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  );
+                }
+                
+                // Default loading state (only shown if not completed and no current question)
+                return (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600">Loading question...</p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      Status: {gameState?.status || gameState?.Status}, Current Question: {gameState?.currentQuestion ? 'Found' : 'Missing'}
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
-            
-            {/* Status Messages */}
-            {hasAnswered && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-center">
-                <p className="text-green-700 font-medium">
-                  Answer submitted! Waiting for other players...
-                </p>
-              </div>
-            )}
-          </>
-        );
-      }
-      
-      // Default loading state (only shown if not completed and no current question)
-      return (
-        <div className="text-center py-12">
-          <p className="text-gray-600">Loading question...</p>
-          <p className="text-xs text-gray-400 mt-2">
-            Status: {gameState?.status || gameState?.Status}, Current Question: {gameState?.currentQuestion ? 'Found' : 'Missing'}
-          </p>
-        </div>
-      );
-    })()}
-  </div>
-</div>
+          </div>
 
           {/* Leaderboard */}
           <div className="lg:col-span-1">

@@ -368,7 +368,7 @@ const fetchResult = async () => {
             onClick={handleTakeAnotherQuiz}
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
             style={{ 
-              backgroundColor: '#3b82f6',
+              backgroundColor: '#353b42ff',
               color: 'white'
             }}
           >
@@ -379,7 +379,7 @@ const fetchResult = async () => {
             onClick={handleRetakeQuiz}
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 inline-flex items-center"
             style={{ 
-              backgroundColor: '#22c55e',
+              backgroundColor: '#495464',
               color: 'white'
             }}
           >
