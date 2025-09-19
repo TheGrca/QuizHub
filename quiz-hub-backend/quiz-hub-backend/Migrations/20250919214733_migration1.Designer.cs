@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using quiz_hub_backend;
 
@@ -11,9 +12,11 @@ using quiz_hub_backend;
 namespace quiz_hub_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250919214733_migration1")]
+    partial class migration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,33 +41,6 @@ namespace quiz_hub_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Programming"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Math"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Geography"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "History"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Sport"
-                        });
                 });
 
             modelBuilder.Entity("quiz_hub_backend.Models.GlobalRanking", b =>
@@ -207,17 +183,6 @@ namespace quiz_hub_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin@admin.com",
-                            Image = new byte[0],
-                            Password = "$2a$11$TK9QNjkzQjkzQjkzQjkzQeH6wJaNetcHLFurxE39aMjudZLNvEiW",
-                            Username = "Admin",
-                            isAdmin = 1
-                        });
                 });
 
             modelBuilder.Entity("quiz_hub_backend.Models.UserAnswer", b =>

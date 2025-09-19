@@ -62,6 +62,27 @@ namespace quiz_hub_backend
                 .HasValue<TrueFalseUserAnswer>("TrueFalse")
                 .HasValue<TextInputUserAnswer>("TextInput");
                 
+
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Username = "Admin",
+                    Email = "admin@admin.com",
+                    Password = "$2a$11$myz1T0j.fuRSUwvixXDGQOcqmSENj77L9YAK5X3RnZCILqPv2cIYq", 
+                    Image = new byte[0], 
+                    isAdmin = UserType.Admin
+                }
+            );
+
+            // Seed Categories
+            modelBuilder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "Programming" },
+                new Category { Id = 2, Name = "Math" },
+                new Category { Id = 3, Name = "Geography" },
+                new Category { Id = 4, Name = "History" },
+                new Category { Id = 5, Name = "Sport" }
+            );
         }
     }
 }
