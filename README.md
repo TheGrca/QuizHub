@@ -4,7 +4,7 @@ A comprehensive full-stack quiz application built with ASP.NET Core and React, f
 
 ## 📋 About
 
-Quiz Hub is an interactive quiz platform that allows users to take timed quizzes across various categories and difficulty levels. The application supports multiple question types including multiple choice, multiple answer, true/false, and text input questions. Users can track their progress, view detailed results, and compete on global leaderboards.
+Quiz Hub is an interactive quiz platform that allows users to take timed quizzes across various categories and difficulty levels. The application supports multiple question types including single choice, multiple choice, true/false, and text input questions. Users can track their progress, view detailed results, and compete on global leaderboards.
 The application also supports real-time multiplayer competitions where multiple users can compete simultaneously in a quiz room with live rankings and speed-based scoring.
 
 ### Key Features
@@ -26,8 +26,8 @@ The application also supports real-time multiplayer competitions where multiple 
 - 🎪 Create and manage a live competition room
 
 **Question Types Supported:**
-- **Multiple Choice**: Classic 4-option questions with one correct answer
-- **Multiple Answer**: Questions requiring selection of all correct options
+- **Single Choice**: Classic 4-option questions with one correct answer
+- **Multiple Choice**: Questions requiring selection of all correct options
 - **True/False**: Simple binary questions
 - **Text Input**: Fill-in-the-blank questions with exact text matching
 
@@ -110,7 +110,7 @@ cd quiz-hub
    ```bash
    dotnet run
    ```
-   The API will be available at `https://localhost:7000`
+   The API will be available at `https://host:port`
 
 #### 3. Frontend Setup (Windows)
 
@@ -128,14 +128,15 @@ cd quiz-hub
    
    Create a `.env` file in the frontend root:
    ```env
-   REACT_APP_API_BASE_URL=https://localhost:7000/api
+   REACT_APP_API_BASE_URL=https://host:port/api
+   REACT_APP_WS_URL=ws://host:port/ws
    ```
 
 4. **Start the Development Server:**
    ```bash
    npm start
    ```
-   The application will be available at `http://localhost:3000`
+   The application will be available at `http://host:port`
 
 ### macOS Setup
 
@@ -196,7 +197,7 @@ cd quiz-hub
    ```bash
    dotnet run
    ```
-   The API will be available at `https://localhost:7000`
+   The API will be available at `https://host:port`
 
 #### 3. Frontend Setup (macOS)
 
@@ -214,14 +215,22 @@ cd quiz-hub
    
    Create a `.env` file in the frontend root:
    ```env
-   REACT_APP_API_BASE_URL=https://localhost:7000/api
+   REACT_APP_API_BASE_URL=https://host:port/api
+   REACT_APP_WS_URL=ws://host:port/ws
    ```
 
 4. **Start the Development Server:**
    ```bash
    npm start
    ```
-   The application will be available at `http://localhost:3000`
+   The application will be available at `http://host:port`
+
+### Admin Panel
+When you first migrate the database, an admin profile will automatically be generated. To visit the Admin portal, the credentials are:
+   ```bash
+   username: Admin
+   password: Admin123
+   ```
 
 ## 🌟 Usage
 
