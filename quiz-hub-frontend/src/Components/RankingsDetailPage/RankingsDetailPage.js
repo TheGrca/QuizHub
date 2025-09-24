@@ -32,28 +32,61 @@ export default function QuizRankingsDetail() {
   ];
 
   const filterRankingsByTime = (rankingsData, filter) => {
-    if (filter === 'all') return rankingsData;
-
+  if (filter === 'all') {
+    const bestResults = getBestResultPerUser(rankingsData);
+    return assignRanks(bestResults);
+  }
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    return rankingsData.filter(ranking => {
-      const completionDate = new Date(ranking.completionDate);
+    let daysBack;
       
       switch (filter) {
         case 'week':
-          return completionDate >= startOfWeek;
+          daysBack = 7;
+          break;
         case 'month':
-          return completionDate >= startOfMonth;
+          daysBack = 30;
+          break;
         default:
-          return true;
+          return assignRanks(getBestResultPerUser(rankingsData));
       }
-    });
+
+      const cutoffDate = new Date(now.getTime() - (daysBack * 24 * 60 * 60 * 1000));
+
+      const filteredByTime = rankingsData.filter(ranking => {
+          const completionDate = new Date(ranking.completionDate);
+          return completionDate >= cutoffDate;
+        });
+
+        const bestResults = getBestResultPerUser(filteredByTime);
+        return assignRanks(bestResults);
   };
+
+const getBestResultPerUser = (results) => {
+  const userBestResults = new Map();
+  
+  results.forEach(result => {
+    const existing = userBestResults.get(result.userId);
+    if (!existing || 
+        result.score > existing.score || 
+        (result.score === existing.score && result.timeTakenSeconds < existing.timeTakenSeconds)) {
+      userBestResults.set(result.userId, result);
+    }
+  });
+  
+  return Array.from(userBestResults.values());
+};
+
+const assignRanks = (results) => {
+  return results
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.timeTakenSeconds - b.timeTakenSeconds;
+    })
+    .map((result, index) => ({
+      ...result,
+      rank: index + 1
+    }));
+};
 
   const handleTimeFilterChange = (newFilter) => {
     setTimeFilter(newFilter);

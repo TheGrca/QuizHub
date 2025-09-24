@@ -159,9 +159,6 @@ class UserService {
         throw new Error('User not found. Please login again.');
       }
 
-      console.log('Fetching rankings for quiz:', quizId);
-      console.log('User ID:', user.id);
-
       const response = await fetch(`${this.baseURL}/user/quiz-rankings/${quizId}`, {
         method: 'GET',
         headers: {
@@ -170,9 +167,6 @@ class UserService {
         },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server error response:', errorText);
@@ -180,7 +174,6 @@ class UserService {
       }
 
       const data = await response.json();
-      console.log('Rankings data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching quiz rankings:', error);
@@ -195,8 +188,6 @@ class UserService {
         throw new Error('User not found. Please login again.');
       }
 
-      console.log('Fetching quiz results for user:', user.id);
-
       const response = await fetch(`${this.baseURL}/user/my-quiz-results`, {
         method: 'GET',
         headers: {
@@ -205,9 +196,6 @@ class UserService {
         },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server error response:', errorText);
@@ -215,7 +203,6 @@ class UserService {
       }
 
       const data = await response.json();
-      console.log('Quiz results data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching quiz results:', error);
@@ -230,9 +217,6 @@ class UserService {
         throw new Error('User not found. Please login again.');
       }
 
-      console.log('Fetching quiz result details for resultId:', resultId);
-      console.log('User ID:', user.id);
-
       const response = await fetch(`${this.baseURL}/user/quiz-result/${resultId}`, {
         method: 'GET',
         headers: {
@@ -241,9 +225,6 @@ class UserService {
         },
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server error response:', errorText);
@@ -251,7 +232,6 @@ class UserService {
       }
 
       const data = await response.json();
-      console.log('Quiz result data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching quiz result:', error);

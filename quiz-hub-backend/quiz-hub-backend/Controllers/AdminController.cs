@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using quiz_hub_backend.DTO;
 using quiz_hub_backend.Interfaces;
 
@@ -6,9 +7,11 @@ namespace quiz_hub_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
+
 
         public AdminController(IAdminService adminService)
         {
@@ -17,6 +20,7 @@ namespace quiz_hub_backend.Controllers
 
         //This makes a quiz
         [HttpPost("quiz")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<QuizResponseDTO>> CreateQuiz([FromBody] CreateQuizDTO createQuizDto)
         {
             try
@@ -37,6 +41,7 @@ namespace quiz_hub_backend.Controllers
 
         //This fetches the categories
         [HttpGet("categories")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<CategoryDTO>>> GetCategories()
         {
             try
@@ -52,6 +57,7 @@ namespace quiz_hub_backend.Controllers
 
         //This fetches all quizzes
         [HttpGet("quizzes")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<QuizResponseDTO>>> GetAllQuizzes()
         {
             try
@@ -64,9 +70,10 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching quizzes.", error = ex.Message });
             }
         }
-       
-       //This creates a new category
+
+        //This creates a new category
         [HttpPost("category")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CreateCategoryDTO createCategoryDto)
         {
             try
@@ -96,6 +103,7 @@ namespace quiz_hub_backend.Controllers
 
         //This fetches a single quiz
         [HttpGet("quiz/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<QuizResponseDTO>> GetQuiz(int id)
         {
             try
@@ -117,6 +125,7 @@ namespace quiz_hub_backend.Controllers
 
         //This selects one quiz that will be edited
         [HttpGet("quiz/{quizId}/edit")]
+        [Authorize(Roles = "Admin")]    
         public async Task<IActionResult> GetQuizForEdit(int quizId)
         {
             try
@@ -137,6 +146,7 @@ namespace quiz_hub_backend.Controllers
 
         //This edits a quiz
         [HttpPut("quiz/{quizId}/edit")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> UpdateQuizWithEdit(int quizId, [FromBody] EditQuizDTO editQuizDto)
         {
             try
@@ -162,6 +172,7 @@ namespace quiz_hub_backend.Controllers
 
         //This deletes a quiz
         [HttpDelete("quiz/{quizId}/delete")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> DeleteQuizCompletely(int quizId)
         {
             try
@@ -182,6 +193,7 @@ namespace quiz_hub_backend.Controllers
 
         //This fetches all users
         [HttpGet("users")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -197,6 +209,7 @@ namespace quiz_hub_backend.Controllers
 
         //This fetches one user and all of his quizz results
         [HttpGet("user/{userId}")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> GetUserResults(int userId)
         {
             try

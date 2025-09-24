@@ -24,7 +24,6 @@ class AdminService {
       }
 
       const quizzes = await response.json();
-      console.log('Raw quizzes from API:', quizzes);
       return quizzes;
     } catch (error) {
       console.error('Error fetching quizzes:', error);
@@ -176,7 +175,6 @@ class AdminService {
       }
 
       const users = await response.json();
-      console.log('Users fetched:', users);
       return users;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -198,7 +196,6 @@ class AdminService {
       }
 
       const userResults = await response.json();
-      console.log('User results fetched:', userResults);
       return userResults;
     } catch (error) {
       console.error('Error fetching user results:', error);

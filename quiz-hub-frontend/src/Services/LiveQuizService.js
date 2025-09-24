@@ -10,27 +10,14 @@ class LiveQuizService {
  async createLiveQuiz(quizData) {
     try {
       const headers = AuthService.getAuthHeaders();
-      
-      // Debug logging
-      console.log('Request headers:', headers);
-      console.log('Quiz data:', quizData);
-      console.log('Current user:', AuthService.getCurrentUser());
-      console.log('Token:', AuthService.getToken());
-
       const response = await fetch(`${this.baseURL}/livequiz/create`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(quizData),
       });
 
-      // Check if response has content before trying to parse JSON
       const responseText = await response.text();
       
-      // Log the response for debugging
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      console.log('Response text:', responseText);
-
       let data;
       try {
         data = responseText ? JSON.parse(responseText) : {};

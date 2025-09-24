@@ -9,6 +9,7 @@ namespace quiz_hub_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class LiveQuizController : ControllerBase
     {
         private readonly ILiveQuizService _liveQuizService;
@@ -21,6 +22,7 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateLiveQuiz([FromBody] LiveQuizCreateRequestDTO requestDto)
         {
             try
@@ -185,6 +187,7 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpPost("start")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> StartLiveQuiz([FromBody] LiveQuizStartDTO request)
         {
             try
@@ -272,7 +275,7 @@ namespace quiz_hub_backend.Controllers
                         {
                             var broadcastMessage = new
                             {
-                                Type = "LEADERBOARD_UPDATED", 
+                                Type = "LEADERBOARD_UPDATED",
                                 Payload = leaderboardPayload
                             };
 

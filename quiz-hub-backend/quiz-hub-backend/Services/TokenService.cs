@@ -41,7 +41,7 @@ namespace quiz_hub_backend.Services
                 issuer: _configuration["JWT_ISSUER"],
                 audience: _configuration["JWT_AUDIENCE"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(20),
+                expires: DateTime.Now.AddMinutes(40),
                 signingCredentials: signingCredentials
             );
 

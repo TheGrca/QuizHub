@@ -10,6 +10,7 @@ namespace quiz_hub_backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,6 +21,7 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("{userId}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<UserDTO>> GetUserById(int userId)
         {
             try
@@ -38,10 +40,16 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("quizzes")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<List<QuizListDTO>>> GetQuizzes([FromQuery] QuizFilterDTO? filters = null)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
                 var quizzes = await _userService.GetAllQuizzesAsync(filters);
                 return Ok(quizzes);
             }
@@ -52,10 +60,16 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("categories")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<List<CategoryDTO>>> GetCategories()
         {
             try
             {
+               var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
                 var categories = await _userService.GetCategoriesAsync();
                 return Ok(categories);
             }
@@ -66,10 +80,16 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("quiz/{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<QuizResponseDTO>> GetQuiz(int id)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
                 var quiz = await _userService.GetQuizByIdAsync(id);
 
                 if (quiz == null)
@@ -86,10 +106,16 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpPost("submit-quiz")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<QuizSubmissionResultDTO>> SubmitQuiz([FromBody] QuizSubmissionDTO submission)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
                 var result = await _userService.SubmitQuizAsync(submission.UserId, submission);
                 return Ok(result);
             }
@@ -100,17 +126,18 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("quiz-result/{id}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<QuizResultDetailDTO>> GetQuizResult(int id)
         {
             try
             {
-                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
-                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                var userId = GetCurrentUserId();
+                if (userId == null)
                 {
-                    return BadRequest("User ID is required");
+                    return Unauthorized("User not authenticated");
                 }
 
-                var result = await _userService.GetQuizResultAsync(id, userId);
+                var result = await _userService.GetQuizResultAsync(id, userId.Value);
 
                 if (result == null)
                 {
@@ -125,17 +152,18 @@ namespace quiz_hub_backend.Controllers
             }
         }
         [HttpGet("my-quiz-results")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<MyQuizResultsDTO>> GetMyQuizResults()
         {
             try
             {
-                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
-                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                var userId = GetCurrentUserId();
+                if (userId == null)
                 {
-                    return BadRequest("User ID is required");
+                    return Unauthorized("User not authenticated");
                 }
 
-                var results = await _userService.GetMyQuizResultsAsync(userId);
+                var results = await _userService.GetMyQuizResultsAsync(userId.Value);
                 return Ok(results);
             }
             catch (Exception ex)
@@ -145,17 +173,18 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("quiz-progress/{quizId}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<List<QuizProgressDTO>>> GetQuizProgress(int quizId)
         {
             try
             {
-                var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
-                if (string.IsNullOrEmpty(userIdHeader) || !int.TryParse(userIdHeader, out int userId))
+                var userId = GetCurrentUserId();
+                if (userId == null)
                 {
-                    return BadRequest("User ID is required");
+                    return Unauthorized("User not authenticated");
                 }
 
-                var progressData = await _userService.GetQuizProgressAsync(userId, quizId);
+                var progressData = await _userService.GetQuizProgressAsync(userId.Value, quizId);
                 return Ok(progressData);
             }
             catch (Exception ex)
@@ -165,10 +194,16 @@ namespace quiz_hub_backend.Controllers
         }
 
         [HttpGet("quiz-rankings/{quizId}")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<QuizRankingsDTO>> GetQuizRankings(int quizId)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized("User not authenticated");
+                }
                 var rankings = await _userService.GetQuizRankingsAsync(quizId);
 
                 if (rankings == null)
@@ -183,6 +218,12 @@ namespace quiz_hub_backend.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching quiz rankings.", error = ex.Message });
             }
         }
+
+            private int? GetCurrentUserId()
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                return int.TryParse(userIdClaim, out var userId) ? userId : null;
+            }
 
     }
 }

@@ -492,21 +492,11 @@ namespace quiz_hub_backend.Services
             var allResults = await _context.UserQuizResults
                 .Include(r => r.User)
                 .Where(r => r.QuizId == quizId)
+                .OrderByDescending(r => r.CompletionDate) 
                 .ToListAsync();
 
-            // Group by user and get best result for each user (in memory)
-            var bestResults = allResults
-                .GroupBy(r => r.UserId)
-                .Select(g => g
-                    .OrderByDescending(r => r.Score)
-                    .ThenBy(r => r.TimeTakenSeconds)
-                    .First())
-                .OrderByDescending(r => r.Score)
-                .ThenBy(r => r.TimeTakenSeconds)
-                .ToList();
-
             // Create rankings with rank numbers
-            var rankings = bestResults.Select((result, index) => new UserRankingDTO
+            var rankings = allResults.Select((result, index) => new UserRankingDTO
             {
                 UserId = result.UserId,
                 Username = result.User.Username,
