@@ -95,7 +95,7 @@ const LiveQuizArenaRoom = () => {
           break;
               
             case 'QUIZ_CANCELLED':
-              if (data.Payload.quizId === quizId) {
+              if (data.Payload.quizId === quizId || !user.isAdmin) {
                 toast.error('Quiz has been cancelled by the admin');
                 navigate('/home');
               }

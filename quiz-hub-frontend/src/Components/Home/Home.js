@@ -51,6 +51,7 @@ export default function Home() {
     // Fetch initial data
     fetchCategories();
     fetchQuizzes();
+    fetchCurrentLiveQuiz();
   }, []);
 
   //Function for fetching current live quiz
@@ -287,7 +288,7 @@ const handleModalClose = () => {
                   <div>
                     <div className="flex items-center mb-2">
                       <h2 className="text-2xl font-bold mr-3" style={{ color: '#495464' }}>
-                        {liveQuiz.quizData?.name || 'Live Quiz'}
+                        {liveQuiz.quizData?.name || liveQuiz?.name  ||'Live Quiz'}
                       </h2>
                       <div 
                         className="px-3 py-1 rounded-full text-xs font-medium text-white"
@@ -297,7 +298,7 @@ const handleModalClose = () => {
                       </div>
                     </div>
                     <p className="text-lg mb-2" style={{ color: '#495464', opacity: 0.7 }}>
-                      {liveQuiz.quizData?.description || 'Join the live quiz competition!'}
+                      {liveQuiz.quizData?.description || liveQuiz?.description  ||'Join the live quiz competition!'}
                     </p>
                     <div className="flex items-center" style={{ color: '#495464', opacity: 0.6 }}>
                       <Users className="h-4 w-4 mr-2" />

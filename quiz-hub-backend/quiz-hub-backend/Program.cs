@@ -55,9 +55,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["JWT_AUDIENCE"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["JWT_SECRET_KEY"])),
-            ClockSkew = TimeSpan.Zero, // Add this
-            NameClaimType = ClaimTypes.Name, // Add this
-            RoleClaimType = ClaimTypes.Role  // Add this
+            ClockSkew = TimeSpan.Zero, 
+            NameClaimType = ClaimTypes.Name, 
+            RoleClaimType = ClaimTypes.Role  
         };
     });
 
